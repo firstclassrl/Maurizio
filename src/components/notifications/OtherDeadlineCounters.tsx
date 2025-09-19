@@ -2,24 +2,22 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { Card, CardContent } from '../ui/card'
 import { Badge } from '../ui/badge'
-import { Calendar, Clock, AlertTriangle, CheckCircle } from 'lucide-react'
+import { Calendar, Clock, AlertTriangle } from 'lucide-react'
 
-interface DeadlineCountersProps {
+interface OtherDeadlineCountersProps {
   userId: string
 }
 
 interface DeadlineStats {
   today: number
   tomorrow: number
-  thisWeek: number
   overdue: number
 }
 
-export function DeadlineCounters({ userId }: DeadlineCountersProps) {
+export function OtherDeadlineCounters({ userId }: OtherDeadlineCountersProps) {
   const [stats, setStats] = useState<DeadlineStats>({
     today: 0,
     tomorrow: 0,
-    thisWeek: 0,
     overdue: 0
   })
   const [loading, setLoading] = useState(false)
@@ -29,7 +27,6 @@ export function DeadlineCounters({ userId }: DeadlineCountersProps) {
       setLoading(true)
       const today = new Date().toISOString().split('T')[0]
       const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-      const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
       // Get tasks due today
       const { data: todayTasks, error: todayError } = await supabase
@@ -51,17 +48,6 @@ export function DeadlineCounters({ userId }: DeadlineCountersProps) {
 
       if (tomorrowError) throw tomorrowError
 
-      // Get tasks due this week
-      const { data: weekTasks, error: weekError } = await supabase
-        .from('tasks')
-        .select('id')
-        .eq('user_id', userId)
-        .gte('scadenza', today)
-        .lte('scadenza', weekFromNow)
-        .eq('stato', 'todo')
-
-      if (weekError) throw weekError
-
       // Get overdue tasks
       const { data: overdueTasks, error: overdueError } = await supabase
         .from('tasks')
@@ -75,7 +61,6 @@ export function DeadlineCounters({ userId }: DeadlineCountersProps) {
       setStats({
         today: todayTasks?.length || 0,
         tomorrow: tomorrowTasks?.length || 0,
-        thisWeek: weekTasks?.length || 0,
         overdue: overdueTasks?.length || 0
       })
     } catch (error) {
@@ -91,7 +76,7 @@ export function DeadlineCounters({ userId }: DeadlineCountersProps) {
       
       // Set up real-time subscription
       const subscription = supabase
-        .channel('deadline_stats_changes')
+        .channel('other_deadline_stats_changes')
         .on(
           'postgres_changes',
           {
@@ -114,8 +99,8 @@ export function DeadlineCounters({ userId }: DeadlineCountersProps) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        {[1, 2, 3, 4].map((i) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {[1, 2, 3].map((i) => (
           <Card key={i} className="animate-pulse">
             <CardContent className="p-4">
               <div className="h-4 bg-gray-200 rounded mb-2"></div>
@@ -127,14 +112,14 @@ export function DeadlineCounters({ userId }: DeadlineCountersProps) {
     )
   }
 
-  const totalActive = stats.today + stats.tomorrow + stats.thisWeek + stats.overdue
+  const totalActive = stats.today + stats.tomorrow + stats.overdue
 
   if (totalActive === 0) {
     return null
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       {/* Overdue Tasks */}
       {stats.overdue > 0 && (
         <Card className="border-red-200 bg-red-50">
@@ -191,23 +176,6 @@ export function DeadlineCounters({ userId }: DeadlineCountersProps) {
             <Badge className="mt-2 bg-yellow-600 text-white">
               Domani
             </Badge>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* This Week's Tasks */}
-      {stats.thisWeek > 0 && (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardContent className="p-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-blue-800">Scadenze questa settimana</p>
-                <p className="text-lg font-bold text-blue-900">{stats.thisWeek}</p>
-              </div>
-              <div className="p-1 bg-blue-100 rounded-full">
-                <CheckCircle className="h-4 w-4 text-blue-600" />
-              </div>
-            </div>
           </CardContent>
         </Card>
       )}

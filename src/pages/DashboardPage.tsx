@@ -14,7 +14,8 @@ import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
 import { NotificationCenter } from '../components/notifications/NotificationCenter'
 import { UrgentNotifications } from '../components/notifications/UrgentNotifications'
-import { DeadlineCounters } from '../components/notifications/DeadlineCounters'
+import { WeekCounter } from '../components/notifications/WeekCounter'
+import { OtherDeadlineCounters } from '../components/notifications/OtherDeadlineCounters'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -287,21 +288,28 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        {/* Greeting Section */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
-            Buongiorno Avvocato{getUserDisplayName() ? ` ${getUserDisplayName()}` : ''}
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Ecco il riepilogo delle tue attività per oggi
-          </p>
+        {/* Greeting Section with Week Counter */}
+        <div className="mb-6 flex items-start justify-between">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-gray-800">
+              Buongiorno Avvocato{getUserDisplayName() ? ` ${getUserDisplayName()}` : ''}
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Ecco il riepilogo delle tue attività per oggi
+            </p>
+          </div>
+          
+          {/* Week Counter - positioned on the right */}
+          <div className="ml-4">
+            <WeekCounter userId={user.id} />
+          </div>
         </div>
 
         {/* Urgent Notifications */}
         <UrgentNotifications userId={user.id} />
 
-        {/* Deadline Counters */}
-        <DeadlineCounters userId={user.id} />
+        {/* Other Deadline Counters */}
+        <OtherDeadlineCounters userId={user.id} />
 
         {/* Today's Tasks Section */}
         <Card className="mb-6 bg-yellow-50 border-yellow-200">
