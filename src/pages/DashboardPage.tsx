@@ -13,6 +13,7 @@ import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
 import { NotificationCenter } from '../components/notifications/NotificationCenter'
+import { AudioNotificationSettings } from '../components/notifications/AudioNotificationSettings'
 import { WeekCounter } from '../components/notifications/WeekCounter'
 import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
@@ -279,6 +280,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
               MESE
             </Button>
             <NotificationCenter userId={user.id} />
+            <AudioNotificationSettings userId={user.id} />
             <Button onClick={handleLogout} variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
               <LogOut className="h-4 w-4 mr-2" />
               Logout

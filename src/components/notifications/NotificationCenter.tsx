@@ -5,6 +5,7 @@ import { Badge } from '../ui/badge'
 import { Bell, BellRing, Check, Clock, AlertTriangle, Info } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { it } from 'date-fns/locale'
+import { useAudioNotifications } from '../../hooks/useAudioNotifications'
 
 interface Notification {
   id: string
@@ -29,6 +30,7 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
   const [unreadCount, setUnreadCount] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { playNotificationSound, playUrgentNotification, showBrowserNotification } = useAudioNotifications()
 
   const loadNotifications = async () => {
     try {
@@ -43,11 +45,40 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
 
       if (error) throw error
 
+      const previousCount = unreadCount
       setNotifications(data || [])
       
       // Update unread count
       const unread = data?.filter(n => !n.is_read).length || 0
       setUnreadCount(unread)
+      
+      // Play notification sound if new notifications arrived
+      if (unread > previousCount) {
+        const newNotifications = data?.filter(n => !n.is_read) || []
+        const hasUrgent = newNotifications.some(n => n.priority === 'urgent')
+        
+        if (hasUrgent) {
+          playUrgentNotification()
+          // Show browser notification for urgent
+          const urgentNotification = newNotifications.find(n => n.priority === 'urgent')
+          if (urgentNotification) {
+            showBrowserNotification(
+              urgentNotification.title,
+              urgentNotification.message
+            )
+          }
+        } else {
+          playNotificationSound()
+          // Show browser notification for normal
+          const latestNotification = newNotifications[0]
+          if (latestNotification) {
+            showBrowserNotification(
+              latestNotification.title,
+              latestNotification.message
+            )
+          }
+        }
+      }
     } catch (error) {
       console.error('Error loading notifications:', error)
     } finally {
