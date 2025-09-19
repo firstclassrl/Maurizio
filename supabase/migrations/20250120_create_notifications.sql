@@ -22,7 +22,12 @@ CREATE INDEX IF NOT EXISTS idx_notifications_priority ON public.notifications(pr
 -- Enable Row Level Security
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
--- Create RLS policies
+-- Create RLS policies (drop first if they exist)
+DROP POLICY IF EXISTS "Users can view their own notifications" ON public.notifications;
+DROP POLICY IF EXISTS "Users can insert their own notifications" ON public.notifications;
+DROP POLICY IF EXISTS "Users can update their own notifications" ON public.notifications;
+DROP POLICY IF EXISTS "Users can delete their own notifications" ON public.notifications;
+
 CREATE POLICY "Users can view their own notifications" ON public.notifications
     FOR SELECT USING (auth.uid() = user_id);
 
@@ -68,6 +73,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Create trigger to automatically create notifications when tasks are created
+DROP TRIGGER IF EXISTS trigger_create_deadline_notifications ON public.tasks;
 CREATE TRIGGER trigger_create_deadline_notifications
     AFTER INSERT ON public.tasks
     FOR EACH ROW
@@ -108,7 +114,10 @@ CREATE INDEX IF NOT EXISTS idx_email_reminders_status ON public.email_reminders(
 -- Enable Row Level Security for email reminders
 ALTER TABLE public.email_reminders ENABLE ROW LEVEL SECURITY;
 
--- Create RLS policies for email reminders
+-- Create RLS policies for email reminders (drop first if they exist)
+DROP POLICY IF EXISTS "Users can view their own email reminders" ON public.email_reminders;
+DROP POLICY IF EXISTS "Users can insert their own email reminders" ON public.email_reminders;
+
 CREATE POLICY "Users can view their own email reminders" ON public.email_reminders
     FOR SELECT USING (auth.uid() = user_id);
 
@@ -153,6 +162,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Create trigger to automatically create email reminders when tasks are created
+DROP TRIGGER IF EXISTS trigger_create_email_reminders ON public.tasks;
 CREATE TRIGGER trigger_create_email_reminders
     AFTER INSERT ON public.tasks
     FOR EACH ROW
