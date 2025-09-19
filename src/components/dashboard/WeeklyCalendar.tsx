@@ -12,6 +12,21 @@ interface WeeklyCalendarProps {
 export function WeeklyCalendar({ tasks, onBackToDashboard }: WeeklyCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
 
+  // Generate different colors for multiple tasks
+  const getTaskColor = (index: number) => {
+    const colors = [
+      'bg-blue-100 text-blue-800 border-blue-200',
+      'bg-green-100 text-green-800 border-green-200',
+      'bg-purple-100 text-purple-800 border-purple-200',
+      'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'bg-pink-100 text-pink-800 border-pink-200',
+      'bg-indigo-100 text-indigo-800 border-indigo-200',
+      'bg-red-100 text-red-800 border-red-200',
+      'bg-teal-100 text-teal-800 border-teal-200'
+    ]
+    return colors[index % colors.length]
+  }
+
   // Get the start of the week (Monday)
   const getWeekStart = (date: Date) => {
     const day = date.getDay()
@@ -116,17 +131,18 @@ export function WeeklyCalendar({ tasks, onBackToDashboard }: WeeklyCalendarProps
                 </div>
                 
                 <div className="space-y-1">
-                  {dayTasks.slice(0, 3).map((task) => (
+                  {dayTasks.slice(0, 3).map((task, taskIndex) => (
                     <div
                       key={task.id}
-                      className={`text-xs p-1 rounded truncate ${
+                      className={`text-xs p-2 rounded border ${
                         task.stato === 'done' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-blue-100 text-blue-800'
+                          ? 'bg-green-100 text-green-800 border-green-200' 
+                          : getTaskColor(taskIndex)
                       }`}
-                      title={task.pratica + ' - ' + task.attivita}
+                      title={`${task.pratica} - ${task.attivita}`}
                     >
-                      {task.pratica}
+                      <div className="font-medium truncate">{task.pratica}</div>
+                      <div className="text-xs opacity-80 truncate">{task.attivita}</div>
                     </div>
                   ))}
                   {dayTasks.length > 3 && (
