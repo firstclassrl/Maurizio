@@ -32,23 +32,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
   const loadTasks = async () => {
     try {
-      console.log('Loading tasks for user:', user.id)
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
         .eq('user_id', user.id)
         .order('scadenza', { ascending: true })
 
-      if (error) {
-        console.error('Supabase error:', error)
-        throw error
-      }
-      
-      console.log('Tasks loaded:', data)
+      if (error) throw error
       setTasks(data || [])
     } catch (error) {
       console.error('Error loading tasks:', error)
-      alert('Errore nel caricamento delle attività. Controlla la connessione al database.')
     }
   }
 
