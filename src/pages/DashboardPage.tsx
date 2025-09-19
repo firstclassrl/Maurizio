@@ -7,6 +7,7 @@ import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Card, CardContent } from '../components/ui/card'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
+import { Logo } from '../components/ui/Logo'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -130,7 +131,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">LadyBoy Planner</h1>
+          <div className="flex items-center gap-3">
+            <Logo size={32} className="text-blue-600" />
+            <h1 className="text-2xl font-bold text-gray-900">LadyBoy Planner</h1>
+          </div>
           <div className="flex items-center gap-4">
             <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0" size="sm">
               <Calendar className="h-4 w-4 mr-2" />
