@@ -1,9 +1,20 @@
 import { useState, useEffect, useRef } from 'react'
 
-export function useAudioNotifications() {
+export function useAudioNotifications(userId?: string) {
   const [isEnabled, setIsEnabled] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [audioEnabled, setAudioEnabled] = useState(true)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  // Load audio settings from localStorage
+  useEffect(() => {
+    if (userId) {
+      const savedAudioSetting = localStorage.getItem(`audio-notifications-${userId}`)
+      if (savedAudioSetting !== null) {
+        setAudioEnabled(JSON.parse(savedAudioSetting))
+      }
+    }
+  }, [userId])
 
   // Check if audio notifications are supported
   useEffect(() => {
@@ -46,7 +57,7 @@ export function useAudioNotifications() {
   }, [])
 
   const playNotificationSound = () => {
-    if (audioRef.current && isEnabled) {
+    if (audioRef.current && isEnabled && audioEnabled) {
       try {
         setIsPlaying(true)
         audioRef.current.play()
@@ -83,7 +94,7 @@ export function useAudioNotifications() {
   }
 
   const playUrgentNotification = () => {
-    if (audioRef.current && isEnabled) {
+    if (audioRef.current && isEnabled && audioEnabled) {
       try {
         setIsPlaying(true)
         
@@ -123,6 +134,7 @@ export function useAudioNotifications() {
   return {
     isEnabled,
     isPlaying,
+    audioEnabled,
     playNotificationSound,
     playUrgentNotification,
     showBrowserNotification,

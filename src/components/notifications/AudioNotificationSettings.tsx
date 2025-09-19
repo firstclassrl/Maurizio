@@ -2,22 +2,37 @@ import { useState } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Badge } from '../ui/badge'
-import { Volume2, VolumeX, Bell, BellRing, Settings } from 'lucide-react'
+import { Volume2, VolumeX, Bell, BellRing, Settings, ToggleLeft, ToggleRight } from 'lucide-react'
 import { useAudioNotifications } from '../../hooks/useAudioNotifications'
 
 interface AudioNotificationSettingsProps {
   userId: string
 }
 
-export function AudioNotificationSettings({ userId: _userId }: AudioNotificationSettingsProps) {
+export function AudioNotificationSettings({ userId }: AudioNotificationSettingsProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { 
     isEnabled, 
     isPlaying, 
+    audioEnabled,
     playNotificationSound, 
     playUrgentNotification, 
     requestPermission 
-  } = useAudioNotifications()
+  } = useAudioNotifications(userId)
+
+  // Save audio settings to localStorage
+  const toggleAudioNotifications = () => {
+    const newValue = !audioEnabled
+    localStorage.setItem(`audio-notifications-${userId}`, JSON.stringify(newValue))
+    
+    // Test sound if enabling
+    if (newValue && isEnabled) {
+      playNotificationSound()
+    }
+    
+    // Close the settings panel after toggle
+    setIsOpen(false)
+  }
 
   const handleEnableNotifications = async () => {
     const granted = await requestPermission()
@@ -67,7 +82,7 @@ export function AudioNotificationSettings({ userId: _userId }: AudioNotification
                 {/* Audio Status */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    {isEnabled ? (
+                    {audioEnabled && isEnabled ? (
                       <Volume2 className="h-4 w-4 text-green-600" />
                     ) : (
                       <VolumeX className="h-4 w-4 text-red-600" />
@@ -76,9 +91,35 @@ export function AudioNotificationSettings({ userId: _userId }: AudioNotification
                       Notifiche Audio
                     </span>
                   </div>
-                  <Badge className={isEnabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                    {isEnabled ? 'Attive' : 'Disattive'}
+                  <Badge className={audioEnabled && isEnabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                    {audioEnabled && isEnabled ? 'Attive' : 'Disattive'}
                   </Badge>
+                </div>
+
+                {/* Audio Toggle */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">
+                      Attiva suoni notifiche
+                    </span>
+                  </div>
+                  <button
+                    onClick={toggleAudioNotifications}
+                    disabled={!isEnabled}
+                    className={`flex items-center gap-2 transition-colors ${
+                      !isEnabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                    }`}
+                  >
+                    {audioEnabled ? (
+                      <ToggleRight className="h-6 w-6 text-green-600" />
+                    ) : (
+                      <ToggleLeft className="h-6 w-6 text-gray-400" />
+                    )}
+                    <span className="text-xs text-gray-500">
+                      {audioEnabled ? 'ON' : 'OFF'}
+                    </span>
+                  </button>
                 </div>
 
                 {/* Enable Button */}
@@ -94,7 +135,7 @@ export function AudioNotificationSettings({ userId: _userId }: AudioNotification
                 )}
 
                 {/* Test Sounds */}
-                {isEnabled && (
+                {isEnabled && audioEnabled && (
                   <div className="space-y-2">
                     <p className="text-xs text-gray-600">Test suoni:</p>
                     <div className="flex gap-2">
@@ -119,6 +160,15 @@ export function AudioNotificationSettings({ userId: _userId }: AudioNotification
                         Urgente
                       </Button>
                     </div>
+                  </div>
+                )}
+
+                {/* Disabled Message */}
+                {isEnabled && !audioEnabled && (
+                  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-xs text-yellow-800 text-center">
+                      🔇 Suoni disattivati - Attiva il toggle per abilitare i test
+                    </p>
                   </div>
                 )}
 
