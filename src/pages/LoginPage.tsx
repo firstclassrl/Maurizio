@@ -73,13 +73,11 @@ export function LoginPage() {
 
       {/* Glassmorphism login card */}
       <div className="relative w-full max-w-md">
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-8">
+        <div className="backdrop-blur-xl bg-blue-500/20 border border-blue-400/30 rounded-2xl shadow-2xl p-8">
           {/* Logo and header */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-6">
-              <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/30 shadow-lg">
-                <Logo size={60} />
-              </div>
+              <Logo size={80} />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">LexAgenda</h1>
             <p className="text-white/70 text-sm">Sistema di gestione pratiche legali</p>
@@ -100,7 +98,7 @@ export function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={loading}
-                  className="bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder-white/50 focus:border-white/50 focus:ring-white/20"
+                  className="bg-blue-500/10 backdrop-blur-sm border-blue-400/30 text-white placeholder-white/50 focus:border-blue-400/50 focus:ring-blue-400/20"
                 />
               </div>
             </div>
@@ -119,13 +117,13 @@ export function LoginPage() {
                   required
                   disabled={loading}
                   minLength={6}
-                  className="bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder-white/50 focus:border-white/50 focus:ring-white/20 pr-12"
+                  className="bg-blue-500/10 backdrop-blur-sm border-blue-400/30 text-white placeholder-white/50 focus:border-blue-400/50 focus:ring-blue-400/20 pr-12"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-white/10 text-white/70"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-blue-500/10 text-white/70"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={loading}
                 >
@@ -183,7 +181,7 @@ export function LoginPage() {
                 setPassword('')
               }}
               disabled={loading}
-              className="text-white/70 hover:text-white hover:bg-white/10"
+              className="text-white/70 hover:text-white hover:bg-blue-500/10"
             >
               {isSignUp 
                 ? 'Hai già un account? Accedi' 
