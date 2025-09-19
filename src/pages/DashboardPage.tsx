@@ -13,9 +13,9 @@ import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
 import { NotificationCenter } from '../components/notifications/NotificationCenter'
-import { UrgentNotifications } from '../components/notifications/UrgentNotifications'
 import { WeekCounter } from '../components/notifications/WeekCounter'
-import { OtherDeadlineCounters } from '../components/notifications/OtherDeadlineCounters'
+import { TodayCounter } from '../components/notifications/TodayCounter'
+import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -288,7 +288,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        {/* Greeting Section with Week Counter */}
+        {/* Greeting Section with All Counters */}
         <div className="mb-6 flex items-start justify-between">
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-gray-800">
@@ -299,17 +299,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             </p>
           </div>
           
-          {/* Week Counter - positioned on the right */}
-          <div className="ml-4">
+          {/* All Counters - positioned on the right */}
+          <div className="ml-4 flex flex-col gap-2">
             <WeekCounter userId={user.id} />
+            <TodayCounter userId={user.id} />
+            <UrgentCounter userId={user.id} />
           </div>
         </div>
-
-        {/* Urgent Notifications */}
-        <UrgentNotifications userId={user.id} />
-
-        {/* Other Deadline Counters */}
-        <OtherDeadlineCounters userId={user.id} />
 
         {/* Today's Tasks Section */}
         <Card className="mb-6 bg-yellow-50 border-yellow-200">
