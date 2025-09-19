@@ -10,8 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { Logo } from '../components/ui/Logo'
 import { MessageModal } from '../components/ui/MessageModal'
+import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
-import { Plus, LogOut, Calendar, CalendarDays, RefreshCw } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -24,6 +25,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
   // Form fields for new task
   const [newPratica, setNewPratica] = useState('')
@@ -149,6 +152,38 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
 
 
+  const handleDeleteTask = (task: Task) => {
+    setTaskToDelete(task)
+    setIsConfirmDialogOpen(true)
+  }
+
+  const confirmDeleteTask = async () => {
+    if (!taskToDelete) return
+
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskToDelete.id)
+
+      if (error) throw error
+
+      await loadTasks()
+      showSuccess('Attività eliminata', 'L\'attività è stata eliminata con successo')
+    } catch (error) {
+      console.error('Error deleting task:', error)
+      showError('Errore', 'Errore durante l\'eliminazione dell\'attività')
+    } finally {
+      setIsConfirmDialogOpen(false)
+      setTaskToDelete(null)
+    }
+  }
+
+  const cancelDeleteTask = () => {
+    setIsConfirmDialogOpen(false)
+    setTaskToDelete(null)
+  }
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
   }
@@ -165,11 +200,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b header-pattern">
+      <div className="bg-blue-900 shadow-sm border-b header-pattern">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <Logo size={32} className="text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">LexAgenda</h1>
+            <Logo size={32} className="text-blue-300" />
+            <h1 className="text-2xl font-bold text-white">LexAgenda</h1>
           </div>
           <div className="flex items-center gap-4">
             <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0" size="sm">
@@ -180,7 +215,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
               <CalendarDays className="h-4 w-4 mr-2" />
               MESE
             </Button>
-            <Button onClick={handleLogout} variant="outline" size="sm">
+            <Button onClick={handleLogout} variant="outline" size="sm" className="border-white text-white hover:bg-white hover:text-blue-900">
               <LogOut className="h-4 w-4 mr-2" />
               Logout
             </Button>
@@ -349,6 +384,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                       >
                         Modifica
                       </Button>
+                      <Button
+                        onClick={() => handleDeleteTask(task)}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -371,6 +414,17 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         type={message?.type || 'info'}
         title={message?.title || ''}
         message={message?.message || ''}
+      />
+      
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onClose={cancelDeleteTask}
+        onConfirm={confirmDeleteTask}
+        title="Conferma eliminazione"
+        message={`Sei sicuro di voler eliminare l'attività "${taskToDelete?.pratica}"? Questa azione non può essere annullata.`}
+        confirmText="Elimina"
+        cancelText="Annulla"
+        type="danger"
       />
     </div>
   )
