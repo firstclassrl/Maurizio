@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Card, CardContent } from '../components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { Logo } from '../components/ui/Logo'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw } from 'lucide-react'
@@ -23,7 +24,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
   // Form fields for new task
   const [newPratica, setNewPratica] = useState('')
-  const [newAttivita, setNewAttivita] = useState('')
+  const [newCategoria, setNewCategoria] = useState('')
   const [newScadenza, setNewScadenza] = useState('')
   const [newOra, setNewOra] = useState('')
 
@@ -43,6 +44,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       setTasks(data || [])
     } catch (error) {
       console.error('Error loading tasks:', error)
+    }
+  }
+
+  // Get category color for tasks
+  const getCategoryColor = (categoria: string) => {
+    switch (categoria) {
+      case 'SCADENZA ATTO PROCESSUALE':
+        return 'bg-red-100 text-red-800 border-red-200'
+      case 'UDIENZA':
+        return 'bg-amber-100 text-amber-800 border-amber-200'
+      case 'ATTIVITA\' PROCESSUALE':
+        return 'bg-purple-100 text-purple-800 border-purple-200'
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
 
@@ -80,7 +95,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   }
 
   const handleQuickAdd = async () => {
-    if (!newPratica.trim() || !newAttivita.trim() || !newScadenza.trim()) {
+    if (!newPratica.trim() || !newCategoria.trim() || !newScadenza.trim()) {
       alert('Per favore compila tutti i campi obbligatori')
       return
     }
@@ -91,7 +106,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         .insert({
           user_id: user.id,
           pratica: newPratica.trim(),
-          attivita: newAttivita.trim(),
+          attivita: newCategoria.trim(),
           scadenza: newScadenza,
           stato: 'todo',
           priorita: 5
@@ -101,7 +116,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
       // Clear form
       setNewPratica('')
-      setNewAttivita('')
+      setNewCategoria('')
       setNewScadenza('')
       setNewOra('')
       await loadTasks()
@@ -129,7 +144,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b header-pattern">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Logo size={32} className="text-blue-600" />
@@ -210,13 +225,32 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                 />
               </div>
               <div>
-                <Label htmlFor="attivita">Attività</Label>
-                <Input
-                  id="attivita"
-                  value={newAttivita}
-                  onChange={(e) => setNewAttivita(e.target.value)}
-                  placeholder="Descrizione attività"
-                />
+                <Label htmlFor="categoria">Categoria Attività</Label>
+                <Select value={newCategoria} onValueChange={setNewCategoria}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleziona categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SCADENZA ATTO PROCESSUALE">
+                      <span className="flex items-center gap-2">
+                        <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                        SCADENZA ATTO PROCESSUALE
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="UDIENZA">
+                      <span className="flex items-center gap-2">
+                        <span className="w-3 h-3 bg-amber-500 rounded-full"></span>
+                        UDIENZA
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="ATTIVITA' PROCESSUALE">
+                      <span className="flex items-center gap-2">
+                        <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
+                        ATTIVITA' PROCESSUALE
+                      </span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="scadenza">Scadenza</Label>
@@ -267,8 +301,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                   <div key={task.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div className="flex-1">
                       <div className="font-medium text-gray-900">{task.pratica}</div>
-                      <div className="text-sm text-gray-600">{task.attivita}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
+                          {task.attivita}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
                         Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
                       </div>
                     </div>

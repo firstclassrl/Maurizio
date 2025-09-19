@@ -12,19 +12,18 @@ interface MonthlyCalendarProps {
 export function MonthlyCalendar({ tasks, onBackToDashboard }: MonthlyCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
-  // Generate different colors for multiple tasks
-  const getTaskColor = (index: number) => {
-    const colors = [
-      'bg-blue-100 text-blue-800 border-blue-200',
-      'bg-green-100 text-green-800 border-green-200',
-      'bg-purple-100 text-purple-800 border-purple-200',
-      'bg-yellow-100 text-yellow-800 border-yellow-200',
-      'bg-pink-100 text-pink-800 border-pink-200',
-      'bg-indigo-100 text-indigo-800 border-indigo-200',
-      'bg-red-100 text-red-800 border-red-200',
-      'bg-teal-100 text-teal-800 border-teal-200'
-    ]
-    return colors[index % colors.length]
+  // Generate colors based on category
+  const getTaskColor = (task: Task) => {
+    switch (task.attivita) {
+      case 'SCADENZA ATTO PROCESSUALE':
+        return 'bg-red-100 text-red-800 border-red-200'
+      case 'UDIENZA':
+        return 'bg-amber-100 text-amber-800 border-amber-200'
+      case 'ATTIVITA\' PROCESSUALE':
+        return 'bg-purple-100 text-purple-800 border-purple-200'
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200'
+    }
   }
 
   // Get the first day of the month
@@ -157,13 +156,13 @@ export function MonthlyCalendar({ tasks, onBackToDashboard }: MonthlyCalendarPro
                 </div>
                 
                 <div className="space-y-1">
-                  {dayTasks.slice(0, 2).map((task, taskIndex) => (
+                  {dayTasks.slice(0, 2).map((task) => (
                     <div
                       key={task.id}
                       className={`text-xs p-1 rounded border ${
                         task.stato === 'done' 
                           ? 'bg-green-100 text-green-800 border-green-200' 
-                          : getTaskColor(taskIndex)
+                          : getTaskColor(task)
                       }`}
                       title={`${task.pratica} - ${task.attivita}`}
                     >

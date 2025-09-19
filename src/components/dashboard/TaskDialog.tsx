@@ -17,7 +17,7 @@ interface TaskDialogProps {
 export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps) {
   const [formData, setFormData] = useState({
     pratica: '',
-    attivita: '',
+    categoria: '',
     scadenza: '',
     stato: 'todo' as 'todo' | 'done',
     priorita: 0
@@ -27,7 +27,7 @@ export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps
     if (task) {
       setFormData({
         pratica: task.pratica,
-        attivita: task.attivita,
+        categoria: task.attivita,
         scadenza: task.scadenza,
         stato: task.stato,
         priorita: task.priorita
@@ -35,7 +35,7 @@ export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps
     } else {
       setFormData({
         pratica: '',
-        attivita: '',
+        categoria: '',
         scadenza: format(new Date(), 'yyyy-MM-dd'),
         stato: 'todo',
         priorita: 0
@@ -77,16 +77,35 @@ export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="attivita">Attività *</Label>
-            <textarea
-              id="attivita"
-              placeholder="es. Deposito ricorso presso il tribunale"
-              value={formData.attivita}
-              onChange={(e) => handleChange('attivita', e.target.value)}
-              required
-              rows={3}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[80px]"
-            />
+            <Label htmlFor="categoria">Categoria Attività *</Label>
+            <Select 
+              value={formData.categoria} 
+              onValueChange={(value) => handleChange('categoria', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleziona categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="SCADENZA ATTO PROCESSUALE">
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                    SCADENZA ATTO PROCESSUALE
+                  </span>
+                </SelectItem>
+                <SelectItem value="UDIENZA">
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 bg-amber-500 rounded-full"></span>
+                    UDIENZA
+                  </span>
+                </SelectItem>
+                <SelectItem value="ATTIVITA' PROCESSUALE">
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
+                    ATTIVITA' PROCESSUALE
+                  </span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
