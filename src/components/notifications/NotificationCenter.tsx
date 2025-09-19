@@ -180,7 +180,7 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 hover:bg-gray-100"
+        className="relative p-2 hover:bg-gray-100 text-white"
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
