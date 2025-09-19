@@ -71,7 +71,7 @@ export function LoginPage() {
               <Scale className="h-8 w-8 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Legal Planner</CardTitle>
+          <CardTitle className="text-2xl font-bold">LadyBoy Planner</CardTitle>
           <CardDescription>
             Sistema di gestione pratiche legali
           </CardDescription>
@@ -167,7 +167,7 @@ export function LoginPage() {
             >
               {isSignUp 
                 ? 'Hai già un account? Accedi' 
-                : 'Non hai un account? Registrati'}
+                : ''}
             </Button>
           </div>
         </CardContent>
