@@ -48,11 +48,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         .eq('user_id', user.id)
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('Profile query error:', error)
+        setUserProfile(null)
+        return
+      }
+      
+      console.log('Profile data loaded:', data)
       setUserProfile(data)
     } catch (error) {
       console.error('Error loading user profile:', error)
-      // Fallback to email if profile not found
       setUserProfile(null)
     }
   }
@@ -216,12 +221,15 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
   // Get user's display name
   const getUserDisplayName = () => {
+    console.log('UserProfile:', userProfile)
     if (userProfile?.full_name) {
+      console.log('Using full_name:', userProfile.full_name)
       return userProfile.full_name
     }
     // Fallback to email if profile not found
     const email = user.email || ''
     const firstName = email.split('@')[0].split('.')[0]
+    console.log('Using fallback email name:', firstName)
     return firstName.charAt(0).toUpperCase() + firstName.slice(1)
   }
 

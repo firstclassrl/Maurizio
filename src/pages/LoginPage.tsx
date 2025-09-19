@@ -195,8 +195,29 @@ export function LoginPage() {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/30 rounded-full animate-pulse"></div>
         <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-white/40 rounded-full animate-pulse animation-delay-1000"></div>
-        <div className="absolute top-1/2 left-1/3 w-1.5 h-1.5 bg-white/20 rounded-full animate-pulse animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/3 w-1.5 h-1.5 bg-white/20 rounded-full animate-pulse animation-delay-2000">        </div>
       </div>
+
+      {/* Footer */}
+      <footer className="absolute bottom-0 left-0 right-0 py-4 bg-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center gap-2">
+            <div className="text-white text-sm">
+              Created by Abruzzo.AI
+            </div>
+            <div className="text-white text-xs opacity-75">
+              Copyright 2025
+            </div>
+            <div className="mt-2">
+              <img 
+                src="/Marchio AbruzzoAI.png" 
+                alt="Abruzzo.AI" 
+                className="h-4 w-auto"
+              />
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
