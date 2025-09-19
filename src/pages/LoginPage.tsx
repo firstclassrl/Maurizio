@@ -63,7 +63,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 geometric-pattern hex-pattern">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 geometric-pattern login-colorful-pattern">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
@@ -73,11 +73,11 @@ export function LoginPage() {
 
       {/* Glassmorphism login card */}
       <div className="relative w-full max-w-md">
-        <div className="backdrop-blur-xl bg-blue-500/20 border border-blue-400/30 rounded-2xl shadow-2xl p-8">
+        <div className="backdrop-blur-xl bg-blue-600/30 border border-blue-500/40 rounded-2xl shadow-2xl p-8">
           {/* Logo and header */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-6">
-              <Logo size={80} />
+              <Logo size={100} />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">LexAgenda</h1>
             <p className="text-white/70 text-sm">Sistema di gestione pratiche legali</p>
@@ -98,7 +98,7 @@ export function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={loading}
-                  className="bg-blue-500/10 backdrop-blur-sm border-blue-400/30 text-white placeholder-white/50 focus:border-blue-400/50 focus:ring-blue-400/20"
+                  className="bg-blue-600/20 backdrop-blur-sm border-blue-500/40 text-white placeholder-white/50 focus:border-blue-500/60 focus:ring-blue-500/30"
                 />
               </div>
             </div>
@@ -117,13 +117,13 @@ export function LoginPage() {
                   required
                   disabled={loading}
                   minLength={6}
-                  className="bg-blue-500/10 backdrop-blur-sm border-blue-400/30 text-white placeholder-white/50 focus:border-blue-400/50 focus:ring-blue-400/20 pr-12"
+                  className="bg-blue-600/20 backdrop-blur-sm border-blue-500/40 text-white placeholder-white/50 focus:border-blue-500/60 focus:ring-blue-500/30 pr-12"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-blue-500/10 text-white/70"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-blue-600/20 text-white/70"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={loading}
                 >
@@ -181,7 +181,7 @@ export function LoginPage() {
                 setPassword('')
               }}
               disabled={loading}
-              className="text-white/70 hover:text-white hover:bg-blue-500/10"
+              className="text-white/70 hover:text-white hover:bg-blue-600/20"
             >
               {isSignUp 
                 ? 'Hai già un account? Accedi' 

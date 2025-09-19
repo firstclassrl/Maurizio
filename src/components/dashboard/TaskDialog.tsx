@@ -5,6 +5,8 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { MessageModal } from '../ui/MessageModal'
+import { useMessage } from '../../hooks/useMessage'
 import { Task } from '../../lib/calendar-utils'
 
 interface TaskDialogProps {
@@ -15,6 +17,7 @@ interface TaskDialogProps {
 }
 
 export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps) {
+  const { message, showError, hideMessage } = useMessage()
   const [formData, setFormData] = useState({
     pratica: '',
     categoria: '',
@@ -45,6 +48,17 @@ export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate date is not in the past
+    const selectedDate = new Date(formData.scadenza)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // Reset time to start of day
+    
+    if (selectedDate < today) {
+      showError('Data non valida', 'Non è possibile creare pratiche con date precedenti a oggi')
+      return
+    }
+    
     onSave(formData)
   }
 
@@ -172,6 +186,14 @@ export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps
           </DialogFooter>
         </form>
       </DialogContent>
+      
+      <MessageModal
+        open={!!message}
+        onClose={hideMessage}
+        type={message?.type || 'info'}
+        title={message?.title || ''}
+        message={message?.message || ''}
+      />
     </Dialog>
   )
 }

@@ -9,6 +9,8 @@ import { Card, CardContent } from '../components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { Logo } from '../components/ui/Logo'
+import { MessageModal } from '../components/ui/MessageModal'
+import { useMessage } from '../hooks/useMessage'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -18,6 +20,7 @@ interface DashboardPageProps {
 }
 
 export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: DashboardPageProps) {
+  const { message, showError, showSuccess, hideMessage } = useMessage()
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
@@ -63,12 +66,19 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
   const handleTaskSave = async (taskData: Partial<Task>) => {
     try {
+      // Map categoria to attivita for database compatibility
+      const mappedData = {
+        ...taskData,
+        attivita: taskData.categoria || taskData.attivita,
+        categoria: undefined // Remove categoria field
+      }
+
       if (selectedTask) {
         // Update existing task
         const { error } = await supabase
           .from('tasks')
           .update({
-            ...taskData,
+            ...mappedData,
             updated_at: new Date().toISOString()
           })
           .eq('id', selectedTask.id)
@@ -79,7 +89,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         const { error } = await supabase
           .from('tasks')
           .insert({
-            ...taskData,
+            ...mappedData,
             user_id: user.id
           })
 
@@ -96,7 +106,17 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
   const handleQuickAdd = async () => {
     if (!newPratica.trim() || !newCategoria.trim() || !newScadenza.trim()) {
-      alert('Per favore compila tutti i campi obbligatori')
+      showError('Campi obbligatori', 'Per favore compila tutti i campi obbligatori')
+      return
+    }
+
+    // Validate date is not in the past
+    const selectedDate = new Date(newScadenza)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // Reset time to start of day
+    
+    if (selectedDate < today) {
+      showError('Data non valida', 'Non è possibile creare pratiche con date precedenti a oggi')
       return
     }
 
@@ -120,9 +140,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       setNewScadenza('')
       setNewOra('')
       await loadTasks()
+      showSuccess('Pratica aggiunta', 'La pratica è stata aggiunta con successo')
     } catch (error) {
       console.error('Error adding task:', error)
-      alert('Errore durante l\'aggiunta della pratica')
+      showError('Errore', 'Errore durante l\'aggiunta della pratica')
     }
   }
 
@@ -342,6 +363,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         onOpenChange={setIsTaskDialogOpen}
         task={selectedTask}
         onSave={handleTaskSave}
+      />
+      
+      <MessageModal
+        open={!!message}
+        onClose={hideMessage}
+        type={message?.type || 'info'}
+        title={message?.title || ''}
+        message={message?.message || ''}
       />
     </div>
   )

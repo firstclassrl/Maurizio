@@ -28,6 +28,7 @@ export interface Task {
   user_id: string
   pratica: string
   attivita: string
+  categoria?: string // Optional field for form compatibility
   scadenza: string
   stato: 'todo' | 'done'
   priorita: number
