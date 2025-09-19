@@ -3,11 +3,16 @@ import { supabase } from './lib/supabase'
 import { User } from '@supabase/supabase-js'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { MonthPage } from './pages/MonthPage'
+import { WeekPage } from './pages/WeekPage'
 import { Loader2 } from 'lucide-react'
+
+type AppView = 'dashboard' | 'month' | 'week'
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [currentView, setCurrentView] = useState<AppView>('dashboard')
 
   useEffect(() => {
     // Get initial session
@@ -41,7 +46,44 @@ function App() {
     )
   }
 
-  return user ? <DashboardPage user={user} /> : <LoginPage />
+  const renderCurrentView = () => {
+    if (!user) return <LoginPage />
+    
+    switch (currentView) {
+      case 'dashboard':
+        return (
+          <DashboardPage 
+            user={user} 
+            onNavigateToMonth={() => setCurrentView('month')}
+            onNavigateToWeek={() => setCurrentView('week')}
+          />
+        )
+      case 'month':
+        return (
+          <MonthPage 
+            user={user} 
+            onBackToDashboard={() => setCurrentView('dashboard')}
+          />
+        )
+      case 'week':
+        return (
+          <WeekPage 
+            user={user} 
+            onBackToDashboard={() => setCurrentView('dashboard')}
+          />
+        )
+      default:
+        return (
+          <DashboardPage 
+            user={user} 
+            onNavigateToMonth={() => setCurrentView('month')}
+            onNavigateToWeek={() => setCurrentView('week')}
+          />
+        )
+    }
+  }
+
+  return renderCurrentView()
 }
 
 export default App

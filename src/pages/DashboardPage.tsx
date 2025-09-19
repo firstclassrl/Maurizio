@@ -7,18 +7,16 @@ import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Card, CardContent } from '../components/ui/card'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
-import { WeeklyCalendar } from '../components/dashboard/WeeklyCalendar'
-import { MonthlyCalendar } from '../components/dashboard/MonthlyCalendar'
-import { Plus, LogOut } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
+  onNavigateToMonth: () => void
+  onNavigateToWeek: () => void
 }
 
-export function DashboardPage({ user }: DashboardPageProps) {
+export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: DashboardPageProps) {
   const [tasks, setTasks] = useState<Task[]>([])
-  const [viewMode, setViewMode] = useState<'month' | 'week'>('month')
-  const [currentView, setCurrentView] = useState<'dashboard' | 'calendar'>('dashboard')
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
 
@@ -113,23 +111,11 @@ export function DashboardPage({ user }: DashboardPageProps) {
   }
 
 
-  const handleNewTask = () => {
-    setSelectedTask(null)
-    setIsTaskDialogOpen(true)
-  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
   }
 
-  const handleBackToDashboard = () => {
-    setCurrentView('dashboard')
-  }
-
-  const handleViewModeChange = (mode: 'month' | 'week') => {
-    setViewMode(mode)
-    setCurrentView('calendar')
-  }
 
   // Get today's tasks
   const getTodayTasks = () => {
@@ -141,41 +127,69 @@ export function DashboardPage({ user }: DashboardPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with logout */}
+      {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Legal Planner</h1>
-          <Button onClick={handleLogout} variant="outline" size="sm">
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button onClick={onNavigateToWeek} variant="outline" size="sm">
+              <Calendar className="h-4 w-4 mr-2" />
+              SETTIMANA
+            </Button>
+            <Button onClick={onNavigateToMonth} variant="outline" size="sm">
+              <CalendarDays className="h-4 w-4 mr-2" />
+              MESE
+            </Button>
+            <Button onClick={handleLogout} variant="outline" size="sm">
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        {/* Navigation Tabs */}
-        <div className="flex mb-6">
-          <button
-            onClick={() => handleViewModeChange('month')}
-            className={`px-8 py-3 text-white font-medium rounded-l-lg ${
-              viewMode === 'month' && currentView === 'calendar'
-                ? 'bg-blue-900' 
-                : 'bg-green-800 hover:bg-green-700'
-            }`}
-          >
-            PER MESE
-          </button>
-          <button
-            onClick={() => handleViewModeChange('week')}
-            className={`px-8 py-3 text-white font-medium rounded-r-lg ${
-              viewMode === 'week' && currentView === 'calendar'
-                ? 'bg-blue-900' 
-                : 'bg-green-800 hover:bg-green-700'
-            }`}
-          >
-            PER SETTIMANA
-          </button>
-        </div>
+        {/* Today's Tasks Section */}
+        <Card className="mb-6 bg-yellow-50 border-yellow-200">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold mb-4 text-yellow-800">GLI IMPEGNI PER OGGI</h3>
+            {getTodayTasks().length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                Nessun impegno per oggi! 🎉
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {getTodayTasks().map((task) => (
+                  <div key={task.id} className="flex items-center justify-between p-4 bg-white rounded-lg border border-yellow-200">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">{task.pratica}</div>
+                      <div className="text-sm text-gray-600">{task.attivita}</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        task.stato === 'done' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {task.stato === 'done' ? 'Completato' : 'Da fare'}
+                      </span>
+                      <Button
+                        onClick={() => {
+                          setSelectedTask(task)
+                          setIsTaskDialogOpen(true)
+                        }}
+                        variant="outline"
+                        size="sm"
+                      >
+                        Modifica
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Quick Add Form */}
         <Card className="mb-6">
@@ -228,21 +242,24 @@ export function DashboardPage({ user }: DashboardPageProps) {
           </CardContent>
         </Card>
 
-        {/* Today's Tasks Section */}
-        <Card className="mb-6">
+        {/* All Tasks Section */}
+        <Card>
           <CardContent className="p-6">
-            <h3 className="text-lg font-semibold mb-4">GLI IMPEGNI PER OGGI</h3>
-            {getTodayTasks().length === 0 ? (
+            <h3 className="text-lg font-semibold mb-4">Tutte le Attività</h3>
+            {tasks.length === 0 ? (
               <p className="text-gray-500 text-center py-8">
-                Nessun impegno per oggi! 🎉
+                Nessuna attività trovata. Aggiungi la tua prima pratica!
               </p>
             ) : (
               <div className="space-y-3">
-                {getTodayTasks().map((task) => (
+                {tasks.map((task) => (
                   <div key={task.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div className="flex-1">
                       <div className="font-medium text-gray-900">{task.pratica}</div>
                       <div className="text-sm text-gray-600">{task.attivita}</div>
+                      <div className="text-xs text-gray-500">
+                        Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-1 text-xs rounded-full ${
@@ -269,35 +286,6 @@ export function DashboardPage({ user }: DashboardPageProps) {
             )}
           </CardContent>
         </Card>
-
-        {/* Calendar Section - Only show when calendar view is active */}
-        {currentView === 'calendar' && (
-          <div className="bg-purple-800 rounded-lg">
-            {/* Header */}
-            <div className="bg-purple-800 px-6 py-4 rounded-t-lg flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-white">
-                {viewMode === 'month' ? 'CALENDARIO MENSILE' : 'CALENDARIO SETTIMANALE'}
-              </h2>
-              <Button
-                onClick={handleNewTask}
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-purple-700"
-              >
-                <Plus className="h-5 w-5" />
-              </Button>
-            </div>
-
-            {/* Calendar Content */}
-            <div className="bg-white rounded-b-lg p-6">
-              {viewMode === 'month' ? (
-                <MonthlyCalendar tasks={tasks} onBackToDashboard={handleBackToDashboard} />
-              ) : (
-                <WeeklyCalendar tasks={tasks} onBackToDashboard={handleBackToDashboard} />
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       <TaskDialog
