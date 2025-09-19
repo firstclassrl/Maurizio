@@ -7,6 +7,8 @@ import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Card, CardContent } from '../components/ui/card'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
+import { WeeklyCalendar } from '../components/dashboard/WeeklyCalendar'
+import { MonthlyCalendar } from '../components/dashboard/MonthlyCalendar'
 import { Plus, LogOut } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -109,10 +111,6 @@ export function DashboardPage({ user }: DashboardPageProps) {
     }
   }
 
-  const handleTaskEdit = (task: Task) => {
-    setSelectedTask(task)
-    setIsTaskDialogOpen(true)
-  }
 
   const handleNewTask = () => {
     setSelectedTask(null)
@@ -123,14 +121,7 @@ export function DashboardPage({ user }: DashboardPageProps) {
     await supabase.auth.signOut()
   }
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('it-IT', {
-      month: 'numeric',
-      day: 'numeric',
-      year: '2-digit'
-    }).replace(/\//g, '/')
-  }
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -221,11 +212,13 @@ export function DashboardPage({ user }: DashboardPageProps) {
           </CardContent>
         </Card>
 
-        {/* Activities Section */}
+        {/* Calendar Section */}
         <div className="bg-purple-800 rounded-lg">
           {/* Header */}
           <div className="bg-purple-800 px-6 py-4 rounded-t-lg flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-white">ATTIVITÀ</h2>
+            <h2 className="text-2xl font-bold text-white">
+              {viewMode === 'month' ? 'CALENDARIO MENSILE' : 'CALENDARIO SETTIMANALE'}
+            </h2>
             <Button
               onClick={handleNewTask}
               variant="ghost"
@@ -236,52 +229,13 @@ export function DashboardPage({ user }: DashboardPageProps) {
             </Button>
           </div>
 
-          {/* Table */}
-          <div className="bg-white rounded-b-lg overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-purple-100">
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-900">PRATICA</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-900">ATTIVITÀ</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-900">SCADENZA</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-900">AZIONI</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {tasks.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                        Nessuna attività trovata. Aggiungi la tua prima pratica!
-                      </td>
-                    </tr>
-                  ) : (
-                    tasks.map((task, index) => (
-                      <tr key={task.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                          {task.pratica}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-700">
-                          {task.attivita}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-700">
-                          {formatDate(task.scadenza)}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          <Button
-                            onClick={() => handleTaskEdit(task)}
-                            variant="outline"
-                            size="sm"
-                          >
-                            Modifica
-                          </Button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+          {/* Calendar Content */}
+          <div className="bg-white rounded-b-lg p-6">
+            {viewMode === 'month' ? (
+              <MonthlyCalendar tasks={tasks} />
+            ) : (
+              <WeeklyCalendar tasks={tasks} />
+            )}
           </div>
         </div>
       </div>
