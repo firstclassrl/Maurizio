@@ -327,13 +327,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                       <div className="text-sm text-gray-600">{task.attivita}</div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        task.stato === 'done' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        {task.stato === 'done' ? 'Completato' : 'Da fare'}
-                      </span>
+                      {task.stato === 'done' && (
+                        <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                          Completato
+                        </span>
+                      )}
                       <Button
                         onClick={() => {
                           setSelectedTask(task)
@@ -453,13 +451,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        task.stato === 'done' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        {task.stato === 'done' ? 'Completato' : 'Da fare'}
-                      </span>
+                      {task.stato === 'done' && (
+                        <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                          Completato
+                        </span>
+                      )}
                       <Button
                         onClick={() => {
                           setSelectedTask(task)
