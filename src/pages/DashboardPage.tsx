@@ -133,7 +133,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Logo size={32} className="text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">LadyBoy Planner</h1>
+            <h1 className="text-2xl font-bold text-gray-900">LexAgenda</h1>
           </div>
           <div className="flex items-center gap-4">
             <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0" size="sm">

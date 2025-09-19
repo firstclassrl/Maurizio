@@ -63,7 +63,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 geometric-pattern hex-pattern">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
@@ -81,7 +81,7 @@ export function LoginPage() {
                 <Logo size={60} />
               </div>
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">LadyBoy Planner</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">LexAgenda</h1>
             <p className="text-white/70 text-sm">Sistema di gestione pratiche legali</p>
           </div>
 
