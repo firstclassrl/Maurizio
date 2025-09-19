@@ -301,8 +301,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           
           {/* All Counters - positioned on the right */}
           <div className="ml-4 flex flex-col gap-2">
-            <WeekCounter userId={user.id} />
-            <TodayCounter userId={user.id} />
+            {/* Today and Week counters in horizontal layout */}
+            <div className="flex gap-2">
+              <TodayCounter userId={user.id} />
+              <WeekCounter userId={user.id} />
+            </div>
             <UrgentCounter userId={user.id} />
           </div>
         </div>
