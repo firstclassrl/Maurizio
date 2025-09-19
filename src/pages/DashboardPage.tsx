@@ -12,6 +12,9 @@ import { Logo } from '../components/ui/Logo'
 import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
+import { NotificationCenter } from '../components/notifications/NotificationCenter'
+import { UrgentNotifications } from '../components/notifications/UrgentNotifications'
+import { DeadlineCounters } from '../components/notifications/DeadlineCounters'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -274,6 +277,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
               <CalendarDays className="h-4 w-4 mr-2" />
               MESE
             </Button>
+            <NotificationCenter userId={user.id} />
             <Button onClick={handleLogout} variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
               <LogOut className="h-4 w-4 mr-2" />
               Logout
@@ -292,6 +296,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             Ecco il riepilogo delle tue attività per oggi
           </p>
         </div>
+
+        {/* Urgent Notifications */}
+        <UrgentNotifications userId={user.id} />
+
+        {/* Deadline Counters */}
+        <DeadlineCounters userId={user.id} />
 
         {/* Today's Tasks Section */}
         <Card className="mb-6 bg-yellow-50 border-yellow-200">
