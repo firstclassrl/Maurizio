@@ -147,12 +147,12 @@
 /* Colorful login background pattern */
 .login-colorful-pattern {
   background-image: 
-    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.08) 2px, transparent 2px),
-    radial-gradient(circle at 80% 80%, rgba(96, 165, 250, 0.08) 2px, transparent 2px),
-    radial-gradient(circle at 40% 60%, rgba(147, 197, 253, 0.08) 2px, transparent 2px),
-    radial-gradient(circle at 60% 40%, rgba(59, 130, 246, 0.06) 2px, transparent 2px),
-    radial-gradient(circle at 90% 10%, rgba(96, 165, 250, 0.06) 2px, transparent 2px),
-    radial-gradient(circle at 10% 90%, rgba(147, 197, 253, 0.06) 2px, transparent 2px);
+    radial-gradient(circle at 20% 20%, rgba(71, 85, 105, 0.05) 2px, transparent 2px),
+    radial-gradient(circle at 80% 80%, rgba(100, 116, 139, 0.05) 2px, transparent 2px),
+    radial-gradient(circle at 40% 60%, rgba(51, 65, 85, 0.05) 2px, transparent 2px),
+    radial-gradient(circle at 60% 40%, rgba(71, 85, 105, 0.03) 2px, transparent 2px),
+    radial-gradient(circle at 90% 10%, rgba(100, 116, 139, 0.03) 2px, transparent 2px),
+    radial-gradient(circle at 10% 90%, rgba(51, 65, 85, 0.03) 2px, transparent 2px);
   background-size: 80px 80px, 120px 120px, 100px 100px, 140px 140px, 90px 90px, 110px 110px;
   background-position: 0 0, 40px 40px, 20px 20px, 60px 60px, 30px 30px, 50px 50px;
   animation: colorfulPatternMove 25s linear infinite;

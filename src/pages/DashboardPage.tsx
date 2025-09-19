@@ -195,12 +195,19 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
     return tasks.filter(task => task.scadenza === today)
   }
 
+  // Get user's first name from email
+  const getUserFirstName = () => {
+    const email = user.email || ''
+    const firstName = email.split('@')[0].split('.')[0]
+    return firstName.charAt(0).toUpperCase() + firstName.slice(1)
+  }
+
 
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-blue-900 shadow-sm border-b header-pattern">
+      <div className="bg-slate-900 shadow-sm border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Logo size={32} className="text-blue-300" />
@@ -215,7 +222,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
               <CalendarDays className="h-4 w-4 mr-2" />
               MESE
             </Button>
-            <Button onClick={handleLogout} variant="outline" size="sm" className="border-white text-white hover:bg-white hover:text-blue-900">
+            <Button onClick={handleLogout} variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
               <LogOut className="h-4 w-4 mr-2" />
               Logout
             </Button>
@@ -224,6 +231,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       </div>
 
       <div className="container mx-auto px-4 py-6">
+        {/* Greeting Section */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">
+            Buongiorno Avvocato {getUserFirstName()}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Ecco il riepilogo delle tue attività per oggi
+          </p>
+        </div>
+
         {/* Today's Tasks Section */}
         <Card className="mb-6 bg-yellow-50 border-yellow-200">
           <CardContent className="p-6">
