@@ -27,6 +27,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [userProfile, setUserProfile] = useState<{full_name: string} | null>(null)
 
   // Form fields for new task
   const [newPratica, setNewPratica] = useState('')
@@ -36,7 +37,25 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
   useEffect(() => {
     loadTasks()
+    loadUserProfile()
   }, [])
+
+  const loadUserProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) throw error
+      setUserProfile(data)
+    } catch (error) {
+      console.error('Error loading user profile:', error)
+      // Fallback to email if profile not found
+      setUserProfile(null)
+    }
+  }
 
   const loadTasks = async () => {
     try {
@@ -195,8 +214,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
     return tasks.filter(task => task.scadenza === today)
   }
 
-  // Get user's first name from email
-  const getUserFirstName = () => {
+  // Get user's display name
+  const getUserDisplayName = () => {
+    if (userProfile?.full_name) {
+      return userProfile.full_name
+    }
+    // Fallback to email if profile not found
     const email = user.email || ''
     const firstName = email.split('@')[0].split('.')[0]
     return firstName.charAt(0).toUpperCase() + firstName.slice(1)
@@ -234,7 +257,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         {/* Greeting Section */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-800">
-            Buongiorno Avvocato {getUserFirstName()}
+            Buongiorno Avvocato {getUserDisplayName()}
           </h1>
           <p className="text-gray-600 mt-2">
             Ecco il riepilogo delle tue attività per oggi
@@ -443,6 +466,25 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         cancelText="Annulla"
         type="danger"
       />
+      
+      {/* Footer */}
+      <footer className="mt-12 py-4 bg-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2 text-white text-sm">
+              <span>Created by</span>
+              <img 
+                src="/Marchio AbruzzoAI.png" 
+                alt="Abruzzo.AI" 
+                className="h-4 w-auto"
+              />
+            </div>
+            <div className="text-white text-xs opacity-75">
+              Copyright 2025
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
