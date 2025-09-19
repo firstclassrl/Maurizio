@@ -212,7 +212,7 @@ export function LoginPage() {
               <img 
                 src="/Marchio AbruzzoAI.png" 
                 alt="Abruzzo.AI" 
-                className="h-4 w-auto"
+                className="h-8 w-auto"
               />
             </div>
           </div>

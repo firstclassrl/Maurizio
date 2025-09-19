@@ -42,6 +42,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
   const loadUserProfile = async () => {
     try {
+      console.log('Loading profile for user ID:', user.id)
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('full_name')
@@ -50,11 +52,23 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
       if (error) {
         console.error('Profile query error:', error)
+        console.log('Trying to get all profiles to debug...')
+        
+        // Debug: check if profiles table exists and has data
+        const { data: allProfiles, error: allError } = await supabase
+          .from('profiles')
+          .select('*')
+          .limit(5)
+        
+        console.log('All profiles debug:', allProfiles)
+        console.log('All profiles error:', allError)
+        
         setUserProfile(null)
         return
       }
       
       console.log('Profile data loaded:', data)
+      console.log('Full name value:', data?.full_name)
       setUserProfile(data)
     } catch (error) {
       console.error('Error loading user profile:', error)
@@ -222,11 +236,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   // Get user's display name
   const getUserDisplayName = () => {
     console.log('UserProfile:', userProfile)
-    if (userProfile?.full_name) {
+    console.log('Full name check:', userProfile?.full_name)
+    
+    if (userProfile?.full_name && userProfile.full_name.trim() !== '') {
       console.log('Using full_name:', userProfile.full_name)
       return userProfile.full_name
     }
-    // Fallback to email if profile not found
+    
+    // Fallback to email if profile not found or full_name is empty
     const email = user.email || ''
     const firstName = email.split('@')[0].split('.')[0]
     console.log('Using fallback email name:', firstName)
@@ -478,18 +495,29 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       {/* Footer */}
       <footer className="mt-12 py-4 bg-slate-900">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center gap-2">
-            <div className="flex items-center gap-2 text-white text-sm">
-              <span>Created by</span>
-              <img 
-                src="/Marchio AbruzzoAI.png" 
-                alt="Abruzzo.AI" 
-                className="h-4 w-auto"
-              />
-            </div>
+          <div className="flex justify-between items-center">
+            {/* Versione app - sinistra */}
             <div className="text-white text-xs opacity-75">
-              Copyright 2025
+              LexAgenda Ver 1.0 Beta
             </div>
+            
+            {/* Abruzzo.AI branding - centro */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex items-center gap-2 text-white text-sm">
+                <span>Created by</span>
+                <img 
+                  src="/Marchio AbruzzoAI.png" 
+                  alt="Abruzzo.AI" 
+                  className="h-4 w-auto"
+                />
+              </div>
+              <div className="text-white text-xs opacity-75">
+                Copyright 2025
+              </div>
+            </div>
+            
+            {/* Spazio vuoto per bilanciare */}
+            <div className="w-24"></div>
           </div>
         </div>
       </footer>
