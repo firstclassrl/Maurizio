@@ -237,17 +237,21 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   const getUserDisplayName = () => {
     console.log('UserProfile:', userProfile)
     console.log('Full name check:', userProfile?.full_name)
+    console.log('Full name type:', typeof userProfile?.full_name)
+    console.log('Full name is null:', userProfile?.full_name === null)
+    console.log('Full name is undefined:', userProfile?.full_name === undefined)
     
-    if (userProfile?.full_name && userProfile.full_name.trim() !== '') {
+    // Only use full_name if it exists, is not null, and is not empty
+    if (userProfile?.full_name && 
+        userProfile.full_name !== null && 
+        userProfile.full_name !== undefined && 
+        userProfile.full_name.trim() !== '') {
       console.log('Using full_name:', userProfile.full_name)
       return userProfile.full_name
     }
     
-    // Fallback to email if profile not found or full_name is empty
-    const email = user.email || ''
-    const firstName = email.split('@')[0].split('.')[0]
-    console.log('Using fallback email name:', firstName)
-    return firstName.charAt(0).toUpperCase() + firstName.slice(1)
+    console.log('Full name not available, not showing any name')
+    return '' // Don't show anything if full_name is not available
   }
 
 
@@ -282,7 +286,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         {/* Greeting Section */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-800">
-            Buongiorno Avvocato {getUserDisplayName()}
+            Buongiorno Avvocato{getUserDisplayName() ? ` ${getUserDisplayName()}` : ''}
           </h1>
           <p className="text-gray-600 mt-2">
             Ecco il riepilogo delle tue attività per oggi
