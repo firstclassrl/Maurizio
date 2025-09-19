@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Card, CardContent } from '../components/ui/card'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
-import { Plus, LogOut, Calendar, CalendarDays } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, RefreshCw } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -32,16 +32,23 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
   const loadTasks = async () => {
     try {
+      console.log('Loading tasks for user:', user.id)
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
         .eq('user_id', user.id)
         .order('scadenza', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
+      }
+      
+      console.log('Tasks loaded:', data)
       setTasks(data || [])
     } catch (error) {
       console.error('Error loading tasks:', error)
+      alert('Errore nel caricamento delle attività. Controlla la connessione al database.')
     }
   }
 
@@ -243,9 +250,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         </Card>
 
         {/* All Tasks Section */}
-        <Card>
+        <Card className="bg-purple-50 border-purple-200">
           <CardContent className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Tutte le Attività</h3>
+            <div className="bg-purple-800 h-1 w-full mb-4 rounded"></div>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-purple-900">Tutte le Attività</h3>
+              <Button onClick={loadTasks} variant="outline" size="sm">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Ricarica
+              </Button>
+            </div>
             {tasks.length === 0 ? (
               <p className="text-gray-500 text-center py-8">
                 Nessuna attività trovata. Aggiungi la tua prima pratica!
