@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { Task } from '../../lib/calendar-utils'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Home } from 'lucide-react'
 
 interface WeeklyCalendarProps {
   tasks: Task[]
+  onBackToDashboard?: () => void
 }
 
-export function WeeklyCalendar({ tasks }: WeeklyCalendarProps) {
+export function WeeklyCalendar({ tasks, onBackToDashboard }: WeeklyCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
 
   // Get the start of the week (Monday)
@@ -77,6 +78,12 @@ export function WeeklyCalendar({ tasks }: WeeklyCalendarProps) {
             {formatMonthYear(currentWeek)}
           </CardTitle>
           <div className="flex items-center gap-2">
+            {onBackToDashboard && (
+              <Button onClick={onBackToDashboard} variant="outline" size="sm">
+                <Home className="h-4 w-4 mr-1" />
+                Dashboard
+              </Button>
+            )}
             <Button onClick={goToPreviousWeek} variant="outline" size="sm">
               <ChevronLeft className="h-4 w-4" />
             </Button>

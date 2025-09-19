@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { Task } from '../../lib/calendar-utils'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Home } from 'lucide-react'
 
 interface MonthlyCalendarProps {
   tasks: Task[]
+  onBackToDashboard?: () => void
 }
 
-export function MonthlyCalendar({ tasks }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ tasks, onBackToDashboard }: MonthlyCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
   // Get the first day of the month
@@ -88,6 +89,12 @@ export function MonthlyCalendar({ tasks }: MonthlyCalendarProps) {
             {formatMonthYear(currentMonth)}
           </CardTitle>
           <div className="flex items-center gap-2">
+            {onBackToDashboard && (
+              <Button onClick={onBackToDashboard} variant="outline" size="sm">
+                <Home className="h-4 w-4 mr-1" />
+                Dashboard
+              </Button>
+            )}
             <Button onClick={goToPreviousMonth} variant="outline" size="sm">
               <ChevronLeft className="h-4 w-4" />
             </Button>
