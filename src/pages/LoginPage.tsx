@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Label } from '../components/ui/label'
-import { Scale, LogIn, Eye, EyeOff, UserPlus } from 'lucide-react'
+import { Scale, LogIn, Eye, EyeOff, UserPlus, CheckCircle } from 'lucide-react'
 
 export function LoginPage() {
   const [email, setEmail] = useState('')
