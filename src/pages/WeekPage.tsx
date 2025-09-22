@@ -47,11 +47,10 @@ export function WeekPage({ user, onBackToDashboard }: WeekPageProps) {
         scadenza: taskData.scadenza,
         stato: taskData.stato,
         priorita: taskData.priorita,
+        note: taskData.note || null,
+        parte: taskData.parte || null,
+        controparte: taskData.controparte || null,
         user_id: user.id
-        // Temporarily exclude new fields until migration is applied
-        // note: taskData.note,
-        // parte: taskData.parte,
-        // controparte: taskData.controparte
       }
       
       console.log('WeekPage mappedData:', mappedData)

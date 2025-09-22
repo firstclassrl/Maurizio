@@ -89,10 +89,9 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       scadenza: formData.scadenza,
       stato: formData.stato,
       priorita: formData.priorita,
-      // Temporarily exclude new fields until migration is applied
-      // note: formData.note,
-      // parte: formData.parte,
-      // controparte: formData.controparte
+      note: formData.note || null,
+      parte: formData.parte || null,
+      controparte: formData.controparte || null
     }
     
     console.log('TaskDialog calling onSave with:', taskData)

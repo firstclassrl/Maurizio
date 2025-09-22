@@ -145,11 +145,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         scadenza: taskData.scadenza,
         stato: taskData.stato,
         priorita: taskData.priorita || 5, // Use priority from form or default to 5
+        note: taskData.note || null,
+        parte: taskData.parte || null,
+        controparte: taskData.controparte || null,
         user_id: user.id
-        // Temporarily exclude new fields until migration is applied
-        // note: taskData.note,
-        // parte: taskData.parte,
-        // controparte: taskData.controparte
       }
 
       if (selectedTask) {
@@ -202,20 +201,19 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
     }
 
     try {
-      const { error } = await supabase
-        .from('tasks')
-        .insert({
-          user_id: user.id,
-          pratica: newPratica.trim(),
-          attivita: newCategoria.trim(),
-          scadenza: newScadenza,
-          stato: 'todo',
-          priorita: isUrgentMode ? 10 : 5 // Priorità alta per urgenti, media per normali
-          // Temporarily exclude new fields until migration is applied
-          // note: newNote.trim() || null,
-          // parte: newParte.trim() || null,
-          // controparte: newControparte.trim() || null
-        })
+        const { error } = await supabase
+          .from('tasks')
+          .insert({
+            user_id: user.id,
+            pratica: newPratica.trim(),
+            attivita: newCategoria.trim(),
+            scadenza: newScadenza,
+            stato: 'todo',
+            priorita: isUrgentMode ? 10 : 5, // Priorità alta per urgenti, media per normali
+            note: newNote.trim() || null,
+            parte: newParte.trim() || null,
+            controparte: newControparte.trim() || null
+          })
 
       if (error) throw error
 
@@ -725,15 +723,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                               </span>
                             )}
                           </div>
-                          <div className="text-sm text-gray-600 mt-2 text-center">
-                            <div className="flex justify-center gap-4">
-                              <span className="font-medium">
-                                Parte: <span className="text-gray-800">{task.parte || 'Non specificata'}</span>
-                              </span>
-                              <span className="text-gray-400">•</span>
-                              <span className="font-medium">
-                                Controparte: <span className="text-gray-800">{task.controparte || 'Non specificata'}</span>
-                              </span>
+                          <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div className="text-center">
+                                <div className="text-gray-500 text-xs font-medium mb-1">PARTE</div>
+                                <div className="text-gray-800 font-semibold bg-white px-2 py-1 rounded border">
+                                  {task.parte || 'Non specificata'}
+                                </div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-gray-500 text-xs font-medium mb-1">CONTRAPARTE</div>
+                                <div className="text-gray-800 font-semibold bg-white px-2 py-1 rounded border">
+                                  {task.controparte || 'Non specificata'}
+                                </div>
+                              </div>
                             </div>
                           </div>
                           <div className="text-sm text-gray-500 mt-1">
@@ -782,15 +785,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-gray-600 mt-1 text-center">
-                            <div className="flex justify-center gap-3">
-                              <span className="font-medium">
-                                Parte: <span className="text-gray-800">{task.parte || 'Non specificata'}</span>
-                              </span>
-                              <span className="text-gray-400">•</span>
-                              <span className="font-medium">
-                                Controparte: <span className="text-gray-800">{task.controparte || 'Non specificata'}</span>
-                              </span>
+                          <div className="mt-2 p-2 bg-gray-50 rounded border">
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div className="text-center">
+                                <div className="text-gray-500 text-xs font-medium mb-1">PARTE</div>
+                                <div className="text-gray-800 font-semibold bg-white px-1 py-1 rounded border text-xs">
+                                  {task.parte || 'Non specificata'}
+                                </div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-gray-500 text-xs font-medium mb-1">CONTRAPARTE</div>
+                                <div className="text-gray-800 font-semibold bg-white px-1 py-1 rounded border text-xs">
+                                  {task.controparte || 'Non specificata'}
+                                </div>
+                              </div>
                             </div>
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
@@ -877,7 +885,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.6
+                LexAgenda Ver 1.4.7
               </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
@@ -896,7 +904,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="flex justify-between items-center">
               {/* Versione app - sinistra */}
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.6
+                LexAgenda Ver 1.4.7
               </div>
               
               {/* Abruzzo.AI branding - centro */}

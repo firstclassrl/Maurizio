@@ -32,9 +32,9 @@ export interface Task {
   scadenza: string
   stato: 'todo' | 'done'
   priorita: number
-  note?: string
-  parte?: string
-  controparte?: string
+  note?: string | null
+  parte?: string | null
+  controparte?: string | null
   created_at: string
   updated_at: string
 }
