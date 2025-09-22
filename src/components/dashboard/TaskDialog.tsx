@@ -62,29 +62,40 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
+    console.log('TaskDialog handleSubmit called', { task, formData })
+    
     // Validate required fields
     if (!formData.pratica.trim() || !formData.categoria.trim() || !formData.scadenza) {
       showError('Campi obbligatori', 'Compila tutti i campi obbligatori')
       return
     }
     
-    // Validate date is not in the past
-    const selectedDate = new Date(formData.scadenza)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0) // Reset time to start of day
-    
-    if (selectedDate < today) {
-      showError('Data non valida', 'Non è possibile creare pratiche con date precedenti a oggi')
-      return
+    // Validate date is not in the past (only for new tasks, not updates)
+    if (!task) {
+      const selectedDate = new Date(formData.scadenza)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0) // Reset time to start of day
+      
+      if (selectedDate < today) {
+        showError('Data non valida', 'Non è possibile creare pratiche con date precedenti a oggi')
+        return
+      }
     }
     
     // Prepare data for save
     const taskData = {
-      ...formData,
+      pratica: formData.pratica,
       attivita: formData.categoria, // Map categoria to attivita for database compatibility
-      categoria: undefined // Remove categoria field
+      scadenza: formData.scadenza,
+      stato: formData.stato,
+      priorita: formData.priorita,
+      // Temporarily exclude new fields until migration is applied
+      // note: formData.note,
+      // parte: formData.parte,
+      // controparte: formData.controparte
     }
     
+    console.log('TaskDialog calling onSave with:', taskData)
     onSave(taskData)
   }
 

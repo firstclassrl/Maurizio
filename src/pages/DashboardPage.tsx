@@ -140,10 +140,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
     try {
       // Map categoria to attivita for database compatibility
       const mappedData = {
-        ...taskData,
+        pratica: taskData.pratica,
         attivita: taskData.categoria || taskData.attivita,
-        categoria: undefined, // Remove categoria field
-        priorita: taskData.priorita || 5 // Use priority from form or default to 5
+        scadenza: taskData.scadenza,
+        stato: taskData.stato,
+        priorita: taskData.priorita || 5, // Use priority from form or default to 5
+        user_id: user.id
+        // Temporarily exclude new fields until migration is applied
+        // note: taskData.note,
+        // parte: taskData.parte,
+        // controparte: taskData.controparte
       }
 
       if (selectedTask) {
@@ -204,10 +210,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           attivita: newCategoria.trim(),
           scadenza: newScadenza,
           stato: 'todo',
-          priorita: isUrgentMode ? 10 : 5, // Priorità alta per urgenti, media per normali
-          note: newNote.trim() || null,
-          parte: newParte.trim() || null,
-          controparte: newControparte.trim() || null
+          priorita: isUrgentMode ? 10 : 5 // Priorità alta per urgenti, media per normali
+          // Temporarily exclude new fields until migration is applied
+          // note: newNote.trim() || null,
+          // parte: newParte.trim() || null,
+          // controparte: newControparte.trim() || null
         })
 
       if (error) throw error
@@ -862,7 +869,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.4
+                LexAgenda Ver 1.4.5
               </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
@@ -881,7 +888,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="flex justify-between items-center">
               {/* Versione app - sinistra */}
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.4
+                LexAgenda Ver 1.4.5
               </div>
               
               {/* Abruzzo.AI branding - centro */}

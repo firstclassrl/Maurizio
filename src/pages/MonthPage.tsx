@@ -38,13 +38,23 @@ export function MonthPage({ user, onBackToDashboard }: MonthPageProps) {
 
   const handleTaskSave = async (taskData: Partial<Task>) => {
     try {
+      console.log('MonthPage handleTaskSave called with:', taskData)
+      
       // Map categoria to attivita for database compatibility
       const mappedData = {
-        ...taskData,
+        pratica: taskData.pratica,
         attivita: taskData.categoria || taskData.attivita,
-        categoria: undefined, // Remove categoria field
+        scadenza: taskData.scadenza,
+        stato: taskData.stato,
+        priorita: taskData.priorita,
         user_id: user.id
+        // Temporarily exclude new fields until migration is applied
+        // note: taskData.note,
+        // parte: taskData.parte,
+        // controparte: taskData.controparte
       }
+      
+      console.log('MonthPage mappedData:', mappedData)
 
       if (selectedTask) {
         // Update existing task
