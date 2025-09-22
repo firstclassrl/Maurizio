@@ -74,6 +74,11 @@ export function WeekPage({ user, onBackToDashboard }: WeekPageProps) {
     setIsTaskDialogOpen(true)
   }
 
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task)
+    setIsTaskDialogOpen(true)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -92,7 +97,7 @@ export function WeekPage({ user, onBackToDashboard }: WeekPageProps) {
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        <WeeklyCalendar tasks={tasks} />
+        <WeeklyCalendar tasks={tasks} onTaskClick={handleTaskClick} />
       </div>
 
       <TaskDialog

@@ -74,6 +74,11 @@ export function MonthPage({ user, onBackToDashboard }: MonthPageProps) {
     setIsTaskDialogOpen(true)
   }
 
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task)
+    setIsTaskDialogOpen(true)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -92,7 +97,7 @@ export function MonthPage({ user, onBackToDashboard }: MonthPageProps) {
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        <MonthlyCalendar tasks={tasks} />
+        <MonthlyCalendar tasks={tasks} onTaskClick={handleTaskClick} />
       </div>
 
       <TaskDialog

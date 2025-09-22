@@ -755,7 +755,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           <div className="flex justify-between items-center">
             {/* Versione app - sinistra */}
             <div className="text-white text-xs opacity-75">
-              LexAgenda Ver 1.5
+              LexAgenda Ver 1.4.1
             </div>
             
             {/* Abruzzo.AI branding - centro */}

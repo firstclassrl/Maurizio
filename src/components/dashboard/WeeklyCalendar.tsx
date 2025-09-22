@@ -7,9 +7,10 @@ import { ChevronLeft, ChevronRight, Home } from 'lucide-react'
 interface WeeklyCalendarProps {
   tasks: Task[]
   onBackToDashboard?: () => void
+  onTaskClick?: (task: Task) => void
 }
 
-export function WeeklyCalendar({ tasks, onBackToDashboard }: WeeklyCalendarProps) {
+export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick }: WeeklyCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
 
   // Generate colors based on category
@@ -18,12 +19,17 @@ export function WeeklyCalendar({ tasks, onBackToDashboard }: WeeklyCalendarProps
       case 'SCADENZA ATTO PROCESSUALE':
         return 'bg-red-100 text-red-800 border-red-200'
       case 'UDIENZA':
-        return 'bg-amber-100 text-amber-800 border-amber-200'
+        return 'bg-green-100 text-green-800 border-green-200'
       case 'ATTIVITA\' PROCESSUALE':
-        return 'bg-purple-100 text-purple-800 border-purple-200'
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200'
     }
+  }
+
+  // Check if task is urgent
+  const isUrgentTask = (priorita: number) => {
+    return priorita === 10
   }
 
   // Get the start of the week (Monday)
@@ -133,15 +139,19 @@ export function WeeklyCalendar({ tasks, onBackToDashboard }: WeeklyCalendarProps
                       {dayTasks.slice(0, 3).map((task) => (
                     <div
                       key={task.id}
-                      className={`text-xs p-2 rounded border ${
+                      className={`text-xs p-2 rounded border cursor-pointer hover:shadow-md transition-shadow ${
                         task.stato === 'done' 
                           ? 'bg-green-100 text-green-800 border-green-200' 
                           : getTaskColor(task)
                       }`}
                       title={`${task.pratica} - ${task.attivita}`}
+                      onClick={() => onTaskClick?.(task)}
                     >
                       <div className="font-medium truncate">{task.pratica}</div>
                       <div className="text-xs opacity-80 truncate">{task.attivita}</div>
+                      {isUrgentTask(task.priorita) && (
+                        <div className="text-xs text-red-600 font-bold mt-1">URGENTE</div>
+                      )}
                     </div>
                   ))}
                   {dayTasks.length > 3 && (
