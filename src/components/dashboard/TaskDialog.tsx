@@ -203,6 +203,8 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                 type="date"
                 value={formData.scadenza}
                 onChange={(e) => handleChange('scadenza', e.target.value)}
+                className="text-gray-900"
+                style={{ colorScheme: 'light' }}
                 required
               />
             </div>

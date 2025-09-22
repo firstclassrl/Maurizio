@@ -563,7 +563,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                   type="date"
                   value={newScadenza}
                   onChange={(e) => setNewScadenza(e.target.value)}
-                      className="text-base"
+                  className="text-base text-gray-900"
+                  style={{ colorScheme: 'light' }}
                 />
               </div>
               <div>
@@ -573,8 +574,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                   type="time"
                   value={newOra}
                   onChange={(e) => setNewOra(e.target.value)}
-                      className="text-base"
-                    />
+                  className="text-base text-gray-900"
+                  style={{ colorScheme: 'light' }}
+                  step="60"
+                />
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -645,6 +648,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                       type="date"
                       value={newScadenza}
                       onChange={(e) => setNewScadenza(e.target.value)}
+                      className="text-gray-900"
+                      style={{ colorScheme: 'light' }}
                     />
                   </div>
                   <div className="w-32">
@@ -654,6 +659,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                       type="time"
                       value={newOra}
                       onChange={(e) => setNewOra(e.target.value)}
+                      className="text-gray-900"
+                      style={{ colorScheme: 'light' }}
+                      step="60"
                     />
                   </div>
                 </div>

@@ -193,3 +193,21 @@
   background-color: #8b5cf6;
   color: white;
 }
+
+/* Miglioramenti per campi date e time */
+input[type="date"],
+input[type="time"] {
+  color: #111827 !important;
+  background-color: white !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.3);
+  cursor: pointer;
+}
+
+/* Forza formato 24 ore per input time */
+input[type="time"] {
+  font-family: monospace;
+}
