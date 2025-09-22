@@ -38,12 +38,20 @@ export function MonthPage({ user, onBackToDashboard }: MonthPageProps) {
 
   const handleTaskSave = async (taskData: Partial<Task>) => {
     try {
+      // Map categoria to attivita for database compatibility
+      const mappedData = {
+        ...taskData,
+        attivita: taskData.categoria || taskData.attivita,
+        categoria: undefined, // Remove categoria field
+        user_id: user.id
+      }
+
       if (selectedTask) {
         // Update existing task
         const { error } = await supabase
           .from('tasks')
           .update({
-            ...taskData,
+            ...mappedData,
             updated_at: new Date().toISOString()
           })
           .eq('id', selectedTask.id)
@@ -53,10 +61,7 @@ export function MonthPage({ user, onBackToDashboard }: MonthPageProps) {
         // Create new task
         const { error } = await supabase
           .from('tasks')
-          .insert({
-            ...taskData,
-            user_id: user.id
-          })
+          .insert(mappedData)
 
         if (error) throw error
       }

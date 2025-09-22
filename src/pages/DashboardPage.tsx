@@ -143,7 +143,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         ...taskData,
         attivita: taskData.categoria || taskData.attivita,
         categoria: undefined, // Remove categoria field
-        priorita: isUrgentMode ? 10 : 5 // Urgent (10) or Normal (5)
+        priorita: taskData.priorita || 5 // Use priority from form or default to 5
       }
 
       if (selectedTask) {
@@ -862,7 +862,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.3
+                LexAgenda Ver 1.4.4
               </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
@@ -881,7 +881,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="flex justify-between items-center">
               {/* Versione app - sinistra */}
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.3
+                LexAgenda Ver 1.4.4
               </div>
               
               {/* Abruzzo.AI branding - centro */}
