@@ -141,11 +141,21 @@ export function usePushNotifications() {
 
   const toggleSubscription = async (): Promise<boolean> => {
     if (state.isSubscribed) {
-      return await unsubscribeFromPush();
+      const result = await unsubscribeFromPush();
+      // Refresh state after unsubscribe
+      if (result) {
+        await checkExistingSubscription();
+      }
+      return result;
     } else {
       const hasPermission = await requestPermission();
       if (hasPermission) {
-        return await subscribeToPush();
+        const result = await subscribeToPush();
+        // Refresh state after subscribe
+        if (result) {
+          await checkExistingSubscription();
+        }
+        return result;
       }
       return false;
     }

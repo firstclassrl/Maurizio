@@ -43,8 +43,8 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
       playNotificationSound()
     }
     
-    // Close the settings panel after toggle
-    setIsOpen(false)
+    // Keep the settings panel open
+    // setIsOpen(false) - Removed to keep panel open
   }
 
   const handleEnableNotifications = async () => {
@@ -64,9 +64,13 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
   }
 
   const handleTogglePushNotifications = async () => {
+    console.log('Toggle push notifications clicked, current state:', pushSubscribed)
     const success = await togglePushSubscription()
+    console.log('Toggle result:', success)
     if (success) {
       console.log('Stato notifiche push aggiornato')
+    } else {
+      console.log('Errore nell\'aggiornamento stato notifiche push')
     }
   }
 
@@ -230,6 +234,19 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
                           onCheckedChange={handleTogglePushNotifications}
                           disabled={pushPermission === 'denied' || pushLoading}
                         />
+                        {pushLoading && (
+                          <div className="ml-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Debug Info */}
+                      <div className="text-xs text-gray-400 bg-gray-100 p-2 rounded">
+                        Debug: Supported: {pushSupported ? 'Yes' : 'No'}, 
+                        Permission: {pushPermission}, 
+                        Subscribed: {pushSubscribed ? 'Yes' : 'No'}, 
+                        Loading: {pushLoading ? 'Yes' : 'No'}
                       </div>
 
                       {/* Push Status Messages */}
