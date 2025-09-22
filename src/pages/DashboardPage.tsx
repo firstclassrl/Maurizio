@@ -726,11 +726,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                           <div className="text-sm text-gray-600 mt-2 text-center">
                             <div className="flex justify-center gap-4">
                               <span className="font-medium">
-                                Parte: <span className="text-gray-800">{task.parte || 'Non specificata'}</span>
+                                Parte: <span className="text-gray-900 font-bold text-base">{task.parte || 'Non specificata'}</span>
                               </span>
                               <span className="text-gray-400">•</span>
                               <span className="font-medium">
-                                Controparte: <span className="text-gray-800">{task.controparte || 'Non specificata'}</span>
+                                Controparte: <span className="text-gray-900 font-bold text-base">{task.controparte || 'Non specificata'}</span>
                               </span>
                             </div>
                           </div>
@@ -783,11 +783,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                           <div className="text-xs text-gray-600 mt-1 text-center">
                             <div className="flex justify-center gap-3">
                               <span className="font-medium">
-                                Parte: <span className="text-gray-800">{task.parte || 'Non specificata'}</span>
+                                Parte: <span className="text-gray-900 font-bold text-sm">{task.parte || 'Non specificata'}</span>
                               </span>
                               <span className="text-gray-400">•</span>
                               <span className="font-medium">
-                                Controparte: <span className="text-gray-800">{task.controparte || 'Non specificata'}</span>
+                                Controparte: <span className="text-gray-900 font-bold text-sm">{task.controparte || 'Non specificata'}</span>
                               </span>
                             </div>
                           </div>
@@ -875,7 +875,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.8
+                LexAgenda Ver 1.4.9
               </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
@@ -894,7 +894,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="flex justify-between items-center">
               {/* Versione app - sinistra */}
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.8
+                LexAgenda Ver 1.4.9
               </div>
               
               {/* Abruzzo.AI branding - centro */}

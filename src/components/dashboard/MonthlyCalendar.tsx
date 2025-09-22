@@ -180,7 +180,7 @@ export function MonthlyCalendar({ tasks, onBackToDashboard, onTaskClick }: Month
                         >
                           <div className="font-medium truncate text-xs">{task.pratica}</div>
                           <div className="text-xs text-gray-600 truncate">
-                            {task.parte || 'N/A'} vs {task.controparte || 'N/A'}
+                            <span className="text-gray-900 font-bold">{task.parte || 'N/A'}</span> vs <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span>
                           </div>
                           {isUrgentTask(task.priorita) && (
                             <div className="text-xs text-red-600 font-bold">!</div>
@@ -249,7 +249,7 @@ export function MonthlyCalendar({ tasks, onBackToDashboard, onTaskClick }: Month
                           <div className="font-medium truncate text-xs">{task.pratica}</div>
                           <div className="text-xs opacity-80 truncate">{task.attivita}</div>
                           <div className="text-xs text-gray-600 truncate">
-                            {task.parte || 'N/A'} vs {task.controparte || 'N/A'}
+                            <span className="text-gray-900 font-bold">{task.parte || 'N/A'}</span> vs <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span>
                           </div>
                           {isUrgentTask(task.priorita) && (
                             <div className="text-xs text-red-600 font-bold">URGENTE</div>
