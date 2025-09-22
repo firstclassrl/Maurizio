@@ -821,10 +821,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                     ) : (
                       // Desktop Layout - Two Rows
                       <div className="space-y-3">
-                        {/* Prima riga: Pratica a sinistra - Parte e controparte al centro */}
-                        <div className="flex justify-between items-center">
-                          <div className="font-medium text-gray-900">{task.pratica}</div>
-                          <div className="text-sm text-gray-600 text-center">
+                        {/* Prima riga: Pratica a sinistra - Parte e controparte al centro - Pulsanti a destra */}
+                        <div className="flex items-center">
+                          <div className="flex-1 font-medium text-gray-900">{task.pratica}</div>
+                          <div className="flex-1 text-sm text-gray-600 text-center">
                             <span className="font-medium">
                               Parte: <span className="text-gray-900 font-bold">{task.parte || 'Non specificata'}</span>
                             </span>
@@ -833,11 +833,36 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                               Controparte: <span className="text-gray-900 font-bold">{task.controparte || 'Non specificata'}</span>
                             </span>
                           </div>
+                          <div className="flex-1 flex items-center gap-2 justify-end">
+                            {task.stato === 'done' && (
+                              <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                                Completato
+                              </span>
+                            )}
+                            <Button
+                              onClick={() => {
+                                setSelectedTask(task)
+                                setIsTaskDialogOpen(true)
+                              }}
+                              variant="outline"
+                              size="sm"
+                            >
+                              Modifica
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteTask(task)}
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                         
-                        {/* Seconda riga: Categoria attività - Scadenza al centro */}
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-2">
+                        {/* Seconda riga: Categoria attività a sinistra - Scadenza al centro */}
+                        <div className="flex items-center">
+                          <div className="flex-1 flex items-center gap-2">
                             <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
                               {task.attivita}
                             </span>
@@ -847,9 +872,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                               </span>
                             )}
                           </div>
-                          <div className="text-sm font-bold text-gray-700">
+                          <div className="flex-1 text-sm font-bold text-gray-700 text-center">
                             Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
                           </div>
+                          <div className="flex-1"></div> {/* Spazio vuoto per bilanciare */}
                         </div>
                         
                         {/* Note (se presenti) */}
@@ -858,33 +884,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                             Note: {task.note}
                           </div>
                         )}
-                        
-                        {/* Pulsanti desktop */}
-                        <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
-                          {task.stato === 'done' && (
-                            <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                              Completato
-                            </span>
-                          )}
-                          <Button
-                            onClick={() => {
-                              setSelectedTask(task)
-                              setIsTaskDialogOpen(true)
-                            }}
-                            variant="outline"
-                            size="sm"
-                          >
-                            Modifica
-                          </Button>
-                          <Button
-                            onClick={() => handleDeleteTask(task)}
-                            variant="outline"
-                            size="sm"
-                            className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
                       </div>
                     )}
                   </div>
@@ -935,7 +934,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
             <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.7.0
+                LexAgenda Ver 1.7.1
             </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
@@ -954,7 +953,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="flex justify-between items-center">
               {/* Versione app - sinistra */}
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.7.0
+                LexAgenda Ver 1.7.1
               </div>
               
               {/* Abruzzo.AI branding - centro */}
