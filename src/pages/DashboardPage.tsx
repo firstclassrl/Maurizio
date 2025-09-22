@@ -19,6 +19,7 @@ import { WeekCounter } from '../components/notifications/WeekCounter'
 import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
+import { PartyFilter } from '../components/ui/PartyFilter'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -39,6 +40,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   const [isUrgentMode, setIsUrgentMode] = useState(false)
   const [refreshCounters, setRefreshCounters] = useState(0)
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [selectedParty, setSelectedParty] = useState('all')
 
   // Form fields for new task
   const [newPratica, setNewPratica] = useState('')
@@ -203,19 +205,19 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
     }
 
     try {
-        const { error } = await supabase
-          .from('tasks')
-          .insert({
-            user_id: user.id,
-            pratica: newPratica.trim(),
-            attivita: newCategoria.trim(),
-            scadenza: newScadenza,
-            stato: 'todo',
+      const { error } = await supabase
+        .from('tasks')
+        .insert({
+          user_id: user.id,
+          pratica: newPratica.trim(),
+          attivita: newCategoria.trim(),
+          scadenza: newScadenza,
+          stato: 'todo',
             priorita: isUrgentMode ? 10 : 5, // Priorità alta per urgenti, media per normali
             note: newNote.trim() || null,
             parte: newParte.trim() || null,
             controparte: newControparte.trim() || null
-          })
+        })
 
       if (error) throw error
 
@@ -284,12 +286,27 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
     return tasks.filter(task => task.scadenza === today)
   }
 
-  // Filter tasks by category
+  // Filter tasks by category and party
   const getFilteredTasks = () => {
-    if (selectedCategory === 'all') {
-      return tasks
+    let filtered = tasks
+
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(task => task.attivita === selectedCategory)
     }
-    return tasks.filter(task => task.attivita === selectedCategory)
+
+    // Filter by party/controparte
+    if (selectedParty !== 'all') {
+      if (selectedParty.startsWith('parte-')) {
+        const partyName = selectedParty.replace('parte-', '')
+        filtered = filtered.filter(task => task.parte === partyName)
+      } else if (selectedParty.startsWith('controparte-')) {
+        const controparteName = selectedParty.replace('controparte-', '')
+        filtered = filtered.filter(task => task.controparte === controparteName)
+      }
+    }
+
+    return filtered
   }
 
   // Get user's display name
@@ -350,26 +367,26 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           ) : (
             // Desktop Header Layout
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <Logo size={32} className="text-blue-300" />
-                <h1 className="text-2xl font-bold text-white">LexAgenda</h1>
-              </div>
-              <div className="flex items-center gap-4">
-                <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0" size="sm">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  SETTIMANA
-                </Button>
-                <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0" size="sm">
-                  <CalendarDays className="h-4 w-4 mr-2" />
-                  MESE
-                </Button>
-                <NotificationCenter userId={user.id} />
-                <AudioNotificationSettings userId={user.id} />
-                <Button onClick={handleLogout} variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </Button>
-              </div>
+          <div className="flex items-center gap-3">
+            <Logo size={32} className="text-blue-300" />
+            <h1 className="text-2xl font-bold text-white">LexAgenda</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0" size="sm">
+              <Calendar className="h-4 w-4 mr-2" />
+              SETTIMANA
+            </Button>
+            <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0" size="sm">
+              <CalendarDays className="h-4 w-4 mr-2" />
+              MESE
+            </Button>
+            <NotificationCenter userId={user.id} />
+            <AudioNotificationSettings userId={user.id} />
+            <Button onClick={handleLogout} variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
             </div>
           )}
         </div>
@@ -398,20 +415,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           </div>
         ) : (
           // Desktop Layout
-          <div className="mb-6 flex items-start justify-between">
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-800">
-                Buongiorno Avvocato{getUserDisplayName() ? ` ${getUserDisplayName()}` : ''}
-              </h1>
-              <p className="text-gray-600 mt-2">
+        <div className="mb-6 flex items-start justify-between">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-gray-800">
+              Buongiorno Avvocato{getUserDisplayName() ? ` ${getUserDisplayName()}` : ''}
+            </h1>
+            <p className="text-gray-600 mt-2">
                 Ecco il riepilogo delle sue attività per oggi
-              </p>
-            </div>
-            
-            {/* All Counters - positioned on the right */}
-            <div className="ml-4 flex flex-col gap-2">
+            </p>
+          </div>
+          
+          {/* All Counters - positioned on the right */}
+          <div className="ml-4 flex flex-col gap-2">
               {/* Today, Urgent and Week counters in horizontal layout */}
-              <div className="flex gap-2">
+            <div className="flex gap-2">
                 <TodayCounter userId={user.id} key={`today-${refreshCounters}`} />
                 <UrgentCounter userId={user.id} key={`urgent-${refreshCounters}`} />
                 <WeekCounter userId={user.id} key={`week-${refreshCounters}`} />
@@ -467,44 +484,44 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             {isMobile ? (
               // Mobile Layout - Vertical
               <div className="space-y-4">
-                <div>
-                  <Label htmlFor="pratica">Pratica</Label>
-                  <Input
-                    id="pratica"
-                    value={newPratica}
-                    onChange={(e) => setNewPratica(e.target.value)}
-                    placeholder="Nome della pratica"
+              <div>
+                <Label htmlFor="pratica">Pratica</Label>
+                <Input
+                  id="pratica"
+                  value={newPratica}
+                  onChange={(e) => setNewPratica(e.target.value)}
+                  placeholder="Nome della pratica"
                     className="text-base"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="categoria">Categoria Attività</Label>
-                  <Select value={newCategoria} onValueChange={setNewCategoria}>
+                />
+              </div>
+              <div>
+                <Label htmlFor="categoria">Categoria Attività</Label>
+                <Select value={newCategoria} onValueChange={setNewCategoria}>
                     <SelectTrigger className="text-base">
-                      <SelectValue placeholder="Seleziona categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="SCADENZA ATTO PROCESSUALE">
-                        <span className="flex items-center gap-2">
-                          <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-                          SCADENZA ATTO PROCESSUALE
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="UDIENZA">
-                        <span className="flex items-center gap-2">
+                    <SelectValue placeholder="Seleziona categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SCADENZA ATTO PROCESSUALE">
+                      <span className="flex items-center gap-2">
+                        <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                        SCADENZA ATTO PROCESSUALE
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="UDIENZA">
+                      <span className="flex items-center gap-2">
                           <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-                          UDIENZA
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="ATTIVITA' PROCESSUALE">
-                        <span className="flex items-center gap-2">
+                        UDIENZA
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="ATTIVITA' PROCESSUALE">
+                      <span className="flex items-center gap-2">
                           <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
-                          ATTIVITA' PROCESSUALE
-                        </span>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                        ATTIVITA' PROCESSUALE
+                      </span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="parte">Parte</Label>
@@ -539,23 +556,23 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="scadenza">Scadenza</Label>
-                    <Input
-                      id="scadenza"
-                      type="date"
-                      value={newScadenza}
-                      onChange={(e) => setNewScadenza(e.target.value)}
+              <div>
+                <Label htmlFor="scadenza">Scadenza</Label>
+                <Input
+                  id="scadenza"
+                  type="date"
+                  value={newScadenza}
+                  onChange={(e) => setNewScadenza(e.target.value)}
                       className="text-base"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="ora">Ora (opzionale)</Label>
-                    <Input
-                      id="ora"
-                      type="time"
-                      value={newOra}
-                      onChange={(e) => setNewOra(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="ora">Ora (opzionale)</Label>
+                <Input
+                  id="ora"
+                  type="time"
+                  value={newOra}
+                  onChange={(e) => setNewOra(e.target.value)}
                       className="text-base"
                     />
                   </div>
@@ -682,13 +699,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                       <label htmlFor="urgente-desktop" className="text-red-600 font-medium cursor-pointer">
                         URGENTE
                       </label>
-                    </div>
-                  </div>
-                  <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Aggiungi Pratica
-                  </Button>
-                </div>
+              </div>
+            </div>
+              <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Aggiungi Pratica
+              </Button>
+            </div>
               </div>
             )}
           </CardContent>
@@ -700,23 +717,31 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="bg-purple-800 h-1 w-full mb-4 rounded"></div>
             <div className={`flex justify-between items-center mb-4 ${isMobile ? 'flex-col gap-2' : ''}`}>
               <h3 className="text-lg font-semibold text-purple-900">Tutte le Attività</h3>
-              <div className={`flex items-center gap-2 ${isMobile ? 'w-full' : ''}`}>
-                <CategoryFilter 
-                  selectedCategory={selectedCategory}
-                  onCategoryChange={setSelectedCategory}
-                  className={isMobile ? "flex-1" : ""}
-                />
+              <div className={`flex items-center gap-2 ${isMobile ? 'w-full flex-col' : ''}`}>
+                <div className={`flex items-center gap-2 ${isMobile ? 'w-full' : ''}`}>
+                  <CategoryFilter 
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
+                    className={isMobile ? "flex-1" : ""}
+                  />
+                  <PartyFilter 
+                    selectedParty={selectedParty}
+                    onPartyChange={setSelectedParty}
+                    tasks={tasks}
+                    className={isMobile ? "flex-1" : ""}
+                  />
+                </div>
                 <Button onClick={loadTasks} variant="outline" size="sm" className={isMobile ? "w-auto" : ""}>
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Ricarica
-                </Button>
-              </div>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Ricarica
+              </Button>
+            </div>
             </div>
             {getFilteredTasks().length === 0 ? (
               <p className="text-gray-500 text-center py-8">
-                {selectedCategory === 'all' 
+                {selectedCategory === 'all' && selectedParty === 'all'
                   ? 'Nessuna attività trovata. Aggiungi la tua prima pratica!'
-                  : `Nessuna attività trovata per la categoria selezionata.`
+                  : `Nessuna attività trovata per i filtri selezionati.`
                 }
               </p>
             ) : (
@@ -738,9 +763,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                             </span>
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
-                              {task.attivita}
-                            </span>
+                        <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
+                          {task.attivita}
+                        </span>
                             {isUrgentTask(task.priorita) && (
                               <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 border-red-200">
                                 URGENTE
@@ -811,40 +836,40 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                           </div>
                           <div className="text-center mt-2">
                             <div className="text-xs font-bold text-gray-700">
-                              Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
-                            </div>
+                        Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                      </div>
                           </div>
                           {task.note && (
                             <div className="text-xs text-gray-600 mt-1 italic">
                               Note: {task.note}
                             </div>
                           )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {task.stato === 'done' && (
-                            <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                              Completato
-                            </span>
-                          )}
-                          <Button
-                            onClick={() => {
-                              setSelectedTask(task)
-                              setIsTaskDialogOpen(true)
-                            }}
-                            variant="outline"
-                            size="sm"
-                          >
-                            Modifica
-                          </Button>
-                          <Button
-                            onClick={() => handleDeleteTask(task)}
-                            variant="outline"
-                            size="sm"
-                            className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {task.stato === 'done' && (
+                        <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                          Completato
+                        </span>
+                      )}
+                      <Button
+                        onClick={() => {
+                          setSelectedTask(task)
+                          setIsTaskDialogOpen(true)
+                        }}
+                        variant="outline"
+                        size="sm"
+                      >
+                        Modifica
+                      </Button>
+                      <Button
+                        onClick={() => handleDeleteTask(task)}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                       </div>
                     )}
                   </div>
@@ -894,9 +919,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           {isMobile ? (
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
-              <div className="text-white text-xs opacity-75">
+            <div className="text-white text-xs opacity-75">
                 LexAgenda Ver 1.8.0
-              </div>
+            </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
                 <img 
@@ -921,20 +946,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
               <div className="flex flex-col items-center gap-2">
                 <div className="flex items-center gap-2 text-white text-sm">
                   <span>Created by Abruzzo.AI</span>
-                  <img 
-                    src="/Marchio AbruzzoAI.png" 
-                    alt="Abruzzo.AI" 
-                    className="h-4 w-auto"
-                  />
-                </div>
-                <div className="text-white text-xs opacity-75">
-                  Copyright 2025
-                </div>
+                <img 
+                  src="/Marchio AbruzzoAI.png" 
+                  alt="Abruzzo.AI" 
+                  className="h-4 w-auto"
+                />
               </div>
-              
-              {/* Spazio vuoto per bilanciare */}
-              <div className="w-24"></div>
+              <div className="text-white text-xs opacity-75">
+                Copyright 2025
+              </div>
             </div>
+            
+            {/* Spazio vuoto per bilanciare */}
+            <div className="w-24"></div>
+          </div>
           )}
         </div>
       </footer>
