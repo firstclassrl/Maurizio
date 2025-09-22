@@ -18,6 +18,7 @@ import { AudioNotificationSettings } from '../components/notifications/AudioNoti
 import { WeekCounter } from '../components/notifications/WeekCounter'
 import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
+import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -37,6 +38,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   const [userProfile, setUserProfile] = useState<{full_name: string} | null>(null)
   const [isUrgentMode, setIsUrgentMode] = useState(false)
   const [refreshCounters, setRefreshCounters] = useState(0)
+  const [selectedCategory, setSelectedCategory] = useState('all')
 
   // Form fields for new task
   const [newPratica, setNewPratica] = useState('')
@@ -280,6 +282,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   const getTodayTasks = () => {
     const today = new Date().toISOString().split('T')[0]
     return tasks.filter(task => task.scadenza === today)
+  }
+
+  // Filter tasks by category
+  const getFilteredTasks = () => {
+    if (selectedCategory === 'all') {
+      return tasks
+    }
+    return tasks.filter(task => task.attivita === selectedCategory)
   }
 
   // Get user's display name
@@ -690,18 +700,28 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="bg-purple-800 h-1 w-full mb-4 rounded"></div>
             <div className={`flex justify-between items-center mb-4 ${isMobile ? 'flex-col gap-2' : ''}`}>
               <h3 className="text-lg font-semibold text-purple-900">Tutte le Attività</h3>
-              <Button onClick={loadTasks} variant="outline" size="sm" className={isMobile ? "w-full" : ""}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Ricarica
-              </Button>
+              <div className={`flex items-center gap-2 ${isMobile ? 'w-full' : ''}`}>
+                <CategoryFilter 
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                  className={isMobile ? "flex-1" : ""}
+                />
+                <Button onClick={loadTasks} variant="outline" size="sm" className={isMobile ? "w-auto" : ""}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Ricarica
+                </Button>
+              </div>
             </div>
-            {tasks.length === 0 ? (
+            {getFilteredTasks().length === 0 ? (
               <p className="text-gray-500 text-center py-8">
-                Nessuna attività trovata. Aggiungi la tua prima pratica!
+                {selectedCategory === 'all' 
+                  ? 'Nessuna attività trovata. Aggiungi la tua prima pratica!'
+                  : `Nessuna attività trovata per la categoria selezionata.`
+                }
               </p>
             ) : (
               <div className="space-y-3">
-                {tasks.map((task) => (
+                {getFilteredTasks().map((task) => (
                   <div key={task.id} className={`${isMobile ? 'p-3' : 'p-4'} rounded-lg border ${getRowBackgroundColor(task.attivita)}`}>
                     {isMobile ? (
                       // Mobile Layout - Vertical
@@ -871,7 +891,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.6.0
+                LexAgenda Ver 1.7.0
               </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
@@ -890,7 +910,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="flex justify-between items-center">
               {/* Versione app - sinistra */}
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.6.0
+                LexAgenda Ver 1.7.0
               </div>
               
               {/* Abruzzo.AI branding - centro */}

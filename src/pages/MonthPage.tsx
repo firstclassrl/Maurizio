@@ -5,6 +5,7 @@ import { Task } from '../lib/calendar-utils'
 import { Button } from '../components/ui/button'
 import { MonthlyCalendar } from '../components/dashboard/MonthlyCalendar'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
+import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { ArrowLeft, Plus } from 'lucide-react'
 
 interface MonthPageProps {
@@ -16,6 +17,7 @@ export function MonthPage({ user, onBackToDashboard }: MonthPageProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState('all')
 
   useEffect(() => {
     loadTasks()
@@ -93,6 +95,14 @@ export function MonthPage({ user, onBackToDashboard }: MonthPageProps) {
     setIsTaskDialogOpen(true)
   }
 
+  // Filter tasks by category
+  const getFilteredTasks = () => {
+    if (selectedCategory === 'all') {
+      return tasks
+    }
+    return tasks.filter(task => task.attivita === selectedCategory)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -111,7 +121,15 @@ export function MonthPage({ user, onBackToDashboard }: MonthPageProps) {
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        <MonthlyCalendar tasks={tasks} onTaskClick={handleTaskClick} />
+        {/* Filter Section */}
+        <div className="mb-6">
+          <CategoryFilter 
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+          />
+        </div>
+        
+        <MonthlyCalendar tasks={getFilteredTasks()} onTaskClick={handleTaskClick} />
       </div>
 
       <TaskDialog
