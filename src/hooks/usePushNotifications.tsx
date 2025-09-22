@@ -82,8 +82,8 @@ export function usePushNotifications() {
       const registration = await navigator.serviceWorker.ready;
       
       // Chiave VAPID pubblica (dovrebbe essere in .env)
-      const vapidPublicKey = process.env.REACT_APP_VAPID_PUBLIC_KEY || 
-        'BEl62iUYgUivxIkv69yViEuiBIa40HI8g8V7VwjKwx-9X3VrVU8bF8GFLsuxOpxjL0L7Q2HRgWwbv1cEDwv_88';
+      const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || 
+        'BBtzXffm323WoFzkn6tSqS-ZP5Hr3pJluGbkuD20hcgUet0gO84sZWbPJptoCbJ90rLFd0vpL8yuMPM-M4tceSE';
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,

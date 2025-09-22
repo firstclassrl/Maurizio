@@ -18,6 +18,7 @@ import { AudioNotificationSettings } from '../components/notifications/AudioNoti
 import { WeekCounter } from '../components/notifications/WeekCounter'
 import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
+import { PushNotificationSettings } from '../components/notifications/PushNotificationSettings'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
 
@@ -691,6 +692,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Push Notifications Settings */}
+        <Card className="mb-6">
+          <CardContent className={isMobile ? "p-4" : "p-6"}>
+            <PushNotificationSettings />
           </CardContent>
         </Card>
 
