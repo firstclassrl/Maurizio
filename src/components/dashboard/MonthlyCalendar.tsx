@@ -175,10 +175,13 @@ export function MonthlyCalendar({ tasks, onBackToDashboard, onTaskClick }: Month
                               ? 'bg-green-100 text-green-800 border-green-200' 
                               : getTaskColor(task)
                           }`}
-                          title={`${task.pratica} - ${task.attivita}`}
+                          title={`${task.pratica} - ${task.attivita} - Parte: ${task.parte || 'N/A'} - Controparte: ${task.controparte || 'N/A'}`}
                           onClick={() => onTaskClick?.(task)}
                         >
                           <div className="font-medium truncate text-xs">{task.pratica}</div>
+                          <div className="text-xs text-gray-600 truncate">
+                            {task.parte || 'N/A'} vs {task.controparte || 'N/A'}
+                          </div>
                           {isUrgentTask(task.priorita) && (
                             <div className="text-xs text-red-600 font-bold">!</div>
                           )}
@@ -240,11 +243,14 @@ export function MonthlyCalendar({ tasks, onBackToDashboard, onTaskClick }: Month
                               ? 'bg-green-100 text-green-800 border-green-200' 
                               : getTaskColor(task)
                           }`}
-                          title={`${task.pratica} - ${task.attivita}`}
+                          title={`${task.pratica} - ${task.attivita} - Parte: ${task.parte || 'N/A'} - Controparte: ${task.controparte || 'N/A'}`}
                           onClick={() => onTaskClick?.(task)}
                         >
                           <div className="font-medium truncate text-xs">{task.pratica}</div>
                           <div className="text-xs opacity-80 truncate">{task.attivita}</div>
+                          <div className="text-xs text-gray-600 truncate">
+                            {task.parte || 'N/A'} vs {task.controparte || 'N/A'}
+                          </div>
                           {isUrgentTask(task.priorita) && (
                             <div className="text-xs text-red-600 font-bold">URGENTE</div>
                           )}

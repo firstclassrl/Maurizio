@@ -725,16 +725,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                               </span>
                             )}
                           </div>
-                          <div className="text-sm text-gray-500 mt-2">
+                          <div className="text-sm text-gray-600 mt-2 text-center">
+                            <div className="flex justify-center gap-4">
+                              <span className="font-medium">
+                                Parte: <span className="text-gray-800">{task.parte || 'Non specificata'}</span>
+                              </span>
+                              <span className="text-gray-400">•</span>
+                              <span className="font-medium">
+                                Controparte: <span className="text-gray-800">{task.controparte || 'Non specificata'}</span>
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-sm text-gray-500 mt-1">
                             Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
                           </div>
-                          {(task.parte || task.controparte) && (
-                            <div className="text-sm text-gray-600 mt-1">
-                              {task.parte && <span>Parte: {task.parte}</span>}
-                              {task.parte && task.controparte && <span> • </span>}
-                              {task.controparte && <span>Controparte: {task.controparte}</span>}
-                            </div>
-                          )}
                           {task.note && (
                             <div className="text-sm text-gray-600 mt-1 italic">
                               Note: {task.note}
@@ -778,16 +782,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                               </span>
                             )}
                           </div>
+                          <div className="text-xs text-gray-600 mt-1 text-center">
+                            <div className="flex justify-center gap-3">
+                              <span className="font-medium">
+                                Parte: <span className="text-gray-800">{task.parte || 'Non specificata'}</span>
+                              </span>
+                              <span className="text-gray-400">•</span>
+                              <span className="font-medium">
+                                Controparte: <span className="text-gray-800">{task.controparte || 'Non specificata'}</span>
+                              </span>
+                            </div>
+                          </div>
                           <div className="text-xs text-gray-500 mt-1">
                             Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
                           </div>
-                          {(task.parte || task.controparte) && (
-                            <div className="text-xs text-gray-600 mt-1">
-                              {task.parte && <span>Parte: {task.parte}</span>}
-                              {task.parte && task.controparte && <span> • </span>}
-                              {task.controparte && <span>Controparte: {task.controparte}</span>}
-                            </div>
-                          )}
                           {task.note && (
                             <div className="text-xs text-gray-600 mt-1 italic">
                               Note: {task.note}
@@ -869,7 +877,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.5
+                LexAgenda Ver 1.4.6
               </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
@@ -888,7 +896,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="flex justify-between items-center">
               {/* Versione app - sinistra */}
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.5
+                LexAgenda Ver 1.4.6
               </div>
               
               {/* Abruzzo.AI branding - centro */}

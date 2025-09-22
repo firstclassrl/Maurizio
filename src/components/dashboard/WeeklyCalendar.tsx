@@ -169,6 +169,13 @@ export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick }: Weekly
                         >
                           <div className="font-medium text-sm mb-1">{task.pratica}</div>
                           <div className="text-xs opacity-80 mb-1">{task.attivita}</div>
+                          <div className="text-xs text-gray-600 mb-1 text-center">
+                            <div className="flex justify-center gap-2">
+                              <span>Parte: {task.parte || 'N/A'}</span>
+                              <span>•</span>
+                              <span>Controparte: {task.controparte || 'N/A'}</span>
+                            </div>
+                          </div>
                           {isUrgentTask(task.priorita) && (
                             <div className="text-xs text-red-600 font-bold">URGENTE</div>
                           )}
@@ -214,6 +221,9 @@ export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick }: Weekly
                       >
                         <div className="font-medium truncate">{task.pratica}</div>
                         <div className="text-xs opacity-80 truncate">{task.attivita}</div>
+                        <div className="text-xs text-gray-600 truncate text-center">
+                          Parte: {task.parte || 'N/A'} • Controparte: {task.controparte || 'N/A'}
+                        </div>
                         {isUrgentTask(task.priorita) && (
                           <div className="text-xs text-red-600 font-bold mt-1">URGENTE</div>
                         )}
