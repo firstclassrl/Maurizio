@@ -213,10 +213,13 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 // Funzioni per comunicare con il server
 async function sendSubscriptionToServer(subscription: PushSubscription): Promise<void> {
   try {
-    const response = await fetch('/api/subscribe', {
+    // Usa l'endpoint Supabase Edge Function
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const response = await fetch(`${supabaseUrl}/functions/v1/subscribe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${(await import('../lib/supabase')).supabase.auth.getSession().then(s => s.data.session?.access_token)}`
       },
       body: JSON.stringify({
         subscription: subscription.toJSON(),
@@ -238,10 +241,13 @@ async function sendSubscriptionToServer(subscription: PushSubscription): Promise
 
 async function removeSubscriptionFromServer(subscription: PushSubscription): Promise<void> {
   try {
-    const response = await fetch('/api/unsubscribe', {
+    // Usa l'endpoint Supabase Edge Function
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const response = await fetch(`${supabaseUrl}/functions/v1/unsubscribe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${(await import('../lib/supabase')).supabase.auth.getSession().then(s => s.data.session?.access_token)}`
       },
       body: JSON.stringify({
         subscription: subscription.toJSON()
