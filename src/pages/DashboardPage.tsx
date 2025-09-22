@@ -17,7 +17,7 @@ import { AudioNotificationSettings } from '../components/notifications/AudioNoti
 import { WeekCounter } from '../components/notifications/WeekCounter'
 import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
-import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, AlertTriangle } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -33,6 +33,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const [userProfile, setUserProfile] = useState<{full_name: string} | null>(null)
+  const [isUrgentMode, setIsUrgentMode] = useState(false)
 
   // Form fields for new task
   const [newPratica, setNewPratica] = useState('')
@@ -110,13 +111,30 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
     }
   }
 
+  // Get priority color and text for tasks
+  const getPriorityInfo = (priorita: number) => {
+    switch (priorita) {
+      case 1:
+        return { text: 'Bassa', color: 'bg-green-100 text-green-800 border-green-200' }
+      case 5:
+        return { text: 'Media', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' }
+      case 9:
+        return { text: 'Alta', color: 'bg-orange-100 text-orange-800 border-orange-200' }
+      case 10:
+        return { text: 'Urgente', color: 'bg-red-100 text-red-800 border-red-200' }
+      default:
+        return { text: 'Media', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' }
+    }
+  }
+
   const handleTaskSave = async (taskData: Partial<Task>) => {
     try {
       // Map categoria to attivita for database compatibility
       const mappedData = {
         ...taskData,
         attivita: taskData.categoria || taskData.attivita,
-        categoria: undefined // Remove categoria field
+        categoria: undefined, // Remove categoria field
+        priorita: isUrgentMode ? 10 : (taskData.priorita || 5) // Set priority based on mode
       }
 
       if (selectedTask) {
@@ -145,6 +163,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       await loadTasks()
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
+      setIsUrgentMode(false)
     } catch (error) {
       console.error('Error saving task:', error)
     }
@@ -175,7 +194,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           attivita: newCategoria.trim(),
           scadenza: newScadenza,
           stato: 'todo',
-          priorita: 5
+          priorita: isUrgentMode ? 10 : 5 // Priorità alta per urgenti, media per normali
         })
 
       if (error) throw error
@@ -185,12 +204,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       setNewCategoria('')
       setNewScadenza('')
       setNewOra('')
+      setIsUrgentMode(false)
       await loadTasks()
-      showSuccess('Pratica aggiunta', 'La pratica è stata aggiunta con successo')
+      showSuccess('Pratica aggiunta', `La pratica ${isUrgentMode ? 'urgente' : ''} è stata aggiunta con successo`)
     } catch (error) {
       console.error('Error adding task:', error)
       showError('Errore', 'Errore durante l\'aggiunta della pratica')
     }
+  }
+
+  const handleUrgentAdd = () => {
+    setIsUrgentMode(true)
+    setIsTaskDialogOpen(true)
   }
 
 
@@ -413,10 +438,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                 />
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 flex gap-2">
               <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="h-4 w-4 mr-2" />
                 Aggiungi Pratica
+              </Button>
+              <Button onClick={handleUrgentAdd} className="bg-red-600 hover:bg-red-700">
+                <AlertTriangle className="h-4 w-4 mr-2" />
+                Pratica Urgente
               </Button>
             </div>
           </CardContent>
@@ -446,6 +475,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                       <div className="flex items-center gap-2 mt-1">
                         <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
                           {task.attivita}
+                        </span>
+                        <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityInfo(task.priorita).color}`}>
+                          {getPriorityInfo(task.priorita).text}
                         </span>
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
@@ -487,9 +519,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
       <TaskDialog
         open={isTaskDialogOpen}
-        onOpenChange={setIsTaskDialogOpen}
+        onOpenChange={(open) => {
+          setIsTaskDialogOpen(open)
+          if (!open) {
+            setIsUrgentMode(false)
+            setSelectedTask(null)
+          }
+        }}
         task={selectedTask}
         onSave={handleTaskSave}
+        isUrgentMode={isUrgentMode}
       />
       
       <MessageModal

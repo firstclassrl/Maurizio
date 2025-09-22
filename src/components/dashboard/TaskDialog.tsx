@@ -8,22 +8,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { MessageModal } from '../ui/MessageModal'
 import { useMessage } from '../../hooks/useMessage'
 import { Task } from '../../lib/calendar-utils'
+import { AlertTriangle } from 'lucide-react'
 
 interface TaskDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   task: Task | null
+  isUrgentMode?: boolean
   onSave: (task: Partial<Task>) => void
 }
 
-export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps) {
+export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onSave }: TaskDialogProps) {
   const { message, showError, hideMessage } = useMessage()
   const [formData, setFormData] = useState({
     pratica: '',
     categoria: '',
     scadenza: '',
     stato: 'todo' as 'todo' | 'done',
-    priorita: 0
+    priorita: 5
   })
 
   useEffect(() => {
@@ -41,10 +43,10 @@ export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps
         categoria: '',
         scadenza: format(new Date(), 'yyyy-MM-dd'),
         stato: 'todo',
-        priorita: 0
+        priorita: isUrgentMode ? 10 : 5
       })
     }
-  }, [task, open])
+  }, [task, open, isUrgentMode])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -73,8 +75,9 @@ export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>
-            {task ? 'Modifica Attività' : 'Nuova Attività'}
+          <DialogTitle className={`flex items-center gap-2 ${isUrgentMode ? 'text-red-600' : ''}`}>
+            {isUrgentMode && <AlertTriangle className="h-5 w-5" />}
+            {task ? 'Modifica Attività' : isUrgentMode ? 'Nuova Pratica Urgente' : 'Nuova Attività'}
           </DialogTitle>
         </DialogHeader>
 
@@ -161,17 +164,10 @@ export function TaskDialog({ open, onOpenChange, task, onSave }: TaskDialogProps
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0">Molto bassa</SelectItem>
                 <SelectItem value="1">Bassa</SelectItem>
-                <SelectItem value="2">Bassa</SelectItem>
-                <SelectItem value="3">Bassa</SelectItem>
-                <SelectItem value="4">Bassa</SelectItem>
                 <SelectItem value="5">Media</SelectItem>
-                <SelectItem value="6">Media</SelectItem>
-                <SelectItem value="7">Media</SelectItem>
-                <SelectItem value="8">Alta</SelectItem>
                 <SelectItem value="9">Alta</SelectItem>
-                <SelectItem value="10">Molto alta</SelectItem>
+                <SelectItem value="10">Urgente</SelectItem>
               </SelectContent>
             </Select>
           </div>
