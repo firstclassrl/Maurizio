@@ -5,7 +5,7 @@ interface PartyFilterProps {
   selectedParty: string;
   onPartyChange: (party: string) => void;
   className?: string;
-  tasks: Array<{ parte?: string; controparte?: string }>;
+  tasks: Array<{ parte?: string | null; controparte?: string | null }>;
 }
 
 export const PartyFilter: React.FC<PartyFilterProps> = ({
