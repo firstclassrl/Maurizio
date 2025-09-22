@@ -168,14 +168,12 @@ export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick }: Weekly
                           onClick={() => onTaskClick?.(task)}
                         >
                           <div className="font-medium text-sm mb-1">{task.pratica}</div>
-                          <div className="text-xs opacity-80 mb-1">{task.attivita}</div>
-                          <div className="text-xs text-gray-600 mb-1 text-center">
-                            <div className="flex justify-center gap-2">
-                              <span>Parte: <span className="text-gray-900 font-bold text-sm">{task.parte || 'N/A'}</span></span>
-                              <span>•</span>
-                              <span>Controparte: <span className="text-gray-900 font-bold text-sm">{task.controparte || 'N/A'}</span></span>
-                            </div>
+                          <div className="text-xs text-gray-600 mb-1">
+                            <span>Parte: <span className="text-gray-900 font-bold">{task.parte || 'N/A'}</span></span>
+                            <span className="text-gray-400 mx-1">•</span>
+                            <span>Controparte: <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span></span>
                           </div>
+                          <div className="text-xs opacity-80 mb-1">{task.attivita}</div>
                           {isUrgentTask(task.priorita) && (
                             <div className="text-xs text-red-600 font-bold">URGENTE</div>
                           )}
@@ -220,10 +218,10 @@ export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick }: Weekly
                         onClick={() => onTaskClick?.(task)}
                       >
                         <div className="font-medium truncate">{task.pratica}</div>
-                        <div className="text-xs opacity-80 truncate">{task.attivita}</div>
-                        <div className="text-xs text-gray-600 truncate text-center">
+                        <div className="text-xs text-gray-600 truncate">
                           Parte: <span className="text-gray-900 font-bold">{task.parte || 'N/A'}</span> • Controparte: <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span>
                         </div>
+                        <div className="text-xs opacity-80 truncate">{task.attivita}</div>
                         {isUrgentTask(task.priorita) && (
                           <div className="text-xs text-red-600 font-bold mt-1">URGENTE</div>
                         )}

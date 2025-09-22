@@ -707,8 +707,17 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                       // Mobile Layout - Vertical
                       <div className="space-y-3">
                         <div>
-                          <div className="font-medium text-gray-900 text-base">{task.pratica}</div>
-                          <div className="flex flex-wrap gap-2 mt-2">
+                          <div className="font-medium text-gray-900 text-base mb-1">{task.pratica}</div>
+                          <div className="text-sm text-gray-600 mb-2">
+                            <span className="font-medium">
+                              Parte: <span className="text-gray-900 font-bold">{task.parte || 'Non specificata'}</span>
+                            </span>
+                            <span className="text-gray-400 mx-2">•</span>
+                            <span className="font-medium">
+                              Controparte: <span className="text-gray-900 font-bold">{task.controparte || 'Non specificata'}</span>
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
                             <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
                               {task.attivita}
                             </span>
@@ -722,17 +731,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                                 Completato
                               </span>
                             )}
-                          </div>
-                          <div className="text-sm text-gray-600 mt-2 text-center">
-                            <div className="flex justify-center gap-4">
-                              <span className="font-medium">
-                                Parte: <span className="text-gray-900 font-bold text-base">{task.parte || 'Non specificata'}</span>
-                              </span>
-                              <span className="text-gray-400">•</span>
-                              <span className="font-medium">
-                                Controparte: <span className="text-gray-900 font-bold text-base">{task.controparte || 'Non specificata'}</span>
-                              </span>
-                            </div>
                           </div>
                           <div className="text-sm text-gray-500 mt-1">
                             Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
@@ -769,8 +767,17 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                       // Desktop Layout - Horizontal
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <div className="font-medium text-gray-900">{task.pratica}</div>
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="font-medium text-gray-900 mb-1">{task.pratica}</div>
+                          <div className="text-xs text-gray-600 mb-1">
+                            <span className="font-medium">
+                              Parte: <span className="text-gray-900 font-bold">{task.parte || 'Non specificata'}</span>
+                            </span>
+                            <span className="text-gray-400 mx-1">•</span>
+                            <span className="font-medium">
+                              Controparte: <span className="text-gray-900 font-bold">{task.controparte || 'Non specificata'}</span>
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
                             <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
                               {task.attivita}
                             </span>
@@ -779,17 +786,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                                 URGENTE
                               </span>
                             )}
-                          </div>
-                          <div className="text-xs text-gray-600 mt-1 text-center">
-                            <div className="flex justify-center gap-3">
-                              <span className="font-medium">
-                                Parte: <span className="text-gray-900 font-bold text-sm">{task.parte || 'Non specificata'}</span>
-                              </span>
-                              <span className="text-gray-400">•</span>
-                              <span className="font-medium">
-                                Controparte: <span className="text-gray-900 font-bold text-sm">{task.controparte || 'Non specificata'}</span>
-                              </span>
-                            </div>
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
                             Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
@@ -875,7 +871,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.9
+                LexAgenda Ver 1.5.0
               </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
@@ -894,7 +890,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="flex justify-between items-center">
               {/* Versione app - sinistra */}
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.4.9
+                LexAgenda Ver 1.5.0
               </div>
               
               {/* Abruzzo.AI branding - centro */}
