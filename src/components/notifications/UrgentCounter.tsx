@@ -16,17 +16,17 @@ export function UrgentCounter({ userId }: UrgentCounterProps) {
       setLoading(true)
       const today = new Date().toISOString().split('T')[0]
 
-      // Get overdue tasks
-      const { data: overdueTasks, error: overdueError } = await supabase
+      // Get urgent tasks (priority 10) OR overdue tasks
+      const { data: urgentTasks, error: urgentError } = await supabase
         .from('tasks')
         .select('id')
         .eq('user_id', userId)
-        .lt('scadenza', today)
         .eq('stato', 'todo')
+        .or(`priorita.eq.10,scadenza.lt.${today}`)
 
-      if (overdueError) throw overdueError
+      if (urgentError) throw urgentError
 
-      setUrgentCount(overdueTasks?.length || 0)
+      setUrgentCount(urgentTasks?.length || 0)
     } catch (error) {
       console.error('Error loading urgent count:', error)
     } finally {
@@ -72,9 +72,7 @@ export function UrgentCounter({ userId }: UrgentCounterProps) {
     )
   }
 
-  if (urgentCount === 0) {
-    return null
-  }
+  // Always show the counter, even when count is 0
 
   return (
     <Card className="border-red-200 bg-red-50">

@@ -73,9 +73,7 @@ export function WeekCounter({ userId }: WeekCounterProps) {
     )
   }
 
-  if (thisWeekCount === 0) {
-    return null
-  }
+  // Always show the counter, even when count is 0
 
   return (
     <Card className="border-blue-200 bg-blue-50">

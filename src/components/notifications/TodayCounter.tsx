@@ -71,9 +71,7 @@ export function TodayCounter({ userId }: TodayCounterProps) {
     )
   }
 
-  if (todayCount === 0) {
-    return null
-  }
+  // Always show the counter, even when count is 0
 
   return (
     <Card className="border-orange-200 bg-orange-50">

@@ -34,6 +34,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const [userProfile, setUserProfile] = useState<{full_name: string} | null>(null)
   const [isUrgentMode, setIsUrgentMode] = useState(false)
+  const [refreshCounters, setRefreshCounters] = useState(0)
 
   // Form fields for new task
   const [newPratica, setNewPratica] = useState('')
@@ -164,6 +165,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
       setIsUrgentMode(false)
+      setRefreshCounters(prev => prev + 1) // Force counter refresh
     } catch (error) {
       console.error('Error saving task:', error)
     }
@@ -206,6 +208,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       setNewOra('')
       setIsUrgentMode(false)
       await loadTasks()
+      setRefreshCounters(prev => prev + 1) // Force counter refresh
       showSuccess('Pratica aggiunta', `La pratica ${isUrgentMode ? 'urgente' : ''} è stata aggiunta con successo`)
     } catch (error) {
       console.error('Error adding task:', error)
@@ -237,6 +240,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       if (error) throw error
 
       await loadTasks()
+      setRefreshCounters(prev => prev + 1) // Force counter refresh
       showSuccess('Attività eliminata', 'L\'attività è stata eliminata con successo')
     } catch (error) {
       console.error('Error deleting task:', error)
@@ -330,9 +334,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           <div className="ml-4 flex flex-col gap-2">
             {/* Today, Urgent and Week counters in horizontal layout */}
             <div className="flex gap-2">
-              <TodayCounter userId={user.id} />
-              <UrgentCounter userId={user.id} />
-              <WeekCounter userId={user.id} />
+              <TodayCounter userId={user.id} key={`today-${refreshCounters}`} />
+              <UrgentCounter userId={user.id} key={`urgent-${refreshCounters}`} />
+              <WeekCounter userId={user.id} key={`week-${refreshCounters}`} />
             </div>
           </div>
         </div>
@@ -556,7 +560,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           <div className="flex justify-between items-center">
             {/* Versione app - sinistra */}
             <div className="text-white text-xs opacity-75">
-              LexAgenda Ver 1.1
+              LexAgenda Ver 1.2
             </div>
             
             {/* Abruzzo.AI branding - centro */}
