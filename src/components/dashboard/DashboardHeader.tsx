@@ -74,66 +74,69 @@ export function DashboardHeader({
           </div>
 
           {/* Controls */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            {/* Date Navigation */}
-            <Card>
-              <CardContent className="p-2">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handlePrevious}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  
-                  <div className="min-w-[140px] text-center">
-                    <span className="text-sm font-medium">
-                      {format(currentDate, 'MMMM yyyy', { locale: it })}
-                    </span>
+          <div className="flex flex-col gap-3">
+            {/* Mobile Layout - Stacked */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              {/* Date Navigation */}
+              <Card className="flex-1 sm:flex-none">
+                <CardContent className="p-2">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handlePrevious}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    
+                    <div className="min-w-[120px] text-center flex-1">
+                      <span className="text-sm font-medium">
+                        {format(currentDate, 'MMMM yyyy', { locale: it })}
+                      </span>
+                    </div>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleNext}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                   </div>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleNext}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* View Mode Toggle */}
-            <div className="flex rounded-lg border">
-              <Button
-                variant={viewMode === 'month' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => onViewModeChange('month')}
-                className="rounded-r-none"
-              >
-                <CalendarIcon className="h-4 w-4 mr-1" />
-                Mese
-              </Button>
-              <Button
-                variant={viewMode === 'week' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => onViewModeChange('week')}
-                className="rounded-l-none"
-              >
-                <List className="h-4 w-4 mr-1" />
-                Settimana
-              </Button>
+              {/* View Mode Toggle */}
+              <div className="flex rounded-lg border">
+                <Button
+                  variant={viewMode === 'month' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => onViewModeChange('month')}
+                  className="rounded-r-none flex-1"
+                >
+                  <CalendarIcon className="h-4 w-4 mr-1" />
+                  Mese
+                </Button>
+                <Button
+                  variant={viewMode === 'week' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => onViewModeChange('week')}
+                  className="rounded-l-none flex-1"
+                >
+                  <List className="h-4 w-4 mr-1" />
+                  Settimana
+                </Button>
+              </div>
             </div>
 
-            {/* Actions */}
+            {/* Actions Row */}
             <div className="flex gap-2">
-              <Button onClick={onNewTask} size="sm">
+              <Button onClick={onNewTask} size="sm" className="flex-1 sm:flex-none">
                 <Plus className="h-4 w-4 mr-1" />
-                Nuova
+                Nuova Attività
               </Button>
               
-              <Button variant="outline" onClick={onLogout} size="sm">
+              <Button variant="outline" onClick={onLogout} size="sm" className="sm:flex-none">
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>
