@@ -61,83 +61,82 @@ export function DashboardHeader({
   return (
     <div className="bg-white border-b border-gray-200 shadow-sm">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="flex flex-col gap-4">
           {/* Logo and Title */}
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Scale className="h-6 w-6 text-primary" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Scale className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Legal Planner</h1>
+                <p className="text-sm text-gray-500">Gestione pratiche e scadenze</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Legal Planner</h1>
-              <p className="text-sm text-gray-500">Gestione pratiche e scadenze</p>
+            
+            {/* Actions - Top Right */}
+            <div className="flex gap-2">
+              <Button onClick={onNewTask} size="sm">
+                <Plus className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Nuova</span>
+              </Button>
+              
+              <Button variant="outline" onClick={onLogout} size="sm">
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
           {/* Controls */}
-          <div className="flex flex-col gap-3">
-            {/* Mobile Layout - Stacked */}
-            <div className="flex flex-col sm:flex-row gap-2">
-              {/* Date Navigation */}
-              <Card className="flex-1 sm:flex-none">
-                <CardContent className="p-2">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handlePrevious}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    
-                    <div className="min-w-[120px] text-center flex-1">
-                      <span className="text-sm font-medium">
-                        {format(currentDate, 'MMMM yyyy', { locale: it })}
-                      </span>
-                    </div>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleNext}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Date Navigation */}
+            <Card className="flex-1">
+              <CardContent className="p-2">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handlePrevious}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  <div className="min-w-[120px] text-center flex-1">
+                    <span className="text-sm font-medium">
+                      {format(currentDate, 'MMMM yyyy', { locale: it })}
+                    </span>
                   </div>
-                </CardContent>
-              </Card>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleNext}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* View Mode Toggle */}
-              <div className="flex rounded-lg border">
-                <Button
-                  variant={viewMode === 'month' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => onViewModeChange('month')}
-                  className="rounded-r-none flex-1"
-                >
-                  <CalendarIcon className="h-4 w-4 mr-1" />
-                  Mese
-                </Button>
-                <Button
-                  variant={viewMode === 'week' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => onViewModeChange('week')}
-                  className="rounded-l-none flex-1"
-                >
-                  <List className="h-4 w-4 mr-1" />
-                  Settimana
-                </Button>
-              </div>
-            </div>
-
-            {/* Actions Row */}
-            <div className="flex gap-2">
-              <Button onClick={onNewTask} size="sm" className="flex-1 sm:flex-none">
-                <Plus className="h-4 w-4 mr-1" />
-                Nuova Attività
+            {/* View Mode Toggle */}
+            <div className="flex rounded-lg border">
+              <Button
+                variant={viewMode === 'month' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onViewModeChange('month')}
+                className="rounded-r-none flex-1"
+              >
+                <CalendarIcon className="h-4 w-4 mr-1" />
+                Mese
               </Button>
-              
-              <Button variant="outline" onClick={onLogout} size="sm" className="sm:flex-none">
-                <LogOut className="h-4 w-4" />
+              <Button
+                variant={viewMode === 'week' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onViewModeChange('week')}
+                className="rounded-l-none flex-1"
+              >
+                <List className="h-4 w-4 mr-1" />
+                Settimana
               </Button>
             </div>
           </div>
