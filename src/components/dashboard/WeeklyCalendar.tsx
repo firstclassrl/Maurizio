@@ -169,20 +169,11 @@ export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick }: Weekly
                         >
                           <div className="font-medium text-sm mb-1">{task.pratica}</div>
                           <div className="text-xs opacity-80 mb-1">{task.attivita}</div>
-                          <div className="mt-2 p-2 bg-gray-50 rounded border">
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                              <div className="text-center">
-                                <div className="text-gray-500 text-xs font-medium mb-1">PARTE</div>
-                                <div className="text-gray-800 font-semibold bg-white px-1 py-1 rounded border text-xs">
-                                  {task.parte || 'N/A'}
-                                </div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-gray-500 text-xs font-medium mb-1">CONTRAPARTE</div>
-                                <div className="text-gray-800 font-semibold bg-white px-1 py-1 rounded border text-xs">
-                                  {task.controparte || 'N/A'}
-                                </div>
-                              </div>
+                          <div className="text-xs text-gray-600 mb-1 text-center">
+                            <div className="flex justify-center gap-2">
+                              <span>Parte: {task.parte || 'N/A'}</span>
+                              <span>•</span>
+                              <span>Controparte: {task.controparte || 'N/A'}</span>
                             </div>
                           </div>
                           {isUrgentTask(task.priorita) && (
@@ -230,21 +221,8 @@ export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick }: Weekly
                       >
                         <div className="font-medium truncate">{task.pratica}</div>
                         <div className="text-xs opacity-80 truncate">{task.attivita}</div>
-                        <div className="mt-1 p-1 bg-gray-50 rounded border">
-                          <div className="grid grid-cols-2 gap-1 text-xs">
-                            <div className="text-center">
-                              <div className="text-gray-500 text-xs font-medium">PARTE</div>
-                              <div className="text-gray-800 font-semibold bg-white px-1 py-0.5 rounded border text-xs truncate">
-                                {task.parte || 'N/A'}
-                              </div>
-                            </div>
-                            <div className="text-center">
-                              <div className="text-gray-500 text-xs font-medium">CONTRAPARTE</div>
-                              <div className="text-gray-800 font-semibold bg-white px-1 py-0.5 rounded border text-xs truncate">
-                                {task.controparte || 'N/A'}
-                              </div>
-                            </div>
-                          </div>
+                        <div className="text-xs text-gray-600 truncate text-center">
+                          Parte: {task.parte || 'N/A'} • Controparte: {task.controparte || 'N/A'}
                         </div>
                         {isUrgentTask(task.priorita) && (
                           <div className="text-xs text-red-600 font-bold mt-1">URGENTE</div>

@@ -179,21 +179,8 @@ export function MonthlyCalendar({ tasks, onBackToDashboard, onTaskClick }: Month
                           onClick={() => onTaskClick?.(task)}
                         >
                           <div className="font-medium truncate text-xs">{task.pratica}</div>
-                          <div className="mt-1 p-1 bg-gray-50 rounded border">
-                            <div className="grid grid-cols-2 gap-1 text-xs">
-                              <div className="text-center">
-                                <div className="text-gray-500 text-xs font-medium">PARTE</div>
-                                <div className="text-gray-800 font-semibold bg-white px-1 py-0.5 rounded border text-xs truncate">
-                                  {task.parte || 'N/A'}
-                                </div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-gray-500 text-xs font-medium">CONTRAPARTE</div>
-                                <div className="text-gray-800 font-semibold bg-white px-1 py-0.5 rounded border text-xs truncate">
-                                  {task.controparte || 'N/A'}
-                                </div>
-                              </div>
-                            </div>
+                          <div className="text-xs text-gray-600 truncate">
+                            {task.parte || 'N/A'} vs {task.controparte || 'N/A'}
                           </div>
                           {isUrgentTask(task.priorita) && (
                             <div className="text-xs text-red-600 font-bold">!</div>
@@ -261,21 +248,8 @@ export function MonthlyCalendar({ tasks, onBackToDashboard, onTaskClick }: Month
                         >
                           <div className="font-medium truncate text-xs">{task.pratica}</div>
                           <div className="text-xs opacity-80 truncate">{task.attivita}</div>
-                          <div className="mt-1 p-1 bg-gray-50 rounded border">
-                            <div className="grid grid-cols-2 gap-1 text-xs">
-                              <div className="text-center">
-                                <div className="text-gray-500 text-xs font-medium">PARTE</div>
-                                <div className="text-gray-800 font-semibold bg-white px-1 py-0.5 rounded border text-xs truncate">
-                                  {task.parte || 'N/A'}
-                                </div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-gray-500 text-xs font-medium">CONTRAPARTE</div>
-                                <div className="text-gray-800 font-semibold bg-white px-1 py-0.5 rounded border text-xs truncate">
-                                  {task.controparte || 'N/A'}
-                                </div>
-                              </div>
-                            </div>
+                          <div className="text-xs text-gray-600 truncate">
+                            {task.parte || 'N/A'} vs {task.controparte || 'N/A'}
                           </div>
                           {isUrgentTask(task.priorita) && (
                             <div className="text-xs text-red-600 font-bold">URGENTE</div>
