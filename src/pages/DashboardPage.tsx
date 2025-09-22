@@ -128,6 +128,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
     }
   }
 
+  // Get row background color based on activity type
+  const getRowBackgroundColor = (attivita: string) => {
+    switch (attivita) {
+      case 'UDIENZA':
+        return 'bg-yellow-50 border-yellow-200'
+      case 'ATTIVITA\' PROCESSUALE':
+        return 'bg-purple-50 border-purple-200'
+      case 'SCADENZA ATTO PROCESSUALE':
+        return 'bg-red-50 border-red-200'
+      default:
+        return 'bg-gray-50 border-gray-200'
+    }
+  }
+
   const handleTaskSave = async (taskData: Partial<Task>) => {
     try {
       // Map categoria to attivita for database compatibility
@@ -473,7 +487,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             ) : (
               <div className="space-y-3">
                 {tasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div key={task.id} className={`flex items-center justify-between p-4 rounded-lg border ${getRowBackgroundColor(task.attivita)}`}>
                     <div className="flex-1">
                       <div className="font-medium text-gray-900">{task.pratica}</div>
                       <div className="flex items-center gap-2 mt-1">
@@ -560,7 +574,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           <div className="flex justify-between items-center">
             {/* Versione app - sinistra */}
             <div className="text-white text-xs opacity-75">
-              LexAgenda Ver 1.2
+              LexAgenda Ver 1.3
             </div>
             
             {/* Abruzzo.AI branding - centro */}
