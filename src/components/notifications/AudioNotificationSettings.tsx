@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Badge } from '../ui/badge'
-import { Volume2, VolumeX, Bell, BellRing, Settings, ToggleLeft, ToggleRight } from 'lucide-react'
+import { Switch } from '../ui/switch'
+import { Volume2, VolumeX, Bell, BellRing, Settings, ToggleLeft, ToggleRight, Smartphone, TestTube, AlertCircle, CheckCircle } from 'lucide-react'
 import { useAudioNotifications } from '../../hooks/useAudioNotifications'
+import { usePushNotifications } from '../../hooks/usePushNotifications'
 
 interface AudioNotificationSettingsProps {
   userId: string
@@ -11,6 +13,8 @@ interface AudioNotificationSettingsProps {
 
 export function AudioNotificationSettings({ userId }: AudioNotificationSettingsProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [testResult, setTestResult] = useState<'idle' | 'success' | 'error'>('idle')
+  
   const { 
     isEnabled, 
     isPlaying, 
@@ -20,6 +24,15 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
     playUrgentNotification, 
     requestPermission 
   } = useAudioNotifications(userId)
+
+  const {
+    isSupported: pushSupported,
+    permission: pushPermission,
+    isSubscribed: pushSubscribed,
+    isLoading: pushLoading,
+    toggleSubscription: togglePushSubscription,
+    sendTestNotification
+  } = usePushNotifications()
 
   // Toggle audio notifications using the hook function
   const handleToggleAudioNotifications = () => {
@@ -50,6 +63,22 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
     playUrgentNotification()
   }
 
+  const handleTogglePushNotifications = async () => {
+    const success = await togglePushSubscription()
+    if (success) {
+      console.log('Stato notifiche push aggiornato')
+    }
+  }
+
+  const handleTestPushNotification = async () => {
+    setTestResult('idle')
+    const success = await sendTestNotification()
+    setTestResult(success ? 'success' : 'error')
+    
+    // Reset del risultato dopo 3 secondi
+    setTimeout(() => setTestResult('idle'), 3000)
+  }
+
   return (
     <div className="relative">
       {/* Settings Button */}
@@ -60,7 +89,7 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
         className="relative p-2 hover:bg-gray-100 text-white"
       >
         <Settings className="h-5 w-5" />
-        {!isEnabled && (
+        {(!isEnabled || (pushSupported && !pushSubscribed)) && (
           <Badge className="absolute -top-1 -right-1 h-3 w-3 p-0 bg-red-500">
             !
           </Badge>
@@ -73,7 +102,7 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
           <Card className="border-0 shadow-none">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-gray-900">
-                <Bell className="h-5 w-5" />
+                <Settings className="h-5 w-5" />
                 Impostazioni Notifiche
               </CardTitle>
             </CardHeader>
@@ -172,6 +201,107 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
                   </div>
                 )}
 
+                {/* Push Notifications Section */}
+                {pushSupported && (
+                  <>
+                    <div className="border-t pt-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium text-gray-900">
+                            Push Notifications
+                          </span>
+                        </div>
+                        <Badge className={pushSubscribed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                          {pushSubscribed ? 'Attive' : 'Disattive'}
+                        </Badge>
+                      </div>
+
+                      {/* Push Toggle */}
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-3">
+                        <div>
+                          <p className="font-medium text-sm">Notifiche Push</p>
+                          <p className="text-xs text-gray-600">
+                            Ricevi notifiche anche quando l'app è chiusa
+                          </p>
+                        </div>
+                        <Switch
+                          checked={pushSubscribed}
+                          onCheckedChange={handleTogglePushNotifications}
+                          disabled={pushPermission === 'denied' || pushLoading}
+                        />
+                      </div>
+
+                      {/* Push Status Messages */}
+                      {pushPermission === 'denied' && (
+                        <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg mb-3">
+                          <AlertCircle className="h-4 w-4 text-red-600" />
+                          <div>
+                            <p className="font-medium text-red-900 text-sm">Notifiche Disabilitate</p>
+                            <p className="text-xs text-red-800">
+                              Abilita le notifiche nelle impostazioni del browser
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {pushPermission === 'default' && !pushSubscribed && (
+                        <div className="flex items-center gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg mb-3">
+                          <Bell className="h-4 w-4 text-yellow-600" />
+                          <div>
+                            <p className="font-medium text-yellow-900 text-sm">Pronto per l'Attivazione</p>
+                            <p className="text-xs text-yellow-800">
+                              Clicca su "Abilita" per ricevere notifiche push
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {pushSubscribed && (
+                        <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg mb-3">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <div>
+                            <p className="font-medium text-green-900 text-sm">Notifiche Attive</p>
+                            <p className="text-xs text-green-800">
+                              Riceverai notifiche per le scadenze importanti
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Test Push Notification */}
+                      {pushSubscribed && (
+                        <div className="space-y-2">
+                          <p className="text-xs text-gray-600">Test notifica:</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleTestPushNotification}
+                            disabled={pushLoading}
+                            className="w-full flex items-center gap-2"
+                          >
+                            <TestTube className="h-4 w-4" />
+                            Invia Notifica di Test
+                          </Button>
+
+                          {/* Test Result */}
+                          {testResult === 'success' && (
+                            <div className="p-2 bg-green-50 border border-green-200 rounded text-xs text-green-800">
+                              ✅ Notifica di test inviata con successo!
+                            </div>
+                          )}
+
+                          {testResult === 'error' && (
+                            <div className="p-2 bg-red-50 border border-red-200 rounded text-xs text-red-800">
+                              ❌ Errore nell'invio della notifica di test
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
                 {/* Info */}
                 <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
                   <p className="font-medium mb-1">Come funziona:</p>
@@ -179,6 +309,7 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
                     <li>• Suono normale: 1 giorno prima della scadenza</li>
                     <li>• Suono urgente: scadenze scadute</li>
                     <li>• Notifiche browser: scadenze imminenti</li>
+                    <li>• Push notifications: anche quando l'app è chiusa</li>
                   </ul>
                 </div>
               </div>

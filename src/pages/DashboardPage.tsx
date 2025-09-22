@@ -18,7 +18,6 @@ import { AudioNotificationSettings } from '../components/notifications/AudioNoti
 import { WeekCounter } from '../components/notifications/WeekCounter'
 import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
-import { PushNotificationSettings } from '../components/notifications/PushNotificationSettings'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
 
@@ -695,13 +694,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           </CardContent>
         </Card>
 
-        {/* Push Notifications Settings */}
-        <Card className="mb-6">
-          <CardContent className={isMobile ? "p-4" : "p-6"}>
-            <PushNotificationSettings />
-          </CardContent>
-        </Card>
-
         {/* All Tasks Section */}
         <Card className="bg-purple-50 border-purple-200">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
@@ -899,7 +891,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.7.0
+                LexAgenda Ver 1.8.0
               </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
@@ -918,7 +910,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <div className="flex justify-between items-center">
               {/* Versione app - sinistra */}
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.7.0
+                LexAgenda Ver 1.8.0
               </div>
               
               {/* Abruzzo.AI branding - centro */}
