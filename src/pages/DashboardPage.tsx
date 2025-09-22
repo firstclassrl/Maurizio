@@ -523,7 +523,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             {/* Abruzzo.AI branding - centro */}
             <div className="flex flex-col items-center gap-2">
               <div className="flex items-center gap-2 text-white text-sm">
-                <span>Created by</span>
+                <span>Created by Abruzzo.AI</span>
                 <img 
                   src="/Marchio AbruzzoAI.png" 
                   alt="Abruzzo.AI" 
