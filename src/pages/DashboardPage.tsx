@@ -43,6 +43,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
   const [newCategoria, setNewCategoria] = useState('')
   const [newScadenza, setNewScadenza] = useState('')
   const [newOra, setNewOra] = useState('')
+  const [newNote, setNewNote] = useState('')
+  const [newParte, setNewParte] = useState('')
+  const [newControparte, setNewControparte] = useState('')
 
   useEffect(() => {
     loadTasks()
@@ -201,7 +204,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           attivita: newCategoria.trim(),
           scadenza: newScadenza,
           stato: 'todo',
-          priorita: isUrgentMode ? 10 : 5 // Priorità alta per urgenti, media per normali
+          priorita: isUrgentMode ? 10 : 5, // Priorità alta per urgenti, media per normali
+          note: newNote.trim() || null,
+          parte: newParte.trim() || null,
+          controparte: newControparte.trim() || null
         })
 
       if (error) throw error
@@ -211,6 +217,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       setNewCategoria('')
       setNewScadenza('')
       setNewOra('')
+      setNewNote('')
+      setNewParte('')
+      setNewControparte('')
       setIsUrgentMode(false)
       await loadTasks()
       setRefreshCounters(prev => prev + 1) // Force counter refresh
@@ -483,6 +492,39 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
+                    <Label htmlFor="parte">Parte</Label>
+                    <Input
+                      id="parte"
+                      value={newParte}
+                      onChange={(e) => setNewParte(e.target.value)}
+                      placeholder="es. Mario Rossi"
+                      className="text-base"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="controparte">Controparte</Label>
+                    <Input
+                      id="controparte"
+                      value={newControparte}
+                      onChange={(e) => setNewControparte(e.target.value)}
+                      placeholder="es. Azienda XYZ"
+                      className="text-base"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="note">Note</Label>
+                  <textarea
+                    id="note"
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    placeholder="Note aggiuntive sulla pratica..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-base"
+                    rows={2}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
                     <Label htmlFor="scadenza">Scadenza</Label>
                     <Input
                       id="scadenza"
@@ -520,78 +562,112 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                 </div>
               </div>
             ) : (
-              // Desktop Layout - Single Row
-              <div className="flex items-end gap-4">
-                <div className="flex-1">
-                  <Label htmlFor="pratica">Pratica</Label>
-                  <Input
-                    id="pratica"
-                    value={newPratica}
-                    onChange={(e) => setNewPratica(e.target.value)}
-                    placeholder="Nome della pratica"
-                  />
-                </div>
-                <div className="w-48">
-                  <Label htmlFor="categoria">Categoria Attività</Label>
-                  <Select value={newCategoria} onValueChange={setNewCategoria}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleziona categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="SCADENZA ATTO PROCESSUALE">
-                        <span className="flex items-center gap-2">
-                          <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-                          SCADENZA ATTO PROCESSUALE
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="UDIENZA">
-                        <span className="flex items-center gap-2">
-                          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-                          UDIENZA
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="ATTIVITA' PROCESSUALE">
-                        <span className="flex items-center gap-2">
-                          <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
-                          ATTIVITA' PROCESSUALE
-                        </span>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="w-32">
-                  <Label htmlFor="scadenza">Scadenza</Label>
-                  <Input
-                    id="scadenza"
-                    type="date"
-                    value={newScadenza}
-                    onChange={(e) => setNewScadenza(e.target.value)}
-                  />
-                </div>
-                <div className="w-32">
-                  <Label htmlFor="ora">Ora (opzionale)</Label>
-                  <Input
-                    id="ora"
-                    type="time"
-                    value={newOra}
-                    onChange={(e) => setNewOra(e.target.value)}
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isUrgentMode}
-                      onChange={(e) => setIsUrgentMode(e.target.checked)}
-                      className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500"
+              // Desktop Layout - Two Rows
+              <div className="space-y-4">
+                {/* First Row */}
+                <div className="flex items-end gap-4">
+                  <div className="flex-1">
+                    <Label htmlFor="pratica">Pratica</Label>
+                    <Input
+                      id="pratica"
+                      value={newPratica}
+                      onChange={(e) => setNewPratica(e.target.value)}
+                      placeholder="Nome della pratica"
                     />
-                    <span className="text-red-600 font-medium">URGENTE</span>
-                  </label>
+                  </div>
+                  <div className="w-48">
+                    <Label htmlFor="categoria">Categoria Attività</Label>
+                    <Select value={newCategoria} onValueChange={setNewCategoria}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleziona categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="SCADENZA ATTO PROCESSUALE">
+                          <span className="flex items-center gap-2">
+                            <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                            SCADENZA ATTO PROCESSUALE
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="UDIENZA">
+                          <span className="flex items-center gap-2">
+                            <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                            UDIENZA
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="ATTIVITA' PROCESSUALE">
+                          <span className="flex items-center gap-2">
+                            <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                            ATTIVITA' PROCESSUALE
+                          </span>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-32">
+                    <Label htmlFor="scadenza">Scadenza</Label>
+                    <Input
+                      id="scadenza"
+                      type="date"
+                      value={newScadenza}
+                      onChange={(e) => setNewScadenza(e.target.value)}
+                    />
+                  </div>
+                  <div className="w-32">
+                    <Label htmlFor="ora">Ora (opzionale)</Label>
+                    <Input
+                      id="ora"
+                      type="time"
+                      value={newOra}
+                      onChange={(e) => setNewOra(e.target.value)}
+                    />
+                  </div>
                 </div>
-                <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Aggiungi Pratica
-                </Button>
+                
+                {/* Second Row */}
+                <div className="flex items-end gap-4">
+                  <div className="w-48">
+                    <Label htmlFor="parte">Parte</Label>
+                    <Input
+                      id="parte"
+                      value={newParte}
+                      onChange={(e) => setNewParte(e.target.value)}
+                      placeholder="es. Mario Rossi"
+                    />
+                  </div>
+                  <div className="w-48">
+                    <Label htmlFor="controparte">Controparte</Label>
+                    <Input
+                      id="controparte"
+                      value={newControparte}
+                      onChange={(e) => setNewControparte(e.target.value)}
+                      placeholder="es. Azienda XYZ"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Label htmlFor="note">Note</Label>
+                    <Input
+                      id="note"
+                      value={newNote}
+                      onChange={(e) => setNewNote(e.target.value)}
+                      placeholder="Note aggiuntive sulla pratica..."
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={isUrgentMode}
+                        onChange={(e) => setIsUrgentMode(e.target.checked)}
+                        className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500"
+                      />
+                      <span className="text-red-600 font-medium">URGENTE</span>
+                    </label>
+                  </div>
+                  <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Aggiungi Pratica
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
@@ -639,6 +715,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                           <div className="text-sm text-gray-500 mt-2">
                             Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
                           </div>
+                          {(task.parte || task.controparte) && (
+                            <div className="text-sm text-gray-600 mt-1">
+                              {task.parte && <span>Parte: {task.parte}</span>}
+                              {task.parte && task.controparte && <span> • </span>}
+                              {task.controparte && <span>Controparte: {task.controparte}</span>}
+                            </div>
+                          )}
+                          {task.note && (
+                            <div className="text-sm text-gray-600 mt-1 italic">
+                              Note: {task.note}
+                            </div>
+                          )}
                         </div>
                         <div className="flex gap-2">
                           <Button
@@ -680,6 +768,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                           <div className="text-xs text-gray-500 mt-1">
                             Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
                           </div>
+                          {(task.parte || task.controparte) && (
+                            <div className="text-xs text-gray-600 mt-1">
+                              {task.parte && <span>Parte: {task.parte}</span>}
+                              {task.parte && task.controparte && <span> • </span>}
+                              {task.controparte && <span>Controparte: {task.controparte}</span>}
+                            </div>
+                          )}
+                          {task.note && (
+                            <div className="text-xs text-gray-600 mt-1 italic">
+                              Note: {task.note}
+                            </div>
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           {task.stato === 'done' && (
@@ -755,7 +855,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           <div className="flex justify-between items-center">
             {/* Versione app - sinistra */}
             <div className="text-white text-xs opacity-75">
-              LexAgenda Ver 1.4.1
+              LexAgenda Ver 1.4.2
             </div>
             
             {/* Abruzzo.AI branding - centro */}

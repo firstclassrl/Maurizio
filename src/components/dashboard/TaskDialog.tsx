@@ -27,7 +27,10 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     categoria: '',
     scadenza: '',
     stato: 'todo' as 'todo' | 'done',
-    priorita: 5
+    priorita: 5,
+    note: '',
+    parte: '',
+    controparte: ''
   })
 
   useEffect(() => {
@@ -37,7 +40,10 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         categoria: task.attivita,
         scadenza: task.scadenza,
         stato: task.stato,
-        priorita: task.priorita
+        priorita: task.priorita,
+        note: task.note || '',
+        parte: task.parte || '',
+        controparte: task.controparte || ''
       })
     } else {
       setFormData({
@@ -45,7 +51,10 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         categoria: '',
         scadenza: format(new Date(), 'yyyy-MM-dd'),
         stato: 'todo',
-        priorita: isUrgentMode ? 10 : 5
+        priorita: isUrgentMode ? 10 : 5,
+        note: '',
+        parte: '',
+        controparte: ''
       })
     }
   }, [task, open, isUrgentMode])
@@ -114,18 +123,53 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                 </SelectItem>
                 <SelectItem value="UDIENZA">
                   <span className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-amber-500 rounded-full"></span>
+                    <span className="w-3 h-3 bg-green-500 rounded-full"></span>
                     UDIENZA
                   </span>
                 </SelectItem>
                 <SelectItem value="ATTIVITA' PROCESSUALE">
                   <span className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
+                    <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
                     ATTIVITA' PROCESSUALE
                   </span>
                 </SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="parte">Parte</Label>
+              <Input
+                id="parte"
+                placeholder="es. Mario Rossi"
+                value={formData.parte}
+                onChange={(e) => handleChange('parte', e.target.value)}
+                className={isMobile ? "text-base" : ""}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="controparte">Controparte</Label>
+              <Input
+                id="controparte"
+                placeholder="es. Azienda XYZ"
+                value={formData.controparte}
+                onChange={(e) => handleChange('controparte', e.target.value)}
+                className={isMobile ? "text-base" : ""}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="note">Note</Label>
+            <textarea
+              id="note"
+              placeholder="Note aggiuntive sulla pratica..."
+              value={formData.note}
+              onChange={(e) => handleChange('note', e.target.value)}
+              className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${isMobile ? "text-base" : ""}`}
+              rows={3}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
