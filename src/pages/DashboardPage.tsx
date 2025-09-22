@@ -819,19 +819,24 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                         </div>
                       </div>
                     ) : (
-                      // Desktop Layout - Horizontal
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="font-medium text-gray-900 mb-1">{task.pratica}</div>
-                          <div className="text-xs text-gray-600 mb-1">
+                      // Desktop Layout - Two Rows
+                      <div className="space-y-3">
+                        {/* Prima riga: Pratica a sinistra - Parte e controparte al centro */}
+                        <div className="flex justify-between items-center">
+                          <div className="font-medium text-gray-900">{task.pratica}</div>
+                          <div className="text-sm text-gray-600 text-center">
                             <span className="font-medium">
                               Parte: <span className="text-gray-900 font-bold">{task.parte || 'Non specificata'}</span>
                             </span>
-                            <span className="text-gray-400 mx-1">•</span>
+                            <span className="text-gray-400 mx-2">•</span>
                             <span className="font-medium">
                               Controparte: <span className="text-gray-900 font-bold">{task.controparte || 'Non specificata'}</span>
                             </span>
                           </div>
+                        </div>
+                        
+                        {/* Seconda riga: Categoria attività - Scadenza al centro */}
+                        <div className="flex justify-between items-center">
                           <div className="flex items-center gap-2">
                             <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
                               {task.attivita}
@@ -842,42 +847,44 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                               </span>
                             )}
                           </div>
-                          <div className="text-center mt-2">
-                            <div className="text-xs font-bold text-gray-700">
-                        Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
-                      </div>
+                          <div className="text-sm font-bold text-gray-700">
+                            Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
                           </div>
-                          {task.note && (
-                            <div className="text-xs text-gray-600 mt-1 italic">
-                              Note: {task.note}
-                            </div>
+                        </div>
+                        
+                        {/* Note (se presenti) */}
+                        {task.note && (
+                          <div className="text-xs text-gray-600 mt-1 italic">
+                            Note: {task.note}
+                          </div>
+                        )}
+                        
+                        {/* Pulsanti desktop */}
+                        <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+                          {task.stato === 'done' && (
+                            <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                              Completato
+                            </span>
                           )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {task.stato === 'done' && (
-                        <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                          Completato
-                        </span>
-                      )}
-                      <Button
-                        onClick={() => {
-                          setSelectedTask(task)
-                          setIsTaskDialogOpen(true)
-                        }}
-                        variant="outline"
-                        size="sm"
-                      >
-                        Modifica
-                      </Button>
-                      <Button
-                        onClick={() => handleDeleteTask(task)}
-                        variant="outline"
-                        size="sm"
-                        className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                          <Button
+                            onClick={() => {
+                              setSelectedTask(task)
+                              setIsTaskDialogOpen(true)
+                            }}
+                            variant="outline"
+                            size="sm"
+                          >
+                            Modifica
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteTask(task)}
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>
