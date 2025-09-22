@@ -752,8 +752,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                               </span>
                             )}
                           </div>
-                          <div className="text-sm text-gray-500 mt-1">
-                            Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                          <div className="text-center mt-2">
+                            <div className="text-sm font-bold text-gray-700">
+                              Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                            </div>
                           </div>
                           {task.note && (
                             <div className="text-sm text-gray-600 mt-1 italic">
@@ -807,8 +809,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                          <div className="text-center mt-2">
+                            <div className="text-xs font-bold text-gray-700">
+                              Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                            </div>
                           </div>
                           {task.note && (
                             <div className="text-xs text-gray-600 mt-1 italic">
