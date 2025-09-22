@@ -12,6 +12,7 @@ import { Logo } from '../components/ui/Logo'
 import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
+import { useMobile } from '../hooks/useMobile'
 import { NotificationCenter } from '../components/notifications/NotificationCenter'
 import { AudioNotificationSettings } from '../components/notifications/AudioNotificationSettings'
 import { WeekCounter } from '../components/notifications/WeekCounter'
@@ -27,6 +28,7 @@ interface DashboardPageProps {
 
 export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: DashboardPageProps) {
   const { message, showError, showSuccess, hideMessage } = useMessage()
+  const isMobile = useMobile()
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
@@ -308,52 +310,106 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-slate-900 shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <Logo size={32} className="text-blue-300" />
-            <h1 className="text-2xl font-bold text-white">LexAgenda</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0" size="sm">
-              <Calendar className="h-4 w-4 mr-2" />
-              SETTIMANA
-            </Button>
-            <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0" size="sm">
-              <CalendarDays className="h-4 w-4 mr-2" />
-              MESE
-            </Button>
-            <NotificationCenter userId={user.id} />
-            <AudioNotificationSettings userId={user.id} />
-            <Button onClick={handleLogout} variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
-          </div>
+        <div className="container mx-auto px-4 py-4">
+          {isMobile ? (
+            // Mobile Header Layout
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <Logo size={28} className="text-blue-300" />
+                  <h1 className="text-xl font-bold text-white">LexAgenda</h1>
+                </div>
+                <div className="flex items-center gap-2">
+                  <NotificationCenter userId={user.id} />
+                  <AudioNotificationSettings userId={user.id} />
+                  <Button onClick={handleLogout} variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0 flex-1" size="sm">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  SETTIMANA
+                </Button>
+                <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0 flex-1" size="sm">
+                  <CalendarDays className="h-4 w-4 mr-2" />
+                  MESE
+                </Button>
+              </div>
+            </div>
+          ) : (
+            // Desktop Header Layout
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <Logo size={32} className="text-blue-300" />
+                <h1 className="text-2xl font-bold text-white">LexAgenda</h1>
+              </div>
+              <div className="flex items-center gap-4">
+                <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0" size="sm">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  SETTIMANA
+                </Button>
+                <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0" size="sm">
+                  <CalendarDays className="h-4 w-4 mr-2" />
+                  MESE
+                </Button>
+                <NotificationCenter userId={user.id} />
+                <AudioNotificationSettings userId={user.id} />
+                <Button onClick={handleLogout} variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-6">
         {/* Greeting Section with All Counters */}
-        <div className="mb-6 flex items-start justify-between">
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-800">
-              Buongiorno Avvocato{getUserDisplayName() ? ` ${getUserDisplayName()}` : ''}
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Ecco il riepilogo delle tue attività per oggi
-            </p>
-          </div>
-          
-          {/* All Counters - positioned on the right */}
-          <div className="ml-4 flex flex-col gap-2">
-            {/* Today, Urgent and Week counters in horizontal layout */}
-            <div className="flex gap-2">
+        {isMobile ? (
+          // Mobile Layout
+          <div className="mb-6 space-y-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Buongiorno Avvocato{getUserDisplayName() ? ` ${getUserDisplayName()}` : ''}
+              </h1>
+              <p className="text-gray-600 mt-2">
+                Ecco il riepilogo delle tue attività per oggi
+              </p>
+            </div>
+            
+            {/* Counters in vertical layout for mobile */}
+            <div className="grid grid-cols-1 gap-2">
               <TodayCounter userId={user.id} key={`today-${refreshCounters}`} />
               <UrgentCounter userId={user.id} key={`urgent-${refreshCounters}`} />
               <WeekCounter userId={user.id} key={`week-${refreshCounters}`} />
             </div>
           </div>
-        </div>
+        ) : (
+          // Desktop Layout
+          <div className="mb-6 flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-gray-800">
+                Buongiorno Avvocato{getUserDisplayName() ? ` ${getUserDisplayName()}` : ''}
+              </h1>
+              <p className="text-gray-600 mt-2">
+                Ecco il riepilogo delle tue attività per oggi
+              </p>
+            </div>
+            
+            {/* All Counters - positioned on the right */}
+            <div className="ml-4 flex flex-col gap-2">
+              {/* Today, Urgent and Week counters in horizontal layout */}
+              <div className="flex gap-2">
+                <TodayCounter userId={user.id} key={`today-${refreshCounters}`} />
+                <UrgentCounter userId={user.id} key={`urgent-${refreshCounters}`} />
+                <WeekCounter userId={user.id} key={`week-${refreshCounters}`} />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Today's Tasks Section */}
         <Card className="mb-6 bg-yellow-50 border-yellow-200">
@@ -397,9 +453,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
         {/* Quick Add Form */}
         <Card className="mb-6">
-          <CardContent className="p-6">
+          <CardContent className={isMobile ? "p-4" : "p-6"}>
             <h3 className="text-lg font-semibold mb-4">Aggiungi Nuova Pratica</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
               <div>
                 <Label htmlFor="pratica">Pratica</Label>
                 <Input
@@ -407,12 +463,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                   value={newPratica}
                   onChange={(e) => setNewPratica(e.target.value)}
                   placeholder="Nome della pratica"
+                  className={isMobile ? "text-base" : ""}
                 />
               </div>
               <div>
                 <Label htmlFor="categoria">Categoria Attività</Label>
                 <Select value={newCategoria} onValueChange={setNewCategoria}>
-                  <SelectTrigger>
+                  <SelectTrigger className={isMobile ? "text-base" : ""}>
                     <SelectValue placeholder="Seleziona categoria" />
                   </SelectTrigger>
                   <SelectContent>
@@ -444,6 +501,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                   type="date"
                   value={newScadenza}
                   onChange={(e) => setNewScadenza(e.target.value)}
+                  className={isMobile ? "text-base" : ""}
                 />
               </div>
               <div>
@@ -453,10 +511,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                   type="time"
                   value={newOra}
                   onChange={(e) => setNewOra(e.target.value)}
+                  className={isMobile ? "text-base" : ""}
                 />
               </div>
             </div>
-            <div className="mt-4 flex gap-2">
+            <div className={`mt-4 ${isMobile ? 'flex flex-col gap-2' : 'flex gap-2'}`}>
               <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="h-4 w-4 mr-2" />
                 Aggiungi Pratica
@@ -471,11 +530,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
 
         {/* All Tasks Section */}
         <Card className="bg-purple-50 border-purple-200">
-          <CardContent className="p-6">
+          <CardContent className={isMobile ? "p-4" : "p-6"}>
             <div className="bg-purple-800 h-1 w-full mb-4 rounded"></div>
-            <div className="flex justify-between items-center mb-4">
+            <div className={`flex justify-between items-center mb-4 ${isMobile ? 'flex-col gap-2' : ''}`}>
               <h3 className="text-lg font-semibold text-purple-900">Tutte le Attività</h3>
-              <Button onClick={loadTasks} variant="outline" size="sm">
+              <Button onClick={loadTasks} variant="outline" size="sm" className={isMobile ? "w-full" : ""}>
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Ricarica
               </Button>
@@ -487,46 +546,95 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             ) : (
               <div className="space-y-3">
                 {tasks.map((task) => (
-                  <div key={task.id} className={`flex items-center justify-between p-4 rounded-lg border ${getRowBackgroundColor(task.attivita)}`}>
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900">{task.pratica}</div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
-                          {task.attivita}
-                        </span>
-                        <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityInfo(task.priorita).color}`}>
-                          {getPriorityInfo(task.priorita).text}
-                        </span>
+                  <div key={task.id} className={`${isMobile ? 'p-3' : 'p-4'} rounded-lg border ${getRowBackgroundColor(task.attivita)}`}>
+                    {isMobile ? (
+                      // Mobile Layout - Vertical
+                      <div className="space-y-3">
+                        <div>
+                          <div className="font-medium text-gray-900 text-base">{task.pratica}</div>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
+                              {task.attivita}
+                            </span>
+                            <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityInfo(task.priorita).color}`}>
+                              {getPriorityInfo(task.priorita).text}
+                            </span>
+                            {task.stato === 'done' && (
+                              <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                                Completato
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-500 mt-2">
+                            Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => {
+                              setSelectedTask(task)
+                              setIsTaskDialogOpen(true)
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1"
+                          >
+                            Modifica
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteTask(task)}
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                    ) : (
+                      // Desktop Layout - Horizontal
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{task.pratica}</div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
+                              {task.attivita}
+                            </span>
+                            <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityInfo(task.priorita).color}`}>
+                              {getPriorityInfo(task.priorita).text}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {task.stato === 'done' && (
+                            <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                              Completato
+                            </span>
+                          )}
+                          <Button
+                            onClick={() => {
+                              setSelectedTask(task)
+                              setIsTaskDialogOpen(true)
+                            }}
+                            variant="outline"
+                            size="sm"
+                          >
+                            Modifica
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteTask(task)}
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {task.stato === 'done' && (
-                        <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                          Completato
-                        </span>
-                      )}
-                      <Button
-                        onClick={() => {
-                          setSelectedTask(task)
-                          setIsTaskDialogOpen(true)
-                        }}
-                        variant="outline"
-                        size="sm"
-                      >
-                        Modifica
-                      </Button>
-                      <Button
-                        onClick={() => handleDeleteTask(task)}
-                        variant="outline"
-                        size="sm"
-                        className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -574,7 +682,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           <div className="flex justify-between items-center">
             {/* Versione app - sinistra */}
             <div className="text-white text-xs opacity-75">
-              LexAgenda Ver 1.3
+              LexAgenda Ver 1.4
             </div>
             
             {/* Abruzzo.AI branding - centro */}

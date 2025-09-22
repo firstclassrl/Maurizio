@@ -7,6 +7,7 @@ import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { MessageModal } from '../ui/MessageModal'
 import { useMessage } from '../../hooks/useMessage'
+import { useMobile } from '../../hooks/useMobile'
 import { Task } from '../../lib/calendar-utils'
 import { AlertTriangle } from 'lucide-react'
 
@@ -20,6 +21,7 @@ interface TaskDialogProps {
 
 export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onSave }: TaskDialogProps) {
   const { message, showError, hideMessage } = useMessage()
+  const isMobile = useMobile()
   const [formData, setFormData] = useState({
     pratica: '',
     categoria: '',
@@ -73,7 +75,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className={isMobile ? "mx-4 max-w-[95vw]" : "sm:max-w-[500px]"}>
         <DialogHeader>
           <DialogTitle className={`flex items-center gap-2 ${isUrgentMode ? 'text-red-600' : ''}`}>
             {isUrgentMode && <AlertTriangle className="h-5 w-5" />}
@@ -90,6 +92,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
               value={formData.pratica}
               onChange={(e) => handleChange('pratica', e.target.value)}
               required
+              className={isMobile ? "text-base" : ""}
             />
           </div>
 
