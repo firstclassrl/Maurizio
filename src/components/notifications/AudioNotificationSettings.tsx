@@ -15,18 +15,18 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
     isEnabled, 
     isPlaying, 
     audioEnabled,
+    toggleAudioEnabled,
     playNotificationSound, 
     playUrgentNotification, 
     requestPermission 
   } = useAudioNotifications(userId)
 
-  // Save audio settings to localStorage
-  const toggleAudioNotifications = () => {
-    const newValue = !audioEnabled
-    localStorage.setItem(`audio-notifications-${userId}`, JSON.stringify(newValue))
+  // Toggle audio notifications using the hook function
+  const handleToggleAudioNotifications = () => {
+    toggleAudioEnabled()
     
     // Test sound if enabling
-    if (newValue && isEnabled) {
+    if (!audioEnabled && isEnabled) {
       playNotificationSound()
     }
     
@@ -105,7 +105,7 @@ export function AudioNotificationSettings({ userId }: AudioNotificationSettingsP
                     </span>
                   </div>
                   <button
-                    onClick={toggleAudioNotifications}
+                    onClick={handleToggleAudioNotifications}
                     disabled={!isEnabled}
                     className={`flex items-center gap-2 transition-colors ${
                       !isEnabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'

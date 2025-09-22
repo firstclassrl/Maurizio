@@ -131,10 +131,20 @@ export function useAudioNotifications(userId?: string) {
     }
   }
 
+  const toggleAudioEnabled = () => {
+    const newValue = !audioEnabled
+    setAudioEnabled(newValue)
+    if (userId) {
+      localStorage.setItem(`audio-notifications-${userId}`, JSON.stringify(newValue))
+    }
+  }
+
   return {
     isEnabled,
     isPlaying,
     audioEnabled,
+    setAudioEnabled,
+    toggleAudioEnabled,
     playNotificationSound,
     playUrgentNotification,
     showBrowserNotification,
