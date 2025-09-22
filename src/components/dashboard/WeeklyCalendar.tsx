@@ -3,6 +3,7 @@ import { Task } from '../../lib/calendar-utils'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react'
+import { useMobile } from '../../hooks/useMobile'
 
 interface WeeklyCalendarProps {
   tasks: Task[]
@@ -12,6 +13,7 @@ interface WeeklyCalendarProps {
 
 export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick }: WeeklyCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
+  const isMobile = useMobile()
 
   // Generate colors based on category
   const getTaskColor = (task: Task) => {
@@ -117,53 +119,117 @@ export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick }: Weekly
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-7 gap-2">
-          {weekDays.map((day, index) => {
-            const dayTasks = getTasksForDate(day)
-            const isToday = day.toDateString() === new Date().toDateString()
-            
-            return (
-              <div key={index} className="border rounded-lg p-3 min-h-[120px]">
-                <div className="text-center mb-2">
-                  <div className="text-sm text-gray-600 capitalize">
-                    {formatDayName(day)}
+        {isMobile ? (
+          // Mobile Layout - Vertical
+          <div className="space-y-4">
+            {weekDays.map((day, index) => {
+              const dayTasks = getTasksForDate(day)
+              const isToday = day.toDateString() === new Date().toDateString()
+              
+              return (
+                <div key={index} className="border rounded-lg p-4 bg-white shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`text-lg font-bold ${
+                        isToday ? 'bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center' : 'text-gray-800'
+                      }`}>
+                        {formatDayNumber(day)}
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-800 capitalize">
+                          {formatDayName(day)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {day.toLocaleDateString('it-IT', { month: 'short' })}
+                        </div>
+                      </div>
+                    </div>
+                    {dayTasks.length > 0 && (
+                      <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                        {dayTasks.length} attività
+                      </div>
+                    )}
                   </div>
-                  <div className={`text-lg font-semibold ${
-                    isToday ? 'bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto' : ''
-                  }`}>
-                    {formatDayNumber(day)}
+                  
+                  <div className="space-y-2">
+                    {dayTasks.length === 0 ? (
+                      <div className="text-center text-gray-400 text-sm py-4">
+                        Nessuna attività
+                      </div>
+                    ) : (
+                      dayTasks.map((task) => (
+                        <div
+                          key={task.id}
+                          className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${
+                            task.stato === 'done' 
+                              ? 'bg-green-50 text-green-800 border-green-200' 
+                              : getTaskColor(task)
+                          }`}
+                          onClick={() => onTaskClick?.(task)}
+                        >
+                          <div className="font-medium text-sm mb-1">{task.pratica}</div>
+                          <div className="text-xs opacity-80 mb-1">{task.attivita}</div>
+                          {isUrgentTask(task.priorita) && (
+                            <div className="text-xs text-red-600 font-bold">URGENTE</div>
+                          )}
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
-                
-                <div className="space-y-1">
-                      {dayTasks.slice(0, 3).map((task) => (
-                    <div
-                      key={task.id}
-                      className={`text-xs p-2 rounded border cursor-pointer hover:shadow-md transition-shadow ${
-                        task.stato === 'done' 
-                          ? 'bg-green-100 text-green-800 border-green-200' 
-                          : getTaskColor(task)
-                      }`}
-                      title={`${task.pratica} - ${task.attivita}`}
-                      onClick={() => onTaskClick?.(task)}
-                    >
-                      <div className="font-medium truncate">{task.pratica}</div>
-                      <div className="text-xs opacity-80 truncate">{task.attivita}</div>
-                      {isUrgentTask(task.priorita) && (
-                        <div className="text-xs text-red-600 font-bold mt-1">URGENTE</div>
-                      )}
+              )
+            })}
+          </div>
+        ) : (
+          // Desktop Layout - Grid
+          <div className="grid grid-cols-7 gap-2">
+            {weekDays.map((day, index) => {
+              const dayTasks = getTasksForDate(day)
+              const isToday = day.toDateString() === new Date().toDateString()
+              
+              return (
+                <div key={index} className="border rounded-lg p-3 min-h-[120px]">
+                  <div className="text-center mb-2">
+                    <div className="text-sm text-gray-600 capitalize">
+                      {formatDayName(day)}
                     </div>
-                  ))}
-                  {dayTasks.length > 3 && (
-                    <div className="text-xs text-gray-500 text-center">
-                      +{dayTasks.length - 3} altre
+                    <div className={`text-lg font-semibold ${
+                      isToday ? 'bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto' : ''
+                    }`}>
+                      {formatDayNumber(day)}
                     </div>
-                  )}
+                  </div>
+                  
+                  <div className="space-y-1">
+                        {dayTasks.slice(0, 3).map((task) => (
+                      <div
+                        key={task.id}
+                        className={`text-xs p-2 rounded border cursor-pointer hover:shadow-md transition-shadow ${
+                          task.stato === 'done' 
+                            ? 'bg-green-100 text-green-800 border-green-200' 
+                            : getTaskColor(task)
+                        }`}
+                        title={`${task.pratica} - ${task.attivita}`}
+                        onClick={() => onTaskClick?.(task)}
+                      >
+                        <div className="font-medium truncate">{task.pratica}</div>
+                        <div className="text-xs opacity-80 truncate">{task.attivita}</div>
+                        {isUrgentTask(task.priorita) && (
+                          <div className="text-xs text-red-600 font-bold mt-1">URGENTE</div>
+                        )}
+                      </div>
+                    ))}
+                    {dayTasks.length > 3 && (
+                      <div className="text-xs text-gray-500 text-center">
+                        +{dayTasks.length - 3} altre
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </CardContent>
     </Card>
   )

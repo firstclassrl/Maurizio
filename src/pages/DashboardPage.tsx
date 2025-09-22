@@ -546,15 +546,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
+                  <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
+                      id="urgente-mobile"
                       checked={isUrgentMode}
                       onChange={(e) => setIsUrgentMode(e.target.checked)}
-                      className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500"
+                      className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500 cursor-pointer"
                     />
-                    <span className="text-red-600 font-medium">URGENTE</span>
-                  </label>
+                    <label htmlFor="urgente-mobile" className="text-red-600 font-medium cursor-pointer">
+                      URGENTE
+                    </label>
+                  </div>
                   <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700 flex-1">
                     <Plus className="h-4 w-4 mr-2" />
                     Aggiungi Pratica
@@ -653,15 +656,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                     />
                   </div>
                   <div className="flex items-center gap-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
+                        id="urgente-desktop"
                         checked={isUrgentMode}
                         onChange={(e) => setIsUrgentMode(e.target.checked)}
-                        className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500"
+                        className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500 cursor-pointer"
                       />
-                      <span className="text-red-600 font-medium">URGENTE</span>
-                    </label>
+                      <label htmlFor="urgente-desktop" className="text-red-600 font-medium cursor-pointer">
+                        URGENTE
+                      </label>
+                    </div>
                   </div>
                   <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700">
                     <Plus className="h-4 w-4 mr-2" />
@@ -852,14 +858,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       {/* Footer */}
       <footer className="mt-12 py-4 bg-slate-900">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center">
-            {/* Versione app - sinistra */}
-            <div className="text-white text-xs opacity-75">
-              LexAgenda Ver 1.4.2
-            </div>
-            
-            {/* Abruzzo.AI branding - centro */}
-            <div className="flex flex-col items-center gap-2">
+          {isMobile ? (
+            // Mobile Layout - Vertical
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="text-white text-xs opacity-75">
+                LexAgenda Ver 1.4.3
+              </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
                 <img 
@@ -872,10 +876,33 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                 Copyright 2025
               </div>
             </div>
-            
-            {/* Spazio vuoto per bilanciare */}
-            <div className="w-24"></div>
-          </div>
+          ) : (
+            // Desktop Layout - Horizontal
+            <div className="flex justify-between items-center">
+              {/* Versione app - sinistra */}
+              <div className="text-white text-xs opacity-75">
+                LexAgenda Ver 1.4.3
+              </div>
+              
+              {/* Abruzzo.AI branding - centro */}
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-center gap-2 text-white text-sm">
+                  <span>Created by Abruzzo.AI</span>
+                  <img 
+                    src="/Marchio AbruzzoAI.png" 
+                    alt="Abruzzo.AI" 
+                    className="h-4 w-auto"
+                  />
+                </div>
+                <div className="text-white text-xs opacity-75">
+                  Copyright 2025
+                </div>
+              </div>
+              
+              {/* Spazio vuoto per bilanciare */}
+              <div className="w-24"></div>
+            </div>
+          )}
         </div>
       </footer>
     </div>

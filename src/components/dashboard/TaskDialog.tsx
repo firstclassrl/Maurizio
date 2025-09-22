@@ -62,6 +62,12 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Validate required fields
+    if (!formData.pratica.trim() || !formData.categoria.trim() || !formData.scadenza) {
+      showError('Campi obbligatori', 'Compila tutti i campi obbligatori')
+      return
+    }
+    
     // Validate date is not in the past
     const selectedDate = new Date(formData.scadenza)
     const today = new Date()
@@ -72,7 +78,14 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       return
     }
     
-    onSave(formData)
+    // Prepare data for save
+    const taskData = {
+      ...formData,
+      attivita: formData.categoria, // Map categoria to attivita for database compatibility
+      categoria: undefined // Remove categoria field
+    }
+    
+    onSave(taskData)
   }
 
   const handleChange = (field: string, value: string | number) => {
@@ -202,15 +215,18 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
           </div>
 
           <div className="space-y-2">
-            <label className="flex items-center gap-2 cursor-pointer">
+            <div className="flex items-center gap-2">
               <input
                 type="checkbox"
+                id="urgente"
                 checked={formData.priorita === 10}
                 onChange={(e) => handleChange('priorita', e.target.checked ? 10 : 5)}
-                className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500"
+                className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500 cursor-pointer"
               />
-              <span className="text-red-600 font-medium">URGENTE</span>
-            </label>
+              <label htmlFor="urgente" className="text-red-600 font-medium cursor-pointer">
+                URGENTE
+              </label>
+            </div>
           </div>
 
           <DialogFooter>
