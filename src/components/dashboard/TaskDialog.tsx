@@ -158,21 +158,15 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="priorita">Priorità</Label>
-            <Select 
-              value={formData.priorita.toString()} 
-              onValueChange={(value) => handleChange('priorita', parseInt(value))}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">Bassa</SelectItem>
-                <SelectItem value="5">Media</SelectItem>
-                <SelectItem value="9">Alta</SelectItem>
-                <SelectItem value="10">Urgente</SelectItem>
-              </SelectContent>
-            </Select>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.priorita === 10}
+                onChange={(e) => handleChange('priorita', e.target.checked ? 10 : 5)}
+                className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500"
+              />
+              <span className="text-red-600 font-medium">URGENTE</span>
+            </label>
           </div>
 
           <DialogFooter>

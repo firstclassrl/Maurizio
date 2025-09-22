@@ -18,7 +18,7 @@ import { AudioNotificationSettings } from '../components/notifications/AudioNoti
 import { WeekCounter } from '../components/notifications/WeekCounter'
 import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
-import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, AlertTriangle } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -106,39 +106,28 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
       case 'SCADENZA ATTO PROCESSUALE':
         return 'bg-red-100 text-red-800 border-red-200'
       case 'UDIENZA':
-        return 'bg-amber-100 text-amber-800 border-amber-200'
+        return 'bg-green-100 text-green-800 border-green-200'
       case 'ATTIVITA\' PROCESSUALE':
-        return 'bg-purple-100 text-purple-800 border-purple-200'
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
 
-  // Get priority color and text for tasks
-  const getPriorityInfo = (priorita: number) => {
-    switch (priorita) {
-      case 1:
-        return { text: 'Bassa', color: 'bg-green-100 text-green-800 border-green-200' }
-      case 5:
-        return { text: 'Media', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' }
-      case 9:
-        return { text: 'Alta', color: 'bg-orange-100 text-orange-800 border-orange-200' }
-      case 10:
-        return { text: 'Urgente', color: 'bg-red-100 text-red-800 border-red-200' }
-      default:
-        return { text: 'Media', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' }
-    }
+  // Check if task is urgent (priority 10)
+  const isUrgentTask = (priorita: number) => {
+    return priorita === 10
   }
 
   // Get row background color based on activity type
   const getRowBackgroundColor = (attivita: string) => {
     switch (attivita) {
       case 'UDIENZA':
-        return 'bg-yellow-50 border-yellow-200'
+        return 'bg-green-50 border-green-200'
       case 'ATTIVITA\' PROCESSUALE':
-        return 'bg-purple-50 border-purple-200'
+        return 'bg-yellow-50 border-yellow-200'
       case 'SCADENZA ATTO PROCESSUALE':
-        return 'bg-red-50 border-red-200'
+        return 'bg-red-50 border-red-400 border-2'
       default:
         return 'bg-gray-50 border-gray-200'
     }
@@ -151,7 +140,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         ...taskData,
         attivita: taskData.categoria || taskData.attivita,
         categoria: undefined, // Remove categoria field
-        priorita: isUrgentMode ? 10 : (taskData.priorita || 5) // Set priority based on mode
+        priorita: isUrgentMode ? 10 : 5 // Urgent (10) or Normal (5)
       }
 
       if (selectedTask) {
@@ -232,10 +221,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
     }
   }
 
-  const handleUrgentAdd = () => {
-    setIsUrgentMode(true)
-    setIsTaskDialogOpen(true)
-  }
 
 
 
@@ -455,76 +440,160 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
         <Card className="mb-6">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
             <h3 className="text-lg font-semibold mb-4">Aggiungi Nuova Pratica</h3>
-            <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
-              <div>
-                <Label htmlFor="pratica">Pratica</Label>
-                <Input
-                  id="pratica"
-                  value={newPratica}
-                  onChange={(e) => setNewPratica(e.target.value)}
-                  placeholder="Nome della pratica"
-                  className={isMobile ? "text-base" : ""}
-                />
+            {isMobile ? (
+              // Mobile Layout - Vertical
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="pratica">Pratica</Label>
+                  <Input
+                    id="pratica"
+                    value={newPratica}
+                    onChange={(e) => setNewPratica(e.target.value)}
+                    placeholder="Nome della pratica"
+                    className="text-base"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="categoria">Categoria Attività</Label>
+                  <Select value={newCategoria} onValueChange={setNewCategoria}>
+                    <SelectTrigger className="text-base">
+                      <SelectValue placeholder="Seleziona categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SCADENZA ATTO PROCESSUALE">
+                        <span className="flex items-center gap-2">
+                          <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                          SCADENZA ATTO PROCESSUALE
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="UDIENZA">
+                        <span className="flex items-center gap-2">
+                          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                          UDIENZA
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="ATTIVITA' PROCESSUALE">
+                        <span className="flex items-center gap-2">
+                          <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                          ATTIVITA' PROCESSUALE
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="scadenza">Scadenza</Label>
+                    <Input
+                      id="scadenza"
+                      type="date"
+                      value={newScadenza}
+                      onChange={(e) => setNewScadenza(e.target.value)}
+                      className="text-base"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="ora">Ora (opzionale)</Label>
+                    <Input
+                      id="ora"
+                      type="time"
+                      value={newOra}
+                      onChange={(e) => setNewOra(e.target.value)}
+                      className="text-base"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isUrgentMode}
+                      onChange={(e) => setIsUrgentMode(e.target.checked)}
+                      className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500"
+                    />
+                    <span className="text-red-600 font-medium">URGENTE</span>
+                  </label>
+                  <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700 flex-1">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Aggiungi Pratica
+                  </Button>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="categoria">Categoria Attività</Label>
-                <Select value={newCategoria} onValueChange={setNewCategoria}>
-                  <SelectTrigger className={isMobile ? "text-base" : ""}>
-                    <SelectValue placeholder="Seleziona categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="SCADENZA ATTO PROCESSUALE">
-                      <span className="flex items-center gap-2">
-                        <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-                        SCADENZA ATTO PROCESSUALE
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="UDIENZA">
-                      <span className="flex items-center gap-2">
-                        <span className="w-3 h-3 bg-amber-500 rounded-full"></span>
-                        UDIENZA
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="ATTIVITA' PROCESSUALE">
-                      <span className="flex items-center gap-2">
-                        <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
-                        ATTIVITA' PROCESSUALE
-                      </span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+            ) : (
+              // Desktop Layout - Single Row
+              <div className="flex items-end gap-4">
+                <div className="flex-1">
+                  <Label htmlFor="pratica">Pratica</Label>
+                  <Input
+                    id="pratica"
+                    value={newPratica}
+                    onChange={(e) => setNewPratica(e.target.value)}
+                    placeholder="Nome della pratica"
+                  />
+                </div>
+                <div className="w-48">
+                  <Label htmlFor="categoria">Categoria Attività</Label>
+                  <Select value={newCategoria} onValueChange={setNewCategoria}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleziona categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SCADENZA ATTO PROCESSUALE">
+                        <span className="flex items-center gap-2">
+                          <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                          SCADENZA ATTO PROCESSUALE
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="UDIENZA">
+                        <span className="flex items-center gap-2">
+                          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                          UDIENZA
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="ATTIVITA' PROCESSUALE">
+                        <span className="flex items-center gap-2">
+                          <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                          ATTIVITA' PROCESSUALE
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="w-32">
+                  <Label htmlFor="scadenza">Scadenza</Label>
+                  <Input
+                    id="scadenza"
+                    type="date"
+                    value={newScadenza}
+                    onChange={(e) => setNewScadenza(e.target.value)}
+                  />
+                </div>
+                <div className="w-32">
+                  <Label htmlFor="ora">Ora (opzionale)</Label>
+                  <Input
+                    id="ora"
+                    type="time"
+                    value={newOra}
+                    onChange={(e) => setNewOra(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isUrgentMode}
+                      onChange={(e) => setIsUrgentMode(e.target.checked)}
+                      className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500"
+                    />
+                    <span className="text-red-600 font-medium">URGENTE</span>
+                  </label>
+                </div>
+                <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Aggiungi Pratica
+                </Button>
               </div>
-              <div>
-                <Label htmlFor="scadenza">Scadenza</Label>
-                <Input
-                  id="scadenza"
-                  type="date"
-                  value={newScadenza}
-                  onChange={(e) => setNewScadenza(e.target.value)}
-                  className={isMobile ? "text-base" : ""}
-                />
-              </div>
-              <div>
-                <Label htmlFor="ora">Ora (opzionale)</Label>
-                <Input
-                  id="ora"
-                  type="time"
-                  value={newOra}
-                  onChange={(e) => setNewOra(e.target.value)}
-                  className={isMobile ? "text-base" : ""}
-                />
-              </div>
-            </div>
-            <div className={`mt-4 ${isMobile ? 'flex flex-col gap-2' : 'flex gap-2'}`}>
-              <Button onClick={handleQuickAdd} className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Aggiungi Pratica
-              </Button>
-              <Button onClick={handleUrgentAdd} className="bg-red-600 hover:bg-red-700">
-                <AlertTriangle className="h-4 w-4 mr-2" />
-                Pratica Urgente
-              </Button>
-            </div>
+            )}
           </CardContent>
         </Card>
 
@@ -556,9 +625,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                             <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
                               {task.attivita}
                             </span>
-                            <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityInfo(task.priorita).color}`}>
-                              {getPriorityInfo(task.priorita).text}
-                            </span>
+                            {isUrgentTask(task.priorita) && (
+                              <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 border-red-200">
+                                URGENTE
+                              </span>
+                            )}
                             {task.stato === 'done' && (
                               <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
                                 Completato
@@ -600,9 +671,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                             <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(task.attivita)}`}>
                               {task.attivita}
                             </span>
-                            <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityInfo(task.priorita).color}`}>
-                              {getPriorityInfo(task.priorita).text}
-                            </span>
+                            {isUrgentTask(task.priorita) && (
+                              <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 border-red-200">
+                                URGENTE
+                              </span>
+                            )}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
                             Scadenza: {new Date(task.scadenza).toLocaleDateString('it-IT')}
@@ -682,7 +755,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
           <div className="flex justify-between items-center">
             {/* Versione app - sinistra */}
             <div className="text-white text-xs opacity-75">
-              LexAgenda Ver 1.4
+              LexAgenda Ver 1.5
             </div>
             
             {/* Abruzzo.AI branding - centro */}
