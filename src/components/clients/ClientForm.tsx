@@ -45,6 +45,26 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
 
   useEffect(() => {
     if (client) {
+      // Gestisce i campi JSON che potrebbero essere stringhe
+      let indirizzi = []
+      let contatti = []
+      
+      try {
+        indirizzi = Array.isArray(client.indirizzi) ? client.indirizzi : 
+                   (typeof client.indirizzi === 'string' ? JSON.parse(client.indirizzi) : [])
+      } catch (e) {
+        console.warn('Errore parsing indirizzi:', e)
+        indirizzi = []
+      }
+      
+      try {
+        contatti = Array.isArray(client.contatti) ? client.contatti : 
+                  (typeof client.contatti === 'string' ? JSON.parse(client.contatti) : [])
+      } catch (e) {
+        console.warn('Errore parsing contatti:', e)
+        contatti = []
+      }
+      
       setFormData({
         tipologia: client.tipologia,
         alternativa: client.alternativa,
@@ -56,8 +76,8 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
         dataNascita: client.dataNascita || '',
         luogoNascita: client.luogoNascita || '',
         partitaIva: client.partitaIva || '',
-        indirizzi: client.indirizzi || [],
-        contatti: client.contatti || [],
+        indirizzi: indirizzi,
+        contatti: contatti,
         codiceDestinatario: client.codiceDestinatario || '',
         codiceDestinatarioPA: client.codiceDestinatarioPA || '',
         note: client.note || '',

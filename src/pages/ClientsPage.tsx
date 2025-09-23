@@ -59,7 +59,36 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      setClients(data || [])
+      
+      // Parsa i campi JSON che potrebbero essere stringhe
+      const parsedClients = (data || []).map(client => {
+        let indirizzi = []
+        let contatti = []
+        
+        try {
+          indirizzi = Array.isArray(client.indirizzi) ? client.indirizzi : 
+                     (typeof client.indirizzi === 'string' ? JSON.parse(client.indirizzi) : [])
+        } catch (e) {
+          console.warn('Errore parsing indirizzi per cliente', client.id, ':', e)
+          indirizzi = []
+        }
+        
+        try {
+          contatti = Array.isArray(client.contatti) ? client.contatti : 
+                    (typeof client.contatti === 'string' ? JSON.parse(client.contatti) : [])
+        } catch (e) {
+          console.warn('Errore parsing contatti per cliente', client.id, ':', e)
+          contatti = []
+        }
+        
+        return {
+          ...client,
+          indirizzi,
+          contatti
+        }
+      })
+      
+      setClients(parsedClients)
     } catch (error) {
       console.error('Error loading clients:', error)
       showError('Errore', 'Errore nel caricamento dei clienti')
