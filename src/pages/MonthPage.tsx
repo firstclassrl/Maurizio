@@ -127,7 +127,7 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek, onNavigat
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="px-6 py-4 flex justify-between items-center">
           <Button onClick={onBackToDashboard} variant="outline" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Torna a Dashboard
@@ -140,9 +140,9 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek, onNavigat
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
-        {/* Filter Section */}
-        <div className="mb-6 flex gap-4">
+      {/* Filter Section */}
+      <div className="px-6 py-4 bg-white border-b">
+        <div className="flex gap-4">
           <CategoryFilter 
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
@@ -153,38 +153,38 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek, onNavigat
             tasks={tasks}
           />
         </div>
+      </div>
 
-        {/* Legend */}
-        <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Legenda Colori</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">Scadenza Atto Processuale</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">Udienza</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">Attività Processuale</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-cyan-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">Appuntamento in Studio</span>
-            </div>
+      {/* Legend */}
+      <div className="px-6 py-4 bg-white border-b">
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Legenda Colori</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+            <span className="text-sm text-gray-600">Scadenza Atto Processuale</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+            <span className="text-sm text-gray-600">Udienza</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+            <span className="text-sm text-gray-600">Attività Processuale</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-cyan-500 rounded-full"></div>
+            <span className="text-sm text-gray-600">Appuntamento in Studio</span>
           </div>
         </div>
-        
-        <MonthlyCalendar 
-          tasks={getFilteredTasks()} 
-          onTaskClick={handleTaskClick}
-          onNavigateToWeek={onNavigateToWeek}
-          onNavigateToDay={onNavigateToDay}
-          onNavigateToToday={onNavigateToToday}
-        />
       </div>
+      
+      <MonthlyCalendar 
+        tasks={getFilteredTasks()} 
+        onTaskClick={handleTaskClick}
+        onNavigateToWeek={onNavigateToWeek}
+        onNavigateToDay={onNavigateToDay}
+        onNavigateToToday={onNavigateToToday}
+      />
 
       <TaskDialog
         open={isTaskDialogOpen}

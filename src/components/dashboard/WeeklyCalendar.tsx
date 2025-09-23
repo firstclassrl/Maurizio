@@ -97,9 +97,9 @@ export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNaviga
 
 
   return (
-    <div className="bg-white">
+    <div className="bg-white w-full">
       {/* Header with navigation */}
-      <div className="bg-gray-50 border-b border-gray-200 p-4">
+      <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button onClick={goToPreviousWeek} variant="outline" size="sm">
@@ -119,7 +119,7 @@ export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNaviga
       </div>
 
       {/* Calendar Title */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800">
             {weekStart.getDate()} - {weekDays[weekDays.length - 1].getDate()} {formatMonthYear(currentWeek).split(' ')[0]} {currentWeek.getFullYear()}
@@ -158,8 +158,8 @@ export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNaviga
         </div>
       </div>
 
-      {/* Main Calendar Grid */}
-      <div className="p-4">
+      {/* Main Calendar Grid - Full Width */}
+      <div className="px-2 py-4">
         {isMobile ? (
           // Mobile Layout - Vertical
           <div className="space-y-4">
@@ -237,7 +237,7 @@ export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNaviga
           </div>
         ) : (
           // Desktop Layout - Full width grid
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-5 gap-1 h-full">
             {weekDays.map((day, index) => {
               const dayTasks = getTasksForDate(day)
               const isToday = day.toDateString() === new Date().toDateString()

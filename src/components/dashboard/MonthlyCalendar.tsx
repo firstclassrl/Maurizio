@@ -110,9 +110,9 @@ export function MonthlyCalendar({ tasks, onTaskClick, onNavigateToWeek, onNaviga
   const dayNames = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven']
 
   return (
-    <div className="bg-white">
+    <div className="bg-white w-full">
       {/* Header with navigation */}
-      <div className="bg-gray-50 border-b border-gray-200 p-4">
+      <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button onClick={goToPreviousMonth} variant="outline" size="sm">
@@ -132,7 +132,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, onNavigateToWeek, onNaviga
       </div>
 
       {/* Calendar Title */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800">
             {formatMonthYear(currentMonth)}
@@ -171,8 +171,8 @@ export function MonthlyCalendar({ tasks, onTaskClick, onNavigateToWeek, onNaviga
         </div>
       </div>
 
-      {/* Main Calendar Grid */}
-      <div className="p-4">
+      {/* Main Calendar Grid - Full Width */}
+      <div className="px-2 py-4">
         {isMobile ? (
           // Mobile Layout - Vertical
           <div className="space-y-4">
@@ -257,7 +257,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, onNavigateToWeek, onNaviga
           // Desktop Layout - Grid like in screenshots
           <div>
             {/* Day names header */}
-            <div className="grid grid-cols-5 gap-2 mb-4">
+            <div className="grid grid-cols-5 gap-1 mb-4">
               {dayNames.map((dayName) => (
                 <div key={dayName} className="text-center text-sm font-medium text-gray-600 py-3 bg-gray-50 rounded-lg">
                   {dayName}
@@ -266,7 +266,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, onNavigateToWeek, onNaviga
             </div>
 
             {/* Calendar grid */}
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-5 gap-1 h-full">
               {calendarDays.map((day, index) => {
                 const dayTasks = getTasksForDate(day)
                 const isCurrentMonthDay = isCurrentMonth(day)
