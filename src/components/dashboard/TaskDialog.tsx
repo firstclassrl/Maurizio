@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
+import { DateInput } from '../ui/DateInput'
 import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Switch } from '../ui/switch'
@@ -75,7 +76,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
   }, [formData.pratica, formData.categoria])
 
   const handleScadenzaCalculated = (dataScadenza: Date) => {
-    const formattedDate = format(dataScadenza, 'dd/MM/yyyy')
+    const formattedDate = format(dataScadenza, 'yyyy-MM-dd')
     setFormData(prev => ({
       ...prev,
       scadenza: formattedDate
@@ -98,9 +99,8 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     // Validate date is not in the past (only for new tasks, not updates)
     if (!task && formData.scadenza) {
       try {
-        // Parse Italian date format dd/mm/yyyy
-        const [day, month, year] = formData.scadenza.split('/').map(Number)
-        const selectedDate = new Date(year, month - 1, day)
+        // Parse ISO date format yyyy-mm-dd (from DateInput component)
+        const selectedDate = new Date(formData.scadenza)
         const today = new Date()
         today.setHours(0, 0, 0, 0) // Reset time to start of day
         
@@ -263,22 +263,14 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
           )}
 
           <div className="space-y-1">
-            <Label htmlFor="scadenza">Scadenza * (gg/mm/yyyy)</Label>
             <div className="flex gap-2">
-              <Input
+              <DateInput
                 id="scadenza"
-                type="text"
-                placeholder="gg/mm/yyyy"
+                label="Scadenza * (gg/mm/yyyy)"
                 value={formData.scadenza}
-                onChange={(e) => {
-                  // Permette solo numeri e /
-                  const value = e.target.value.replace(/[^0-9/]/g, '')
-                  // Limita la lunghezza
-                  if (value.length <= 10) {
-                    handleChange('scadenza', value)
-                  }
-                }}
-                className={`flex-1 text-gray-900`}
+                onChange={(value) => handleChange('scadenza', value)}
+                placeholder="gg/mm/yyyy"
+                className="flex-1 text-gray-900"
                 required
               />
               {activityAnalysis?.needsCalculator && (

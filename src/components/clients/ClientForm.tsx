@@ -8,6 +8,7 @@ import { Switch } from '../ui/switch'
 import { Textarea } from '../ui/textarea'
 import { Card } from '../ui/card'
 import { Plus, Minus } from 'lucide-react'
+import { DateInput } from '../ui/DateInput'
 import { Client, Address, Contact, ClientFormData } from '../../types/client'
 import { CLIENT_TYPES, TITLES, GENDER_OPTIONS, CONTACT_TYPES } from '../../data/clientTypes'
 import { useMobile } from '../../hooks/useMobile'
@@ -278,12 +279,12 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               </div>
               
               <div>
-                <Label htmlFor="dataNascita">Data di nascita</Label>
-                <Input
+                <DateInput
                   id="dataNascita"
-                  type="date"
+                  label="Data di nascita"
                   value={formData.dataNascita}
-                  onChange={(e) => handleInputChange('dataNascita', e.target.value)}
+                  onChange={(value) => handleInputChange('dataNascita', value)}
+                  placeholder="gg/mm/aaaa"
                 />
               </div>
               
