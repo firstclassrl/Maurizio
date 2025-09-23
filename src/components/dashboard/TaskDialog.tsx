@@ -79,7 +79,8 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       ...prev,
       scadenza: formattedDate
     }))
-    // Non chiudere automaticamente il calcolatore, lascia che l'utente decida
+    // Chiudi il calcolatore dopo aver applicato la scadenza
+    setShowCalculator(false)
   }
 
   const handleSubmit = (e: React.FormEvent) => {

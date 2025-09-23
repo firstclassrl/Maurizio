@@ -427,21 +427,25 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
           </div>
         )}
 
-        {/* Pulsante Calcola (per calcoli manuali) */}
-        <Button 
-          type="button"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            calculateScadenza()
-          }}
-          disabled={!dataInizio}
-          size="sm"
-          className="w-full"
-        >
-          <Calculator className="h-3 w-3 mr-2" />
-          Calcola Scadenza
-        </Button>
+        {/* Pulsante Applica Scadenza */}
+        {dataScadenza && (
+          <Button 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              if (onScadenzaCalculated && dataScadenza) {
+                const giorni = tipoScadenza === 'termini_generici' ? giorniTermineCustom : giorniTermine
+                onScadenzaCalculated(dataScadenza, giorni)
+              }
+            }}
+            size="sm"
+            className="w-full bg-green-600 hover:bg-green-700"
+          >
+            <Calculator className="h-3 w-3 mr-2" />
+            Applica Scadenza
+          </Button>
+        )}
       </CardContent>
     </Card>
   )
