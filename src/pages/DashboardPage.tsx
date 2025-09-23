@@ -20,15 +20,16 @@ import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2 } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
   onNavigateToMonth: () => void
   onNavigateToWeek: () => void
+  onNavigateToCalcolatore: () => void
 }
 
-export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: DashboardPageProps) {
+export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore }: DashboardPageProps) {
   const { message, showError, showSuccess, hideMessage } = useMessage()
   const isMobile = useMobile()
   const [tasks, setTasks] = useState<Task[]>([])
@@ -362,6 +363,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
                   <CalendarDays className="h-4 w-4 mr-2" />
                   MESE
                 </Button>
+                <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0 flex-1" size="sm">
+                  <Calculator className="h-4 w-4 mr-2" />
+                  TERMINI
+                </Button>
               </div>
             </div>
           ) : (
@@ -379,6 +384,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek }: Das
             <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0" size="sm">
               <CalendarDays className="h-4 w-4 mr-2" />
               MESE
+            </Button>
+            <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0" size="sm">
+              <Calculator className="h-4 w-4 mr-2" />
+              TERMINI
             </Button>
             <NotificationCenter userId={user.id} />
             <AudioNotificationSettings userId={user.id} />
