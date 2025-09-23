@@ -5,10 +5,11 @@ import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { MonthPage } from './pages/MonthPage'
 import { WeekPage } from './pages/WeekPage'
+import { OverduePage } from './pages/OverduePage'
 import { CalcolatoreTerminiPage } from './pages/CalcolatoreTerminiPage'
 import { Loader2 } from 'lucide-react'
 
-type AppView = 'dashboard' | 'month' | 'week' | 'calcolatore-termini'
+type AppView = 'dashboard' | 'month' | 'week' | 'overdue' | 'calcolatore-termini'
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
@@ -57,6 +58,7 @@ function App() {
             user={user} 
             onNavigateToMonth={() => setCurrentView('month')}
             onNavigateToWeek={() => setCurrentView('week')}
+            onNavigateToOverdue={() => setCurrentView('overdue')}
             onNavigateToCalcolatore={() => setCurrentView('calcolatore-termini')}
           />
         )
@@ -76,6 +78,13 @@ function App() {
               onNavigateToMonth={() => setCurrentView('month')}
             />
           )
+        case 'overdue':
+          return (
+            <OverduePage 
+              user={user} 
+              onBackToDashboard={() => setCurrentView('dashboard')}
+            />
+          )
       case 'calcolatore-termini':
         return (
           <CalcolatoreTerminiPage 
@@ -89,6 +98,7 @@ function App() {
             user={user} 
             onNavigateToMonth={() => setCurrentView('month')}
             onNavigateToWeek={() => setCurrentView('week')}
+            onNavigateToOverdue={() => setCurrentView('overdue')}
             onNavigateToCalcolatore={() => setCurrentView('calcolatore-termini')}
           />
         )

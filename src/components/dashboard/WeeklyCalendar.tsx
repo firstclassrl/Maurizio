@@ -166,9 +166,11 @@ export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
                           onClick={() => onTaskClick?.(task)}
                         >
                           <div className="flex items-start gap-2">
-                            <div className="flex-shrink-0 mt-1">
-                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                            </div>
+                                <div className="flex-shrink-0 mt-1">
+                                  <div className={`w-2 h-2 rounded-full ${
+                                    task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
+                                  }`}></div>
+                                </div>
                             <div className="flex-1">
                               <div className="font-medium text-sm">{task.pratica}</div>
                               <div className="text-xs text-gray-600 mt-1">
@@ -229,14 +231,11 @@ export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
                           onClick={() => onTaskClick?.(task)}
                         >
                           <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 mt-1">
-                              <div className={`w-3 h-3 rounded-full ${
-                                task.attivita === 'SCADENZA ATTO PROCESSUALE' ? 'bg-red-500' :
-                                task.attivita === 'UDIENZA' ? 'bg-green-500' :
-                                task.attivita === 'ATTIVITA\' PROCESSUALE' ? 'bg-yellow-500' :
-                                'bg-gray-400'
-                              }`}></div>
-                            </div>
+                                <div className="flex-shrink-0 mt-1">
+                                  <div className={`w-3 h-3 rounded-full ${
+                                    task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
+                                  }`}></div>
+                                </div>
                             <div className="flex-1 min-w-0">
                               <div className="font-medium text-sm mb-1">{task.pratica}</div>
                               <div className="text-xs text-gray-600 mb-1">

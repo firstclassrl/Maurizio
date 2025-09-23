@@ -131,7 +131,7 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
               <ArrowLeft className="h-4 w-4 mr-2" />
               Torna a Dashboard
             </Button>
-            <Button onClick={onNavigateToMonth} variant="outline" size="sm">
+            <Button onClick={onNavigateToMonth} variant="outline" size="sm" className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300">
               <Calendar className="h-4 w-4 mr-2" />
               Mese
             </Button>

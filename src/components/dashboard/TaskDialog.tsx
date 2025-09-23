@@ -5,6 +5,7 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { Switch } from '../ui/switch'
 import { MessageModal } from '../ui/MessageModal'
 import { ScadenzaCalculator } from '../ui/ScadenzaCalculator'
 import { useMessage } from '../../hooks/useMessage'
@@ -31,7 +32,8 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     priorita: 5,
     note: '',
     parte: '',
-    controparte: ''
+    controparte: '',
+    stato: 'todo' as 'todo' | 'done'
   })
   const [showCalculator, setShowCalculator] = useState(false)
   const [activityAnalysis, setActivityAnalysis] = useState<any>(null)
@@ -45,7 +47,8 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         priorita: task.priorita,
         note: task.note || '',
         parte: task.parte || '',
-        controparte: task.controparte || ''
+        controparte: task.controparte || '',
+        stato: task.stato || 'todo'
       })
     } else {
       setFormData({
@@ -55,7 +58,8 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         priorita: isUrgentMode ? 10 : 5,
         note: '',
         parte: '',
-        controparte: ''
+        controparte: '',
+        stato: 'todo'
       })
     }
   }, [task, open, isUrgentMode])
@@ -115,7 +119,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       pratica: formData.pratica,
       attivita: formData.categoria, // Map categoria to attivita for database compatibility
       scadenza: formData.scadenza,
-      stato: 'todo' as 'todo' | 'done', // Default stato
+      stato: formData.stato,
       priorita: formData.priorita,
       note: formData.note || null,
       parte: formData.parte || null,
@@ -126,7 +130,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     onSave(taskData)
   }
 
-  const handleChange = (field: string, value: string | number) => {
+  const handleChange = (field: string, value: string | number | 'todo' | 'done') => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -226,6 +230,21 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
               onChange={(e) => handleChange('note', e.target.value)}
               className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${isMobile ? "text-base" : ""}`}
               rows={3}
+            />
+          </div>
+
+          {/* Semaforo Evaso/Non Evaso */}
+          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+            <div className="flex items-center gap-3">
+              <div className={`w-4 h-4 rounded-full ${formData.stato === 'done' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <Label htmlFor="stato" className="text-sm font-medium">
+                {formData.stato === 'done' ? 'Evaso' : 'Non Evaso'}
+              </Label>
+            </div>
+            <Switch
+              id="stato"
+              checked={formData.stato === 'done'}
+              onCheckedChange={(checked) => handleChange('stato', checked ? 'done' : 'todo')}
             />
           </div>
 

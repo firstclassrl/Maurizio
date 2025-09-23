@@ -131,7 +131,7 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
               <ArrowLeft className="h-4 w-4 mr-2" />
               Torna a Dashboard
             </Button>
-            <Button onClick={onNavigateToWeek} variant="outline" size="sm">
+            <Button onClick={onNavigateToWeek} variant="outline" size="sm" className="bg-green-100 text-green-800 hover:bg-green-200 border-green-300">
               <CalendarDays className="h-4 w-4 mr-2" />
               Settimana
             </Button>
@@ -183,6 +183,8 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
       <MonthlyCalendar 
         tasks={getFilteredTasks()} 
         onTaskClick={handleTaskClick}
+        userId={user.id}
+        onTaskUpdate={loadTasks}
       />
 
       <TaskDialog

@@ -23,16 +23,17 @@ import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator, PenTool, ArrowLeft, Users } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator, PenTool, ArrowLeft, Users, AlertTriangle } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
   onNavigateToMonth: () => void
   onNavigateToWeek: () => void
+  onNavigateToOverdue: () => void
   onNavigateToCalcolatore: () => void
 }
 
-export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore }: DashboardPageProps) {
+export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToOverdue, onNavigateToCalcolatore }: DashboardPageProps) {
   const { message, showError, showSuccess, hideMessage } = useMessage()
   const isMobile = useMobile()
   const [tasks, setTasks] = useState<Task[]>([])
@@ -449,6 +450,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <CalendarDays className="h-4 w-4 mr-2" />
                 MESE
               </Button>
+              <Button onClick={onNavigateToOverdue} className="bg-red-600 hover:bg-red-700 text-white border-0 flex-1" size="sm">
+                <AlertTriangle className="h-4 w-4 mr-2" />
+                SCADUTE
+              </Button>
               <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0 flex-1" size="sm">
                 <Calculator className="h-4 w-4 mr-2" />
                 CALCOLATORE
@@ -474,6 +479,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0" size="sm">
                   <CalendarDays className="h-4 w-4 mr-2" />
                   MESE
+                </Button>
+                <Button onClick={onNavigateToOverdue} className="bg-red-600 hover:bg-red-700 text-white border-0" size="sm">
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  SCADUTE
                 </Button>
                 <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0" size="sm">
                   <Calculator className="h-4 w-4 mr-2" />
