@@ -13,7 +13,8 @@ import {
   AlertTriangle, 
   CheckCircle, 
   Info,
-  Plus
+  Plus,
+  CalendarDays
 } from 'lucide-react';
 import { 
   calcolaTermineGiorni, 
@@ -28,6 +29,7 @@ import {
   TERMINI_PROCESSUALI, 
   getCategorie
 } from '../data/terminiStandard';
+import { CalcolatoreGiorniIntercorrenti } from './CalcolatoreGiorniIntercorrenti';
 
 interface CalcolatoreTerminiProps {
   onAggiungiACalendario?: (data: Date, titolo: string, note?: string) => void;
@@ -54,6 +56,7 @@ export function CalcolatoreTermini({ onAggiungiACalendario }: CalcolatoreTermini
   
   // UI state
   const [mostraTerminiPredefiniti, setMostraTerminiPredefiniti] = useState(false);
+  const [tabAttivo, setTabAttivo] = useState<'termini' | 'giorni'>('termini');
 
   // Inizializza con data odierna
   useEffect(() => {
@@ -167,14 +170,44 @@ export function CalcolatoreTermini({ onAggiungiACalendario }: CalcolatoreTermini
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Calcolatore Termini Processuali
+          Calcolatore Legale
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Calcola i termini processuali civili secondo il Codice di Procedura Civile italiano
+          Calcola termini processuali e giorni intercorrenti secondo il Codice di Procedura Civile italiano
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Tab Navigation */}
+      <div className="flex justify-center">
+        <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+          <button
+            onClick={() => setTabAttivo('termini')}
+            className={`px-6 py-2 rounded-md font-medium transition-colors ${
+              tabAttivo === 'termini'
+                ? 'bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+            }`}
+          >
+            <Calculator className="h-4 w-4 inline mr-2" />
+            Termini Processuali
+          </button>
+          <button
+            onClick={() => setTabAttivo('giorni')}
+            className={`px-6 py-2 rounded-md font-medium transition-colors ${
+              tabAttivo === 'giorni'
+                ? 'bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+            }`}
+          >
+            <CalendarDays className="h-4 w-4 inline mr-2" />
+            Giorni Intercorrenti
+          </button>
+        </div>
+      </div>
+
+      {/* Contenuto Tab */}
+      {tabAttivo === 'termini' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Form di calcolo */}
         <Card>
           <CardHeader>
@@ -463,6 +496,10 @@ export function CalcolatoreTermini({ onAggiungiACalendario }: CalcolatoreTermini
           </CardContent>
         </Card>
       </div>
+      ) : (
+        /* Tab Giorni Intercorrenti */
+        <CalcolatoreGiorniIntercorrenti onAggiungiACalendario={onAggiungiACalendario} />
+      )}
 
       {/* Informazioni legali */}
       <Card className="bg-gray-50 dark:bg-gray-800">
@@ -470,7 +507,7 @@ export function CalcolatoreTermini({ onAggiungiACalendario }: CalcolatoreTermini
           <div className="text-sm text-gray-600 dark:text-gray-400">
             <p className="mb-2">
               <strong>Nota legale:</strong> Questo calcolatore implementa le regole del Codice di Procedura Civile italiano 
-              per il calcolo dei termini processuali. I risultati sono forniti a titolo informativo e non sostituiscono 
+              per il calcolo dei termini processuali e giorni intercorrenti. I risultati sono forniti a titolo informativo e non sostituiscono 
               la consulenza legale professionale.
             </p>
             <p>

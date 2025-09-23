@@ -40,7 +40,7 @@ export function CalcolatoreTerminiPage({ user, onBackToDashboard }: CalcolatoreT
               <div className="flex items-center gap-2">
                 <Calculator className="h-5 w-5 text-blue-600" />
                 <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Calcolatore Termini Processuali
+                  Calcolatore Legale
                 </h1>
               </div>
             </div>

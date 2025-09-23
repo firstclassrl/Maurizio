@@ -365,7 +365,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 </Button>
                 <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0 flex-1" size="sm">
                   <Calculator className="h-4 w-4 mr-2" />
-                  TERMINI
+                  CALCOLATORE
                 </Button>
               </div>
             </div>
@@ -387,7 +387,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             </Button>
             <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0" size="sm">
               <Calculator className="h-4 w-4 mr-2" />
-              TERMINI
+              CALCOLATORE
             </Button>
             <NotificationCenter userId={user.id} />
             <AudioNotificationSettings userId={user.id} />

@@ -395,3 +395,127 @@ export function differenzaGiorni(data1: Date, data2: Date): number {
   const diffTime = Math.abs(data2.getTime() - data1.getTime());
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
+
+/**
+ * Risultato del calcolo giorni intercorrenti
+ */
+export interface RisultatoGiorniIntercorrenti {
+  dataInizio: Date;
+  dataFine: Date;
+  giorniIntercorrenti: number;
+  giorniLavorativi: number;
+  giorniFestivi: number;
+  giorniSospensione: number;
+  note: string[];
+}
+
+/**
+ * Calcola i giorni intercorrenti tra due date
+ * Include calcolo giorni lavorativi, festivi e sospensione feriale
+ */
+export function calcolaGiorniIntercorrenti(
+  dataInizio: Date,
+  dataFine: Date,
+  includiSospensione: boolean = true
+): RisultatoGiorniIntercorrenti {
+  const note: string[] = [];
+  
+  // Assicurati che le date siano ordinate correttamente
+  const inizio = new Date(Math.min(dataInizio.getTime(), dataFine.getTime()));
+  const fine = new Date(Math.max(dataInizio.getTime(), dataFine.getTime()));
+  
+  // Calcola giorni totali intercorrenti
+  const giorniTotali = differenzaGiorni(inizio, fine);
+  
+  // Calcola giorni festivi nel periodo
+  let giorniFestivi = 0;
+  let giorniLavorativi = 0;
+  let giorniSospensione = 0;
+  
+  const dataCorrente = new Date(inizio);
+  dataCorrente.setDate(dataCorrente.getDate() + 1); // Inizia dal giorno successivo
+  
+  while (dataCorrente < fine) {
+    if (isFestivo(dataCorrente)) {
+      giorniFestivi++;
+    } else {
+      giorniLavorativi++;
+    }
+    
+    // Conta giorni di sospensione feriale se richiesto
+    if (includiSospensione && isAgosto(dataCorrente)) {
+      giorniSospensione++;
+    }
+    
+    dataCorrente.setDate(dataCorrente.getDate() + 1);
+  }
+  
+  // Aggiungi note informative
+  if (giorniFestivi > 0) {
+    note.push(`${giorniFestivi} giorni festivi nel periodo`);
+  }
+  
+  if (includiSospensione && giorniSospensione > 0) {
+    note.push(`${giorniSospensione} giorni di sospensione feriale (agosto)`);
+  }
+  
+  if (giorniLavorativi > 0) {
+    note.push(`${giorniLavorativi} giorni lavorativi`);
+  }
+  
+  // Note speciali
+  if (giorniTotali === 0) {
+    note.push('Le date sono uguali');
+  } else if (giorniTotali === 1) {
+    note.push('Giorni consecutivi');
+  }
+  
+  return {
+    dataInizio: inizio,
+    dataFine: fine,
+    giorniIntercorrenti: giorniTotali,
+    giorniLavorativi,
+    giorniFestivi,
+    giorniSospensione,
+    note
+  };
+}
+
+/**
+ * Verifica se una data è in agosto (sospensione feriale)
+ */
+function isAgosto(data: Date): boolean {
+  return data.getMonth() === 7; // Agosto = mese 7 (0-indexed)
+}
+
+/**
+ * Calcola giorni lavorativi tra due date (esclude festivi e sabati)
+ */
+export function calcolaGiorniLavorativi(dataInizio: Date, dataFine: Date): number {
+  const inizio = new Date(Math.min(dataInizio.getTime(), dataFine.getTime()));
+  const fine = new Date(Math.max(dataInizio.getTime(), dataFine.getTime()));
+  
+  let giorniLavorativi = 0;
+  const dataCorrente = new Date(inizio);
+  dataCorrente.setDate(dataCorrente.getDate() + 1);
+  
+  while (dataCorrente < fine) {
+    // Conta solo giorni non festivi e non sabati
+    if (!isFestivo(dataCorrente) && !isSabato(dataCorrente)) {
+      giorniLavorativi++;
+    }
+    dataCorrente.setDate(dataCorrente.getDate() + 1);
+  }
+  
+  return giorniLavorativi;
+}
+
+/**
+ * Formatta il periodo tra due date
+ */
+export function formattaPeriodo(dataInizio: Date, dataFine: Date): string {
+  const inizio = new Date(Math.min(dataInizio.getTime(), dataFine.getTime()));
+  const fine = new Date(Math.max(dataInizio.getTime(), dataFine.getTime()));
+  
+  return `Dal ${formattaDataBreve(inizio)} al ${formattaDataBreve(fine)}`;
+}
