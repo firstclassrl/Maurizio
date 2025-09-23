@@ -1086,7 +1086,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             // Mobile Layout - Vertical
             <div className="flex flex-col items-center gap-3 text-center">
             <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.9.3
+                LexAgenda Ver 2.0.0
             </div>
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>Created by Abruzzo.AI</span>
@@ -1105,7 +1105,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             <div className="flex justify-between items-center">
               {/* Versione app - sinistra */}
               <div className="text-white text-xs opacity-75">
-                LexAgenda Ver 1.9.3
+                LexAgenda Ver 2.0.0
               </div>
               
               {/* Abruzzo.AI branding - centro */}

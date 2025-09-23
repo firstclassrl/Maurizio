@@ -72,10 +72,7 @@ export function OverdueCounter({ userId, onClick }: OverdueCounterProps) {
     )
   }
 
-  // Don't show the counter if there are no overdue tasks
-  if (overdueCount === 0) {
-    return null
-  }
+  // Always show the counter, even when count is 0
 
   return (
     <Card 
