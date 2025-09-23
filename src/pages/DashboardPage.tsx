@@ -23,6 +23,7 @@ import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
+import { TestDataInserter } from '../components/TestDataInserter'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator, PenTool, ArrowLeft, Users } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -566,6 +567,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           </CardContent>
         </Card>
 
+        {/* Test Data Inserter */}
+        <TestDataInserter userId={user.id} />
+
         {/* Quick Add Form */}
         <Card className="mb-6">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
@@ -593,19 +597,23 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Button
                     onClick={() => setModalitaInserimento('manuale')}
-                    className="h-20 flex flex-col items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                    className="h-16 flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    <PenTool className="h-6 w-6" />
-                    <span className="font-medium">Inserimento Manuale</span>
-                    <span className="text-sm opacity-90">Compila i campi direttamente</span>
+                    <PenTool className="h-5 w-5" />
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium text-sm">Inserimento Manuale</span>
+                      <span className="text-xs opacity-90">Compila i campi direttamente</span>
+                    </div>
                   </Button>
                   <Button
                     onClick={onNavigateToCalcolatore}
-                    className="h-20 flex flex-col items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
+                    className="h-16 flex items-center justify-center gap-3 bg-purple-600 hover:bg-purple-700 text-white"
                   >
-                    <Calculator className="h-6 w-6" />
-                    <span className="font-medium">Calcolatore Scadenze</span>
-                    <span className="text-sm opacity-90">Calcola termini processuali</span>
+                    <Calculator className="h-5 w-5" />
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium text-sm">Calcolatore Scadenze</span>
+                      <span className="text-xs opacity-90">Calcola termini processuali</span>
+                    </div>
                   </Button>
                 </div>
               </div>
