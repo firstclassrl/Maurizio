@@ -12,12 +12,9 @@ import { ArrowLeft, Plus } from 'lucide-react'
 interface MonthPageProps {
   user: User
   onBackToDashboard: () => void
-  onNavigateToWeek: () => void
-  onNavigateToDay: () => void
-  onNavigateToToday: () => void
 }
 
-export function MonthPage({ user, onBackToDashboard, onNavigateToWeek, onNavigateToDay, onNavigateToToday }: MonthPageProps) {
+export function MonthPage({ user, onBackToDashboard }: MonthPageProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
@@ -156,24 +153,24 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek, onNavigat
       </div>
 
       {/* Legend */}
-      <div className="px-6 py-4 bg-white border-b">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Legenda Colori</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-            <span className="text-sm text-gray-600">Scadenza Atto Processuale</span>
+      <div className="px-6 py-2 bg-white border-b">
+        <div className="flex items-center gap-4 text-xs text-gray-600">
+          <span className="font-medium">Legenda:</span>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <span>Scadenza Atto Processuale</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-            <span className="text-sm text-gray-600">Udienza</span>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span>Udienza</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-            <span className="text-sm text-gray-600">Attività Processuale</span>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <span>Attività Processuale</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-cyan-500 rounded-full"></div>
-            <span className="text-sm text-gray-600">Appuntamento in Studio</span>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-cyan-500 rounded-full"></div>
+            <span>Appuntamento in Studio</span>
           </div>
         </div>
       </div>
@@ -181,9 +178,6 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek, onNavigat
       <MonthlyCalendar 
         tasks={getFilteredTasks()} 
         onTaskClick={handleTaskClick}
-        onNavigateToWeek={onNavigateToWeek}
-        onNavigateToDay={onNavigateToDay}
-        onNavigateToToday={onNavigateToToday}
       />
 
       <TaskDialog

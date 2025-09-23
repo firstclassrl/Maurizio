@@ -60,26 +60,20 @@ function App() {
             onNavigateToCalcolatore={() => setCurrentView('calcolatore-termini')}
           />
         )
-      case 'month':
-        return (
-          <MonthPage 
-            user={user} 
-            onBackToDashboard={() => setCurrentView('dashboard')}
-            onNavigateToWeek={() => setCurrentView('week')}
-            onNavigateToDay={() => setCurrentView('dashboard')} // Per ora torna alla dashboard
-            onNavigateToToday={() => setCurrentView('dashboard')} // Torna alla dashboard per vedere gli impegni di oggi
-          />
-        )
-      case 'week':
-        return (
-          <WeekPage 
-            user={user} 
-            onBackToDashboard={() => setCurrentView('dashboard')}
-            onNavigateToMonth={() => setCurrentView('month')}
-            onNavigateToDay={() => setCurrentView('dashboard')} // Per ora torna alla dashboard
-            onNavigateToToday={() => setCurrentView('dashboard')} // Torna alla dashboard per vedere gli impegni di oggi
-          />
-        )
+        case 'month':
+          return (
+            <MonthPage 
+              user={user} 
+              onBackToDashboard={() => setCurrentView('dashboard')}
+            />
+          )
+        case 'week':
+          return (
+            <WeekPage 
+              user={user} 
+              onBackToDashboard={() => setCurrentView('dashboard')}
+            />
+          )
       case 'calcolatore-termini':
         return (
           <CalcolatoreTerminiPage 

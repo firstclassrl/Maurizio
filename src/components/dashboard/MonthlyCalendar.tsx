@@ -7,12 +7,9 @@ import { useMobile } from '../../hooks/useMobile'
 interface MonthlyCalendarProps {
   tasks: Task[]
   onTaskClick?: (task: Task) => void
-  onNavigateToWeek?: () => void
-  onNavigateToDay?: () => void
-  onNavigateToToday?: () => void
 }
 
-export function MonthlyCalendar({ tasks, onTaskClick, onNavigateToWeek, onNavigateToDay, onNavigateToToday }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ tasks, onTaskClick }: MonthlyCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const isMobile = useMobile()
 
@@ -137,37 +134,6 @@ export function MonthlyCalendar({ tasks, onTaskClick, onNavigateToWeek, onNaviga
           <h2 className="text-2xl font-bold text-gray-800">
             {formatMonthYear(currentMonth)}
           </h2>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="bg-blue-100 text-blue-800"
-            >
-              Mese
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={onNavigateToWeek}
-              className="hover:bg-green-100 hover:text-green-800"
-            >
-              Settimana
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={onNavigateToToday}
-            >
-              Giorno
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={onNavigateToDay}
-            >
-              Vai al giorno
-            </Button>
-          </div>
         </div>
       </div>
 

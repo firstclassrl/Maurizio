@@ -7,12 +7,9 @@ import { useMobile } from '../../hooks/useMobile'
 interface WeeklyCalendarProps {
   tasks: Task[]
   onTaskClick?: (task: Task) => void
-  onNavigateToMonth?: () => void
-  onNavigateToDay?: () => void
-  onNavigateToToday?: () => void
 }
 
-export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNavigateToDay, onNavigateToToday }: WeeklyCalendarProps) {
+export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const isMobile = useMobile()
 
@@ -124,37 +121,6 @@ export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNaviga
           <h2 className="text-2xl font-bold text-gray-800">
             {weekStart.getDate()} - {weekDays[weekDays.length - 1].getDate()} {formatMonthYear(currentWeek).split(' ')[0]} {currentWeek.getFullYear()}
           </h2>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={onNavigateToMonth}
-              className="bg-blue-100 text-blue-800 hover:bg-blue-200"
-            >
-              Mese
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="bg-green-100 text-green-800"
-            >
-              Settimana
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={onNavigateToToday}
-            >
-              Giorno
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={onNavigateToDay}
-            >
-              Vai al giorno
-            </Button>
-          </div>
         </div>
       </div>
 
