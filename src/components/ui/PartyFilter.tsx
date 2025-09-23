@@ -5,7 +5,7 @@ interface PartyFilterProps {
   selectedParty: string;
   onPartyChange: (party: string) => void;
   className?: string;
-  tasks: Array<{ parte?: string | null; controparte?: string | null }>;
+  tasks: Array<{ cliente?: string | null; controparte?: string | null }>;
 }
 
 export const PartyFilter: React.FC<PartyFilterProps> = ({
@@ -19,7 +19,7 @@ export const PartyFilter: React.FC<PartyFilterProps> = ({
   const allControparties = new Set<string>();
   
   tasks.forEach(task => {
-    if (task.parte) allParties.add(task.parte);
+    if (task.cliente) allParties.add(task.cliente);
     if (task.controparte) allControparties.add(task.controparte);
   });
 
@@ -29,22 +29,22 @@ export const PartyFilter: React.FC<PartyFilterProps> = ({
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <label htmlFor="party-filter" className="text-sm font-medium text-gray-700">
-        Filtra per parte/controparte:
+        Filtra per cliente/controparte:
       </label>
       <Select value={selectedParty} onValueChange={onPartyChange}>
         <SelectTrigger id="party-filter" className="w-64">
-          <SelectValue placeholder="Seleziona parte/controparte" />
+          <SelectValue placeholder="Seleziona cliente/controparte" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Tutte le parti/controparti</SelectItem>
+          <SelectItem value="all">Tutti i clienti/controparti</SelectItem>
           {sortedParties.length > 0 && (
             <>
               <div className="px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-100">
-                PARTI
+                CLIENTI
               </div>
               {sortedParties.map((party) => (
-                <SelectItem key={`parte-${party}`} value={`parte-${party}`}>
-                  Parte: {party}
+                <SelectItem key={`cliente-${party}`} value={`cliente-${party}`}>
+                  Cliente: {party}
                 </SelectItem>
               ))}
             </>

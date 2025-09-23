@@ -1,7 +1,7 @@
 # 🗄️ ISTRUZIONI PER APPLICARE LA MIGRAZIONE DATABASE
 
 ## ⚠️ IMPORTANTE
-Prima di utilizzare l'app con i nuovi campi Parte e Controparte, devi applicare la migrazione del database.
+Prima di utilizzare l'app con i nuovi campi Cliente e Controparte, devi applicare la migrazione del database.
 
 ## 📋 Passaggi per Applicare la Migrazione
 
@@ -21,12 +21,12 @@ Copia e incolla questo codice SQL:
 -- Add new fields to tasks table
 ALTER TABLE tasks 
 ADD COLUMN IF NOT EXISTS note TEXT,
-ADD COLUMN IF NOT EXISTS parte TEXT,
+ADD COLUMN IF NOT EXISTS cliente TEXT,
 ADD COLUMN IF NOT EXISTS controparte TEXT;
 
 -- Add comments for documentation
 COMMENT ON COLUMN tasks.note IS 'Additional notes for the task';
-COMMENT ON COLUMN tasks.parte IS 'Client or party involved in the case';
+COMMENT ON COLUMN tasks.cliente IS 'Client involved in the case';
 COMMENT ON COLUMN tasks.controparte IS 'Opposing party in the case';
 ```
 
@@ -47,16 +47,16 @@ ORDER BY ordinal_position;
 
 Dovresti vedere i nuovi campi:
 - `note` (TEXT, nullable)
-- `parte` (TEXT, nullable) 
+- `cliente` (TEXT, nullable) 
 - `controparte` (TEXT, nullable)
 
 ## ✅ Dopo l'Applicazione della Migrazione
 
 Una volta applicata la migrazione:
 
-1. **I campi Parte e Controparte saranno salvati nel database**
+1. **I campi Cliente e Controparte saranno salvati nel database**
 2. **Le attività esistenti mostreranno "Non specificata" per questi campi**
-3. **Le nuove attività potranno essere salvate con Parte e Controparte**
+3. **Le nuove attività potranno essere salvate con Cliente e Controparte**
 4. **La visualizzazione migliorata sarà completamente funzionale**
 
 ## 🎨 Nuova Visualizzazione
@@ -64,7 +64,7 @@ Una volta applicata la migrazione:
 Dopo la migrazione, vedrai:
 
 ### Dashboard
-- **Sezione dedicata** per Parte e Controparte
+- **Sezione dedicata** per Cliente e Controparte
 - **Layout a griglia** con etichette chiare
 - **Sfondo grigio** per distinguere le informazioni
 - **Campi evidenziati** con bordi bianchi
@@ -97,4 +97,4 @@ Se hai problemi con la migrazione, contatta il supporto tecnico con:
 
 **Versione App:** 1.4.7  
 **Data Migrazione:** 2025-01-21  
-**Campi Aggiunti:** note, parte, controparte
+**Campi Aggiunti:** note, cliente, controparte

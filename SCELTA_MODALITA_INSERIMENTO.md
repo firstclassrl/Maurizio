@@ -57,7 +57,7 @@ Ho implementato una nuova logica per la card "Aggiungi Nuova Pratica" che permet
 - **Categoria**: SCADENZA ATTO PROCESSUALE, UDIENZA, ATTIVITA' PROCESSUALE
 - **Scadenza**: Con calendario popup italiano
 - **Ora**: Con selettore orario 24h
-- **Parte**: Nome della parte
+- **Cliente**: Nome del cliente
 - **Controparte**: Nome della controparte
 - **Note**: Note aggiuntive
 - **Urgente**: Checkbox per pratiche urgenti
@@ -144,7 +144,7 @@ const resetForm = () => {
   setNewScadenza('')
   setNewOra('')
   setNewNote('')
-  setNewParte('')
+  setNewCliente('')
   setNewControparte('')
   setIsUrgentMode(false)
 }

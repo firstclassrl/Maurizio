@@ -201,9 +201,9 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
                           </div>
                         </div>
 
-                        {(task.parte || task.controparte) && (
+                        {(task.cliente || task.controparte) && (
                           <div className="text-sm text-gray-600 mb-3">
-                            <span className="font-medium">Parti:</span> {task.parte || 'N/A'} - {task.controparte || 'N/A'}
+                            <span className="font-medium">Parti:</span> {task.cliente || 'N/A'} - {task.controparte || 'N/A'}
                           </div>
                         )}
 

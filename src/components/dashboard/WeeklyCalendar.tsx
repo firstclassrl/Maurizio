@@ -174,7 +174,7 @@ export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
                             <div className="flex-1">
                               <div className="font-medium text-sm">{task.pratica}</div>
                               <div className="text-xs text-gray-600 mt-1">
-                                <span>Parte: <span className="text-gray-900 font-bold">{task.parte || 'N/A'}</span></span>
+                                <span>Cliente: <span className="text-gray-900 font-bold">{task.cliente || 'N/A'}</span></span>
                                 <span className="text-gray-400 mx-1">•</span>
                                 <span>Controparte: <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span></span>
                               </div>
@@ -239,7 +239,7 @@ export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
                             <div className="flex-1 min-w-0">
                               <div className="font-medium text-sm mb-1">{task.pratica}</div>
                               <div className="text-xs text-gray-600 mb-1">
-                                <span className="text-gray-900 font-bold">{task.parte || 'N/A'}</span> - <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span>
+                                <span className="text-gray-900 font-bold">{task.cliente || 'N/A'}</span> - <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span>
                               </div>
                               <div className="text-xs opacity-80 mb-1">{task.attivita}</div>
                               {isUrgentTask(task.priorita) && (

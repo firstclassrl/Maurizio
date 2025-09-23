@@ -31,7 +31,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     scadenza: '',
     priorita: 5,
     note: '',
-    parte: '',
+    cliente: '',
     controparte: '',
     stato: 'todo' as 'todo' | 'done'
   })
@@ -46,7 +46,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         scadenza: task.scadenza,
         priorita: task.priorita,
         note: task.note || '',
-        parte: task.parte || '',
+        cliente: task.cliente || '',
         controparte: task.controparte || '',
         stato: task.stato || 'todo'
       })
@@ -57,7 +57,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         scadenza: '',
         priorita: isUrgentMode ? 10 : 5,
         note: '',
-        parte: '',
+        cliente: '',
         controparte: '',
         stato: 'todo'
       })
@@ -122,7 +122,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       stato: formData.stato,
       priorita: formData.priorita,
       note: formData.note || null,
-      parte: formData.parte || null,
+      cliente: formData.cliente || null,
       controparte: formData.controparte || null
     }
     
@@ -200,12 +200,12 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <Label htmlFor="parte">Parte</Label>
+              <Label htmlFor="cliente">Cliente</Label>
               <Input
-                id="parte"
+                id="cliente"
                 placeholder="es. Mario Rossi"
-                value={formData.parte}
-                onChange={(e) => handleChange('parte', e.target.value)}
+                value={formData.cliente}
+                onChange={(e) => handleChange('cliente', e.target.value)}
                 className={isMobile ? "text-base" : ""}
               />
             </div>

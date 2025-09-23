@@ -167,7 +167,7 @@ const handleSaveAppuntamento = async (appuntamento: {
       stato: 'todo',
       priorita: 5,
       note: appuntamento.note || null,
-      parte: appuntamento.cliente,
+      cliente: appuntamento.cliente,
       controparte: null
     })
 }

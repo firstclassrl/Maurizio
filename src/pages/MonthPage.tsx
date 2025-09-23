@@ -53,7 +53,7 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         stato: taskData.stato,
         priorita: taskData.priorita,
         note: taskData.note || null,
-        parte: taskData.parte || null,
+        cliente: taskData.cliente || null,
         controparte: taskData.controparte || null,
         user_id: user.id
       }
@@ -107,11 +107,11 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
       filtered = filtered.filter(task => task.attivita === selectedCategory)
     }
 
-    // Filter by party/controparte
+    // Filter by cliente/controparte
     if (selectedParty !== 'all') {
-      if (selectedParty.startsWith('parte-')) {
-        const partyName = selectedParty.replace('parte-', '')
-        filtered = filtered.filter(task => task.parte === partyName)
+      if (selectedParty.startsWith('cliente-')) {
+        const clienteName = selectedParty.replace('cliente-', '')
+        filtered = filtered.filter(task => task.cliente === clienteName)
       } else if (selectedParty.startsWith('controparte-')) {
         const controparteName = selectedParty.replace('controparte-', '')
         filtered = filtered.filter(task => task.controparte === controparteName)

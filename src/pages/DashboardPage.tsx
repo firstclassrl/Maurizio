@@ -24,7 +24,7 @@ import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { OverdueCounter } from '../components/notifications/OverdueCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, PenTool, ArrowLeft, AlertTriangle } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, PenTool, ArrowLeft, AlertTriangle, Users } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -32,9 +32,10 @@ interface DashboardPageProps {
   onNavigateToWeek: () => void
   onNavigateToOverdue: () => void
   onNavigateToCalcolatore: () => void
+  onNavigateToClients: () => void
 }
 
-export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToOverdue, onNavigateToCalcolatore }: DashboardPageProps) {
+export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToOverdue, onNavigateToCalcolatore, onNavigateToClients }: DashboardPageProps) {
   const { message, showError, showSuccess, hideMessage } = useMessage()
   const isMobile = useMobile()
   const [tasks, setTasks] = useState<Task[]>([])
@@ -54,7 +55,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [newScadenza, setNewScadenza] = useState('')
   const [newOra, setNewOra] = useState('')
   const [newNote, setNewNote] = useState('')
-  const [newParte, setNewParte] = useState('')
+  const [newCliente, setNewCliente] = useState('')
   const [newControparte, setNewControparte] = useState('')
   const [modalitaInserimento, setModalitaInserimento] = useState<'scelta' | 'manuale'>('scelta')
   const [isAppuntamentoDialogOpen, setIsAppuntamentoDialogOpen] = useState(false)
@@ -168,7 +169,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         stato: taskData.stato,
         priorita: taskData.priorita || 5, // Use priority from form or default to 5
         note: taskData.note || null,
-        parte: taskData.parte || null,
+        cliente: taskData.cliente || null,
         controparte: taskData.controparte || null,
         user_id: user.id
       }
@@ -216,7 +217,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     setNewScadenza('')
     setNewOra('')
     setNewNote('')
-    setNewParte('')
+    setNewCliente('')
     setNewControparte('')
     setIsUrgentMode(false)
   }
@@ -245,7 +246,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           stato: 'todo',
           priorita: 5,
           note: appuntamento.note || null,
-          parte: appuntamento.cliente,
+          cliente: appuntamento.cliente,
           controparte: null
         })
 
@@ -291,7 +292,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           stato: 'todo',
             priorita: isUrgentMode ? 10 : 5, // Priorità alta per urgenti, media per normali
             note: newNote.trim() || null,
-            parte: newParte.trim() || null,
+            cliente: newCliente.trim() || null,
             controparte: newControparte.trim() || null
         })
 
@@ -384,11 +385,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       filtered = filtered.filter(task => task.attivita === selectedCategory)
     }
 
-    // Filter by party/controparte
+    // Filter by cliente/controparte
     if (selectedParty !== 'all') {
-      if (selectedParty.startsWith('parte-')) {
-        const partyName = selectedParty.replace('parte-', '')
-        filtered = filtered.filter(task => task.parte === partyName)
+      if (selectedParty.startsWith('cliente-')) {
+        const clienteName = selectedParty.replace('cliente-', '')
+        filtered = filtered.filter(task => task.cliente === clienteName)
       } else if (selectedParty.startsWith('controparte-')) {
         const controparteName = selectedParty.replace('controparte-', '')
         filtered = filtered.filter(task => task.controparte === controparteName)
@@ -455,6 +456,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <AlertTriangle className="h-4 w-4 mr-2" />
                 SCADUTE
               </Button>
+              <Button onClick={onNavigateToClients} className="bg-indigo-600 hover:bg-indigo-700 text-white border-0 flex-1" size="sm">
+                <Users className="h-4 w-4 mr-2" />
+                CLIENTI
+              </Button>
             </div>
             </div>
           ) : (
@@ -476,6 +481,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <Button onClick={onNavigateToOverdue} className="bg-red-600 hover:bg-red-700 text-white border-0" size="sm">
                   <AlertTriangle className="h-4 w-4 mr-2" />
                   SCADUTE
+                </Button>
+                <Button onClick={onNavigateToClients} className="bg-indigo-600 hover:bg-indigo-700 text-white border-0" size="sm">
+                  <Users className="h-4 w-4 mr-2" />
+                  CLIENTI
                 </Button>
                 <NotificationCenter userId={user.id} />
                 <AudioNotificationSettings userId={user.id} />
@@ -673,11 +682,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="parte">Parte</Label>
+                    <Label htmlFor="cliente">Cliente</Label>
                     <Input
-                      id="parte"
-                      value={newParte}
-                      onChange={(e) => setNewParte(e.target.value)}
+                      id="cliente"
+                      value={newCliente}
+                      onChange={(e) => setNewCliente(e.target.value)}
                       placeholder="es. Mario Rossi"
                       className="text-base"
                     />
@@ -812,11 +821,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 {/* Second Row */}
                 <div className="flex items-end gap-4">
                   <div className="w-48">
-                    <Label htmlFor="parte">Parte</Label>
+                    <Label htmlFor="cliente">Cliente</Label>
                     <Input
-                      id="parte"
-                      value={newParte}
-                      onChange={(e) => setNewParte(e.target.value)}
+                      id="cliente"
+                      value={newCliente}
+                      onChange={(e) => setNewCliente(e.target.value)}
                       placeholder="es. Mario Rossi"
                     />
                   </div>
@@ -905,7 +914,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                           <div className="font-bold text-gray-900 text-base mb-1">{task.pratica}</div>
                           <div className="text-sm text-gray-600 mb-2">
                             <span className="font-medium">
-                              Parte: <span className="text-gray-900 font-bold">{task.parte || 'Non specificata'}</span>
+                              Cliente: <span className="text-gray-900 font-bold">{task.cliente || 'Non specificato'}</span>
                             </span>
                             <span className="text-gray-400 mx-2">•</span>
                             <span className="font-medium">
@@ -963,12 +972,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     ) : (
                       // Desktop Layout - Two Rows
                       <div className="space-y-3">
-                        {/* Prima riga: Pratica a sinistra - Parte e controparte al centro - Pulsanti a destra */}
+                        {/* Prima riga: Pratica a sinistra - Cliente e controparte al centro - Pulsanti a destra */}
                         <div className="flex items-center">
                           <div className="flex-1 font-bold text-gray-900">{task.pratica}</div>
                           <div className="flex-1 text-sm text-gray-600 text-center">
                             <span className="font-medium">
-                              Parte: <span className="text-gray-900 font-bold">{task.parte || 'Non specificata'}</span>
+                              Cliente: <span className="text-gray-900 font-bold">{task.cliente || 'Non specificato'}</span>
                             </span>
                             <span className="text-gray-400 mx-2">•</span>
                             <span className="font-medium">

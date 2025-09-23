@@ -33,7 +33,7 @@ export interface Task {
   stato: 'todo' | 'done'
   priorita: number
   note?: string | null
-  parte?: string | null
+  cliente?: string | null
   controparte?: string | null
   created_at: string
   updated_at: string
