@@ -97,52 +97,9 @@ export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNaviga
 
   return (
     <div className="bg-white">
-      {/* Header with navigation and controls */}
+      {/* Header with navigation */}
       <div className="bg-gray-50 border-b border-gray-200 p-4">
-        {/* Filters Row */}
-        <div className="flex items-center gap-4 mb-4">
-          <select className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white">
-            <option>Tutte le tipologie</option>
-            <option>SCADENZA ATTO PROCESSUALE</option>
-            <option>UDIENZA</option>
-            <option>ATTIVITA' PROCESSUALE</option>
-            <option>APPUNTAMENTO IN STUDIO</option>
-          </select>
-          <select className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white">
-            <option>Tutte le categorie</option>
-          </select>
-          <select className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white">
-            <option>Avvocato Maurizio</option>
-          </select>
-          <input 
-            type="text" 
-            placeholder="Filtra per autorità..." 
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
-          />
-        </div>
-        
-        {/* Checkboxes Row */}
-        <div className="flex items-center gap-4 mb-4">
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" className="rounded" />
-            Mostra evasi/non evasi
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" className="rounded" />
-            Mostra da evadere/non evadere
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" className="rounded" />
-            Mostra weekend
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" className="rounded" />
-            Mostra tutto
-          </label>
-        </div>
-        
-        {/* Navigation Row */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button onClick={goToPreviousWeek} variant="outline" size="sm">
               <ChevronLeft className="h-4 w-4" />
@@ -157,19 +114,6 @@ export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNaviga
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">Stampa</Button>
-            <Button variant="outline" size="sm">Sincronizza</Button>
-            <Button variant="outline" size="sm">Aggiungi</Button>
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-600">
-            Impegni passati non evasi: {tasks.filter(task => new Date(task.scadenza) < new Date() && task.stato !== 'done').length}
-          </div>
-          <Button variant="outline" size="sm">Legenda</Button>
         </div>
       </div>
 
