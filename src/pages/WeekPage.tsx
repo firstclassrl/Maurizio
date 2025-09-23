@@ -14,9 +14,10 @@ interface WeekPageProps {
   onBackToDashboard: () => void
   onNavigateToMonth: () => void
   onNavigateToDay: () => void
+  onNavigateToToday: () => void
 }
 
-export function WeekPage({ user, onBackToDashboard, onNavigateToMonth, onNavigateToDay }: WeekPageProps) {
+export function WeekPage({ user, onBackToDashboard, onNavigateToMonth, onNavigateToDay, onNavigateToToday }: WeekPageProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
@@ -181,6 +182,7 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth, onNavigat
           onTaskClick={handleTaskClick}
           onNavigateToMonth={onNavigateToMonth}
           onNavigateToDay={onNavigateToDay}
+          onNavigateToToday={onNavigateToToday}
         />
       </div>
 

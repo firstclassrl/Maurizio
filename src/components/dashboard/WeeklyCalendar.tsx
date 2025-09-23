@@ -9,9 +9,10 @@ interface WeeklyCalendarProps {
   onTaskClick?: (task: Task) => void
   onNavigateToMonth?: () => void
   onNavigateToDay?: () => void
+  onNavigateToToday?: () => void
 }
 
-export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNavigateToDay }: WeeklyCalendarProps) {
+export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNavigateToDay, onNavigateToToday }: WeeklyCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const isMobile = useMobile()
 
@@ -142,11 +143,17 @@ export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNaviga
             <Button 
               variant="outline" 
               size="sm"
-              onClick={onNavigateToDay}
+              onClick={onNavigateToToday}
             >
               Giorno
             </Button>
-            <Button variant="outline" size="sm">Vai al giorno</Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={onNavigateToDay}
+            >
+              Vai al giorno
+            </Button>
           </div>
         </div>
       </div>
@@ -229,46 +236,46 @@ export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNaviga
             })}
           </div>
         ) : (
-          // Desktop Layout - Grid like in screenshots
-          <div className="grid grid-cols-5 gap-4">
+          // Desktop Layout - Full width grid
+          <div className="grid grid-cols-5 gap-2">
             {weekDays.map((day, index) => {
               const dayTasks = getTasksForDate(day)
               const isToday = day.toDateString() === new Date().toDateString()
               
               return (
-                <div key={index} className="border border-gray-200 rounded-lg bg-white">
-                  <div className="bg-gray-50 border-b border-gray-200 p-3">
+                <div key={index} className="border border-gray-200 rounded-lg bg-white min-h-[400px]">
+                  <div className="bg-gray-50 border-b border-gray-200 p-4">
                     <div className="text-center">
-                      <div className={`text-lg font-bold ${
-                        isToday ? 'bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mx-auto' : 'text-gray-800'
+                      <div className={`text-xl font-bold ${
+                        isToday ? 'bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto' : 'text-gray-800'
                       }`}>
                         {formatDayNumber(day)}
                       </div>
-                      <div className="text-sm text-gray-600 capitalize mt-1">
+                      <div className="text-sm text-gray-600 capitalize mt-2 font-medium">
                         {formatDayName(day)}
                       </div>
                     </div>
                   </div>
                   
-                  <div className="p-3 space-y-2">
+                  <div className="p-4 space-y-3">
                     {dayTasks.length === 0 ? (
-                      <div className="text-center text-gray-400 text-sm py-4">
+                      <div className="text-center text-gray-400 text-sm py-8">
                         Nessuna attività
                       </div>
                     ) : (
                       dayTasks.map((task) => (
                         <div
                           key={task.id}
-                          className={`p-2 rounded border cursor-pointer hover:shadow-md transition-shadow ${
+                          className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${
                             task.stato === 'done' 
                               ? 'bg-green-50 text-green-800 border-green-200' 
                               : getTaskColor(task)
                           }`}
                           onClick={() => onTaskClick?.(task)}
                         >
-                          <div className="flex items-start gap-2">
+                          <div className="flex items-start gap-3">
                             <div className="flex-shrink-0 mt-1">
-                              <div className={`w-2 h-2 rounded-full ${
+                              <div className={`w-3 h-3 rounded-full ${
                                 task.attivita === 'SCADENZA ATTO PROCESSUALE' ? 'bg-red-500' :
                                 task.attivita === 'UDIENZA' ? 'bg-green-500' :
                                 task.attivita === 'ATTIVITA\' PROCESSUALE' ? 'bg-yellow-500' :
@@ -276,13 +283,13 @@ export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNaviga
                               }`}></div>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium text-xs truncate">{task.pratica}</div>
-                              <div className="text-xs text-gray-600 mt-1">
+                              <div className="font-medium text-sm mb-1">{task.pratica}</div>
+                              <div className="text-xs text-gray-600 mb-1">
                                 <span className="text-gray-900 font-bold">{task.parte || 'N/A'}</span> - <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span>
                               </div>
-                              <div className="text-xs opacity-80 mt-1 truncate">{task.attivita}</div>
+                              <div className="text-xs opacity-80 mb-1">{task.attivita}</div>
                               {isUrgentTask(task.priorita) && (
-                                <div className="text-xs text-red-600 font-bold mt-1">URGENTE</div>
+                                <div className="text-xs text-red-600 font-bold">URGENTE</div>
                               )}
                             </div>
                           </div>

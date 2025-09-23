@@ -14,9 +14,10 @@ interface MonthPageProps {
   onBackToDashboard: () => void
   onNavigateToWeek: () => void
   onNavigateToDay: () => void
+  onNavigateToToday: () => void
 }
 
-export function MonthPage({ user, onBackToDashboard, onNavigateToWeek, onNavigateToDay }: MonthPageProps) {
+export function MonthPage({ user, onBackToDashboard, onNavigateToWeek, onNavigateToDay, onNavigateToToday }: MonthPageProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
@@ -181,6 +182,7 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek, onNavigat
           onTaskClick={handleTaskClick}
           onNavigateToWeek={onNavigateToWeek}
           onNavigateToDay={onNavigateToDay}
+          onNavigateToToday={onNavigateToToday}
         />
       </div>
 

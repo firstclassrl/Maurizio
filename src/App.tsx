@@ -67,6 +67,7 @@ function App() {
             onBackToDashboard={() => setCurrentView('dashboard')}
             onNavigateToWeek={() => setCurrentView('week')}
             onNavigateToDay={() => setCurrentView('dashboard')} // Per ora torna alla dashboard
+            onNavigateToToday={() => setCurrentView('dashboard')} // Torna alla dashboard per vedere gli impegni di oggi
           />
         )
       case 'week':
@@ -76,6 +77,7 @@ function App() {
             onBackToDashboard={() => setCurrentView('dashboard')}
             onNavigateToMonth={() => setCurrentView('month')}
             onNavigateToDay={() => setCurrentView('dashboard')} // Per ora torna alla dashboard
+            onNavigateToToday={() => setCurrentView('dashboard')} // Torna alla dashboard per vedere gli impegni di oggi
           />
         )
       case 'calcolatore-termini':
