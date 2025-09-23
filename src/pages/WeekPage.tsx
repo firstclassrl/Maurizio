@@ -136,7 +136,9 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
               Mese
             </Button>
           </div>
-          <h1 className="text-xl font-bold text-gray-900">Calendario Settimanale</h1>
+          <div className="flex-1 flex justify-center">
+            <h1 className="text-xl font-bold text-gray-900">Calendario Settimanale</h1>
+          </div>
           <div className="flex items-center gap-4">
             <div className="flex gap-4">
               <CategoryFilter 

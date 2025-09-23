@@ -136,7 +136,9 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
               Settimana
             </Button>
           </div>
-          <h1 className="text-xl font-bold text-gray-900">Calendario Mensile</h1>
+          <div className="flex-1 flex justify-center">
+            <h1 className="text-xl font-bold text-gray-900">Calendario Mensile</h1>
+          </div>
           <div className="flex items-center gap-4">
             <div className="flex gap-4">
               <CategoryFilter 
