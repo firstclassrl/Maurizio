@@ -286,6 +286,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
               <ScadenzaCalculator
                 onScadenzaCalculated={handleScadenzaCalculated}
                 initialDataInizio={formData.scadenza ? new Date(formData.scadenza) : undefined}
+                categoriaAttivita={formData.categoria}
               />
             </div>
           )}

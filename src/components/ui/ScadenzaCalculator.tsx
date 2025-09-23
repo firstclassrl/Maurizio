@@ -6,10 +6,38 @@ import { Label } from './label'
 import { Select } from './select'
 import { Calendar, Calculator, AlertTriangle } from 'lucide-react'
 
+// Funzioni di utilità per il formato italiano
+const formatDateToItalian = (date: Date): string => {
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+  return `${day}/${month}/${year}`
+}
+
+const parseItalianDate = (dateString: string): Date => {
+  const [day, month, year] = dateString.split('/').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+// Funzione per riconoscere automaticamente il tipo di scadenza dalla categoria
+const getTipoScadenzaFromCategoria = (categoria: string): string => {
+  switch (categoria) {
+    case 'SCADENZA ATTO PROCESSUALE':
+      return 'termini_processuali_civili'
+    case 'UDIENZA':
+      return 'termini_processuali_civili'
+    case 'ATTIVITA\' PROCESSUALE':
+      return 'memorie_repliche'
+    default:
+      return 'termini_processuali_civili'
+  }
+}
+
 interface ScadenzaCalculatorProps {
   onScadenzaCalculated?: (dataScadenza: Date, giorniTermine: number) => void
   initialDataInizio?: Date
   initialTipoScadenza?: string
+  categoriaAttivita?: string // Per riconoscimento automatico
 }
 
 interface TipoScadenza {
@@ -140,13 +168,14 @@ const TIPI_SCADENZA: TipoScadenza[] = [
 export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
   onScadenzaCalculated,
   initialDataInizio,
-  initialTipoScadenza
+  initialTipoScadenza,
+  categoriaAttivita
 }) => {
   const [dataInizio, setDataInizio] = useState<string>(
-    initialDataInizio ? initialDataInizio.toISOString().split('T')[0] : ''
+    initialDataInizio ? formatDateToItalian(initialDataInizio) : ''
   )
   const [tipoScadenza, setTipoScadenza] = useState<string>(
-    initialTipoScadenza || 'termini_processuali_civili'
+    initialTipoScadenza || (categoriaAttivita ? getTipoScadenzaFromCategoria(categoriaAttivita) : 'termini_processuali_civili')
   )
   const [giorniTermine, setGiorniTermine] = useState<number>(90)
   const [giorniTermineCustom, setGiorniTermineCustom] = useState<number>(30)
@@ -174,27 +203,31 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
   const calculateScadenza = () => {
     if (!dataInizio) return
 
-    const dataInizioDate = new Date(dataInizio)
-    const giorni = tipoScadenza === 'termini_generici' ? giorniTermineCustom : giorniTermine
-    
-    // Calcola la scadenza (per ora usiamo giorni calendario, in futuro aggiungeremo giorni lavorativi)
-    const scadenza = new Date(dataInizioDate)
-    scadenza.setDate(scadenza.getDate() + giorni)
-    
-    setDataScadenza(scadenza)
-    
-    // Calcola giorni rimanenti
-    const oggi = new Date()
-    const diffTime = scadenza.getTime() - oggi.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    setGiorniRimanenti(diffDays)
-    
-    // Controlla se è urgente (meno di 7 giorni)
-    setIsUrgente(diffDays <= 7 && diffDays >= 0)
-    
-    // Callback per il componente padre
-    if (onScadenzaCalculated) {
-      onScadenzaCalculated(scadenza, giorni)
+    try {
+      const dataInizioDate = parseItalianDate(dataInizio)
+      const giorni = tipoScadenza === 'termini_generici' ? giorniTermineCustom : giorniTermine
+      
+      // Calcola la scadenza (per ora usiamo giorni calendario, in futuro aggiungeremo giorni lavorativi)
+      const scadenza = new Date(dataInizioDate)
+      scadenza.setDate(scadenza.getDate() + giorni)
+      
+      setDataScadenza(scadenza)
+      
+      // Calcola giorni rimanenti
+      const oggi = new Date()
+      const diffTime = scadenza.getTime() - oggi.getTime()
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      setGiorniRimanenti(diffDays)
+      
+      // Controlla se è urgente (meno di 7 giorni)
+      setIsUrgente(diffDays <= 7 && diffDays >= 0)
+      
+      // Callback per il componente padre
+      if (onScadenzaCalculated) {
+        onScadenzaCalculated(scadenza, giorni)
+      }
+    } catch (error) {
+      console.error('Errore nel calcolo della scadenza:', error)
     }
   }
 
@@ -237,12 +270,20 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
       <CardContent className="space-y-3">
         {/* Data di Inizio */}
         <div className="space-y-2">
-          <Label htmlFor="data-inizio">Data di Inizio</Label>
+          <Label htmlFor="data-inizio">Data di Inizio (gg/mm/yyyy)</Label>
           <Input
             id="data-inizio"
-            type="date"
+            type="text"
+            placeholder="gg/mm/yyyy"
             value={dataInizio}
-            onChange={(e) => setDataInizio(e.target.value)}
+            onChange={(e) => {
+              // Permette solo numeri e /
+              const value = e.target.value.replace(/[^0-9/]/g, '')
+              // Limita la lunghezza
+              if (value.length <= 10) {
+                setDataInizio(value)
+              }
+            }}
             className="w-full"
           />
         </div>
@@ -250,6 +291,11 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
         {/* Tipo di Scadenza */}
         <div className="space-y-2">
           <Label htmlFor="tipo-scadenza">Tipo di Scadenza</Label>
+          {categoriaAttivita && (
+            <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+              💡 Tipo riconosciuto automaticamente dalla categoria: <strong>{categoriaAttivita}</strong>
+            </div>
+          )}
           <Select value={tipoScadenza} onValueChange={setTipoScadenza}>
             {TIPI_SCADENZA.map((tipo) => (
               <option key={tipo.id} value={tipo.id}>
