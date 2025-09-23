@@ -23,7 +23,6 @@ import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { TestDataInserter } from '../components/TestDataInserter'
 import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator, PenTool, ArrowLeft, Users } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -566,9 +565,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             )}
           </CardContent>
         </Card>
-
-        {/* Test Data Inserter */}
-        <TestDataInserter userId={user.id} />
 
         {/* Quick Add Form */}
         <Card className="mb-6">
