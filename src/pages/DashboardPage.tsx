@@ -58,7 +58,17 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   useEffect(() => {
     loadTasks()
     loadUserProfile()
+    // Force initial counter refresh
+    setRefreshCounters(prev => prev + 1)
   }, [])
+
+  // Force refresh counters when tasks change
+  useEffect(() => {
+    if (tasks.length > 0) {
+      setRefreshCounters(prev => prev + 1)
+    }
+  }, [tasks])
+
 
   const loadUserProfile = async () => {
     try {
@@ -186,7 +196,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
       setIsUrgentMode(false)
-      setRefreshCounters(prev => prev + 1) // Force counter refresh
+      // Force counter refresh after saving task
+      setTimeout(() => {
+        setRefreshCounters(prev => prev + 1)
+      }, 100)
     } catch (error) {
       console.error('Error saving task:', error)
     }
@@ -246,7 +259,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       // Clear form
       resetForm()
       await loadTasks()
-      setRefreshCounters(prev => prev + 1) // Force counter refresh
+      // Force counter refresh after adding task
+      setTimeout(() => {
+        setRefreshCounters(prev => prev + 1)
+      }, 100)
       showSuccess('Pratica aggiunta', `La pratica ${isUrgentMode ? 'urgente' : ''} è stata aggiunta con successo`)
     } catch (error) {
       console.error('Error adding task:', error)
@@ -274,7 +290,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       if (error) throw error
 
       await loadTasks()
-      setRefreshCounters(prev => prev + 1) // Force counter refresh
+      // Force counter refresh after deleting task
+      setTimeout(() => {
+        setRefreshCounters(prev => prev + 1)
+      }, 100)
       showSuccess('Attività eliminata', 'L\'attività è stata eliminata con successo')
     } catch (error) {
       console.error('Error deleting task:', error)
