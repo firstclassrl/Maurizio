@@ -38,6 +38,7 @@ interface ScadenzaCalculatorProps {
   initialDataInizio?: Date
   initialTipoScadenza?: string
   categoriaAttivita?: string // Per riconoscimento automatico
+  activityAnalysis?: any // Analisi AI dell'attività
 }
 
 interface TipoScadenza {
@@ -169,13 +170,16 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
   onScadenzaCalculated,
   initialDataInizio,
   initialTipoScadenza,
-  categoriaAttivita
+  categoriaAttivita,
+  activityAnalysis
 }) => {
   const [dataInizio, setDataInizio] = useState<string>(
     initialDataInizio ? formatDateToItalian(initialDataInizio) : ''
   )
   const [tipoScadenza, setTipoScadenza] = useState<string>(
-    initialTipoScadenza || (categoriaAttivita ? getTipoScadenzaFromCategoria(categoriaAttivita) : 'termini_processuali_civili')
+    initialTipoScadenza || 
+    (activityAnalysis?.suggestedCalculation?.tipoScadenza) ||
+    (categoriaAttivita ? getTipoScadenzaFromCategoria(categoriaAttivita) : 'termini_processuali_civili')
   )
   const [giorniTermine, setGiorniTermine] = useState<number>(90)
   const [giorniTermineCustom, setGiorniTermineCustom] = useState<number>(30)
@@ -291,7 +295,16 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
         {/* Tipo di Scadenza */}
         <div className="space-y-2">
           <Label htmlFor="tipo-scadenza">Tipo di Scadenza</Label>
-          {categoriaAttivita && (
+          {activityAnalysis?.suggestedCalculation && (
+            <div className="text-xs text-green-600 bg-green-50 p-2 rounded">
+              🤖 AI Suggerimento: {activityAnalysis.description}
+              <br />
+              <strong>Tipo:</strong> {TIPI_SCADENZA.find(t => t.id === activityAnalysis.suggestedCalculation.tipoScadenza)?.nome}
+              <br />
+              <strong>Giorni:</strong> {activityAnalysis.suggestedCalculation.giorniTermine}
+            </div>
+          )}
+          {categoriaAttivita && !activityAnalysis?.suggestedCalculation && (
             <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
               💡 Tipo riconosciuto automaticamente dalla categoria: <strong>{categoriaAttivita}</strong>
             </div>
