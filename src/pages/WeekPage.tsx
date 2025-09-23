@@ -126,17 +126,17 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Button onClick={onBackToDashboard} variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-3 w-3 mr-1" />
               Torna a Dashboard
             </Button>
             <Button onClick={onNavigateToMonth} variant="outline" size="sm" className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300">
-              <Calendar className="h-4 w-4 mr-2" />
+              <Calendar className="h-3 w-3 mr-1" />
               Mese
             </Button>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Calendario Settimanale</h1>
+          <h1 className="text-xl font-bold text-gray-900">Calendario Settimanale</h1>
           <div className="flex items-center gap-4">
             <div className="flex gap-4">
               <CategoryFilter 

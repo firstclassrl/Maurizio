@@ -24,7 +24,7 @@ import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { OverdueCounter } from '../components/notifications/OverdueCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator, PenTool, ArrowLeft, AlertTriangle } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, PenTool, ArrowLeft, AlertTriangle } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -885,10 +885,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     className={isMobile ? "flex-1" : ""}
                   />
                 </div>
-                <Button onClick={loadTasks} variant="outline" size="sm" className={isMobile ? "w-auto" : ""}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Ricarica
-              </Button>
             </div>
             </div>
             {getFilteredTasks().length === 0 ? (
