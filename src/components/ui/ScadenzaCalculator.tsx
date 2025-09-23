@@ -227,14 +227,14 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
   }
 
   return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Calculator className="h-5 w-5" />
+    <Card className="w-full">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Calculator className="h-4 w-4" />
           Calcolatore Scadenze Legali
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
         {/* Data di Inizio */}
         <div className="space-y-2">
           <Label htmlFor="data-inizio">Data di Inizio</Label>
@@ -277,23 +277,23 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
 
         {/* Risultato del Calcolo */}
         {dataScadenza && (
-          <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+          <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <span className="font-medium">Risultato del Calcolo:</span>
+              <span className="font-medium text-sm">Risultato del Calcolo:</span>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm text-gray-600">Data di Scadenza:</Label>
-                <div className="text-lg font-bold text-gray-900">
+                <Label className="text-xs text-gray-600">Data di Scadenza:</Label>
+                <div className="text-sm font-bold text-gray-900">
                   {dataScadenza.toLocaleDateString('it-IT')}
                 </div>
               </div>
               
               <div>
-                <Label className="text-sm text-gray-600">Giorni Rimanenti:</Label>
-                <div className={`text-lg font-bold ${isUrgente ? 'text-red-600' : 'text-gray-900'}`}>
+                <Label className="text-xs text-gray-600">Giorni Rimanenti:</Label>
+                <div className={`text-sm font-bold ${isUrgente ? 'text-red-600' : 'text-gray-900'}`}>
                   {giorniRimanenti} giorni
                 </div>
               </div>
@@ -301,24 +301,24 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
 
             {/* Avviso Urgente */}
             {isUrgente && (
-              <div className="flex items-center gap-2 p-3 bg-red-100 border border-red-200 rounded-lg">
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-                <span className="text-sm text-red-800 font-medium">
+              <div className="flex items-center gap-2 p-2 bg-red-100 border border-red-200 rounded-lg">
+                <AlertTriangle className="h-3 w-3 text-red-600" />
+                <span className="text-xs text-red-800 font-medium">
                   ATTENZIONE: Scadenza urgente! Meno di 7 giorni rimanenti.
                 </span>
               </div>
             )}
 
             {/* Informazioni Tipo Scadenza */}
-            <div className="space-y-2">
-              <Label className="text-sm text-gray-600">Informazioni:</Label>
+            <div className="space-y-1">
+              <Label className="text-xs text-gray-600">Informazioni:</Label>
               <div className="flex items-center gap-2">
                 <span className={`px-2 py-1 text-xs rounded-full border ${getCategoriaColor(
                   TIPI_SCADENZA.find(t => t.id === tipoScadenza)?.categoria || 'Generico'
                 )}`}>
                   {TIPI_SCADENZA.find(t => t.id === tipoScadenza)?.categoria}
                 </span>
-                <span className="text-sm text-gray-700">
+                <span className="text-xs text-gray-700">
                   {TIPI_SCADENZA.find(t => t.id === tipoScadenza)?.descrizione}
                 </span>
               </div>
@@ -335,9 +335,10 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
             calculateScadenza()
           }}
           disabled={!dataInizio}
+          size="sm"
           className="w-full"
         >
-          <Calculator className="h-4 w-4 mr-2" />
+          <Calculator className="h-3 w-3 mr-2" />
           Calcola Scadenza
         </Button>
       </CardContent>

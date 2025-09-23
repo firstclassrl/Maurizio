@@ -118,7 +118,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={isMobile ? "mx-4 max-w-[95vw]" : "sm:max-w-[500px]"}>
+      <DialogContent className={isMobile ? "mx-4 max-w-[95vw] max-h-[90vh] overflow-y-auto" : "sm:max-w-[800px] max-h-[90vh] overflow-y-auto"}>
         <DialogHeader>
           <DialogTitle className={`flex items-center gap-2 ${isUrgentMode ? 'text-red-600' : ''}`}>
             {isUrgentMode && <AlertTriangle className="h-5 w-5" />}
@@ -270,15 +270,15 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
 
           {/* Calcolatore Scadenze */}
           {showCalculator && (
-            <div className="space-y-2 p-4 bg-gray-50 rounded-lg border">
+            <div className="space-y-2 p-3 bg-gray-50 rounded-lg border">
               <div className="flex items-center justify-between">
-                <Label className="text-base font-medium">Calcolatore Scadenze Legali</Label>
+                <Label className="text-sm font-medium">Calcolatore Scadenze Legali</Label>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setShowCalculator(false)}
-                  className="px-2 py-1"
+                  className="px-2 py-1 text-xs"
                 >
                   ✕
                 </Button>
