@@ -126,7 +126,7 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mr-8">
             <Button onClick={onBackToDashboard} variant="outline" size="sm">
               <ArrowLeft className="h-3 w-3 mr-1" />
               Torna a Dashboard
