@@ -1057,6 +1057,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         task={selectedTask}
         onSave={handleTaskSave}
         isUrgentMode={isUrgentMode}
+        user={user}
       />
       
       <MessageModal

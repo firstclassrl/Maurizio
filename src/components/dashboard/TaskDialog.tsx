@@ -14,6 +14,8 @@ import { useMobile } from '../../hooks/useMobile'
 import { Task } from '../../lib/calendar-utils'
 import { analyzeActivity, getActivityDescription, getActivityIcon } from '../../lib/activity-intelligence'
 import { AlertTriangle, Calculator, Brain } from 'lucide-react'
+import { supabase } from '../../lib/supabase'
+import { Client } from '../../types/client'
 
 interface TaskDialogProps {
   open: boolean
@@ -21,13 +23,14 @@ interface TaskDialogProps {
   task: Task | null
   isUrgentMode?: boolean
   onSave: (task: Partial<Task>) => void
+  user: any
 }
 
-export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onSave }: TaskDialogProps) {
+export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onSave, user }: TaskDialogProps) {
   const { message, showError, hideMessage } = useMessage()
   const isMobile = useMobile()
   const [formData, setFormData] = useState({
-    pratica: '',
+    attivita: '',
     categoria: '',
     scadenza: '',
     priorita: 5,
@@ -38,11 +41,20 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
   })
   const [showCalculator, setShowCalculator] = useState(false)
   const [activityAnalysis, setActivityAnalysis] = useState<any>(null)
+  const [clients, setClients] = useState<Client[]>([])
+  const [loadingClients, setLoadingClients] = useState(false)
+
+  // Carica i clienti quando il dialog si apre
+  useEffect(() => {
+    if (open) {
+      loadClients()
+    }
+  }, [open])
 
   useEffect(() => {
     if (task) {
       setFormData({
-        pratica: task.pratica,
+        attivita: task.pratica || '', // Mappa da pratica a attivita
         categoria: task.attivita,
         scadenza: task.scadenza,
         priorita: task.priorita,
@@ -53,7 +65,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       })
     } else {
       setFormData({
-        pratica: '',
+        attivita: '',
         categoria: '',
         scadenza: '',
         priorita: isUrgentMode ? 10 : 5,
@@ -65,15 +77,34 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     }
   }, [task, open, isUrgentMode])
 
-  // Analizza l'attività quando cambiano pratica o categoria
+  const loadClients = async () => {
+    try {
+      setLoadingClients(true)
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('ragione', { ascending: true })
+
+      if (error) throw error
+      setClients(data || [])
+    } catch (error) {
+      console.error('Error loading clients:', error)
+      showError('Errore', 'Errore nel caricamento dei clienti')
+    } finally {
+      setLoadingClients(false)
+    }
+  }
+
+  // Analizza l'attività quando cambiano attivita o categoria
   useEffect(() => {
-    if (formData.pratica && formData.categoria) {
-      const analysis = analyzeActivity(formData.categoria, formData.pratica)
+    if (formData.attivita && formData.categoria) {
+      const analysis = analyzeActivity(formData.categoria, formData.attivita)
       setActivityAnalysis(analysis)
     } else {
       setActivityAnalysis(null)
     }
-  }, [formData.pratica, formData.categoria])
+  }, [formData.attivita, formData.categoria])
 
   const handleScadenzaCalculated = (dataScadenza: Date) => {
     const formattedDate = format(dataScadenza, 'yyyy-MM-dd')
@@ -91,7 +122,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     console.log('TaskDialog handleSubmit called', { task, formData })
     
     // Validate required fields
-    if (!formData.pratica.trim() || !formData.categoria.trim() || !formData.scadenza) {
+    if (!formData.attivita.trim() || !formData.categoria.trim() || !formData.scadenza) {
       showError('Campi obbligatori', 'Compila tutti i campi obbligatori')
       return
     }
@@ -105,7 +136,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         today.setHours(0, 0, 0, 0) // Reset time to start of day
         
         if (selectedDate < today) {
-          showError('Data non valida', 'Non è possibile creare pratiche con date precedenti a oggi')
+          showError('Data non valida', 'Non è possibile creare attività con date precedenti a oggi')
           return
         }
       } catch (error) {
@@ -116,7 +147,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     
     // Prepare data for save
     const taskData = {
-      pratica: formData.pratica,
+      pratica: formData.attivita, // Map attivita to pratica for database compatibility
       attivita: formData.categoria, // Map categoria to attivita for database compatibility
       scadenza: formData.scadenza,
       stato: formData.stato,
@@ -143,18 +174,18 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         <DialogHeader>
           <DialogTitle className={`flex items-center gap-2 ${isUrgentMode ? 'text-red-600' : ''}`}>
             {isUrgentMode && <AlertTriangle className="h-5 w-5" />}
-            {task ? 'Modifica Attività' : isUrgentMode ? 'Nuova Pratica Urgente' : 'Nuova Attività'}
+            {task ? 'Modifica Attività' : isUrgentMode ? 'Nuova Attività Urgente' : 'Nuova Attività'}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1">
-            <Label htmlFor="pratica">Pratica *</Label>
+            <Label htmlFor="attivita">Attività *</Label>
             <Input
-              id="pratica"
+              id="attivita"
               placeholder="es. Cliente vs Controparte"
-              value={formData.pratica}
-              onChange={(e) => handleChange('pratica', e.target.value)}
+              value={formData.attivita}
+              onChange={(e) => handleChange('attivita', e.target.value)}
               required
               className={isMobile ? "text-base" : ""}
             />
@@ -201,13 +232,23 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label htmlFor="cliente">Cliente</Label>
-              <Input
-                id="cliente"
-                placeholder="es. Mario Rossi"
-                value={formData.cliente}
-                onChange={(e) => handleChange('cliente', e.target.value)}
-                className={isMobile ? "text-base" : ""}
-              />
+              <Select 
+                value={formData.cliente} 
+                onValueChange={(value) => handleChange('cliente', value)}
+                disabled={loadingClients}
+              >
+                <SelectTrigger className={isMobile ? "text-base" : ""}>
+                  <SelectValue placeholder={loadingClients ? "Caricamento..." : "Seleziona cliente"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Nessun cliente</SelectItem>
+                  {clients.map((client) => (
+                    <SelectItem key={client.id} value={client.ragione}>
+                      {client.ragione}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1">
               <Label htmlFor="controparte">Controparte</Label>

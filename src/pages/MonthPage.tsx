@@ -194,6 +194,7 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         onOpenChange={setIsTaskDialogOpen}
         task={selectedTask}
         onSave={handleTaskSave}
+        user={user}
       />
     </div>
   )
