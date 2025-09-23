@@ -548,7 +548,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 {getTodayTasks().map((task) => (
                   <div key={task.id} className={`flex items-center justify-between p-4 rounded-lg border ${getTaskColor(task)}`}>
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">{task.pratica}</div>
+                      <div className="font-bold text-gray-900">{task.pratica}</div>
                       <div className="text-sm text-gray-600">{task.attivita}</div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -576,10 +576,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         </Card>
 
         {/* Quick Add Form */}
-        <Card className="mb-6">
+        <Card className="mb-6 border-2 border-black">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Aggiungi Nuova Pratica</h3>
+              <h3 className="text-lg font-semibold">Aggiungi Nuova Attività</h3>
               {modalitaInserimento !== 'scelta' && (
                 <Button
                   onClick={handleBackToChoice}
@@ -906,7 +906,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                       // Mobile Layout - Vertical
                       <div className="space-y-3">
                         <div>
-                          <div className="font-medium text-gray-900 text-base mb-1">{task.pratica}</div>
+                          <div className="font-bold text-gray-900 text-base mb-1">{task.pratica}</div>
                           <div className="text-sm text-gray-600 mb-2">
                             <span className="font-medium">
                               Parte: <span className="text-gray-900 font-bold">{task.parte || 'Non specificata'}</span>
@@ -969,7 +969,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                       <div className="space-y-3">
                         {/* Prima riga: Pratica a sinistra - Parte e controparte al centro - Pulsanti a destra */}
                         <div className="flex items-center">
-                          <div className="flex-1 font-medium text-gray-900">{task.pratica}</div>
+                          <div className="flex-1 font-bold text-gray-900">{task.pratica}</div>
                           <div className="flex-1 text-sm text-gray-600 text-center">
                             <span className="font-medium">
                               Parte: <span className="text-gray-900 font-bold">{task.parte || 'Non specificata'}</span>
