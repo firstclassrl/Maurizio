@@ -21,9 +21,10 @@ import { AudioNotificationSettings } from '../components/notifications/AudioNoti
 import { WeekCounter } from '../components/notifications/WeekCounter'
 import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
+import { OverdueCounter } from '../components/notifications/OverdueCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator, PenTool, ArrowLeft, Users, AlertTriangle } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator, PenTool, ArrowLeft, AlertTriangle } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -454,14 +455,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <AlertTriangle className="h-4 w-4 mr-2" />
                 SCADUTE
               </Button>
-              <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0 flex-1" size="sm">
-                <Calculator className="h-4 w-4 mr-2" />
-                CALCOLATORE
-              </Button>
-              <Button onClick={() => setIsAppuntamentoDialogOpen(true)} className="bg-cyan-600 hover:bg-cyan-700 text-white border-0 flex-1" size="sm">
-                <Users className="h-4 w-4 mr-2" />
-                APPUNTAMENTO
-              </Button>
             </div>
             </div>
           ) : (
@@ -483,14 +476,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <Button onClick={onNavigateToOverdue} className="bg-red-600 hover:bg-red-700 text-white border-0" size="sm">
                   <AlertTriangle className="h-4 w-4 mr-2" />
                   SCADUTE
-                </Button>
-                <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0" size="sm">
-                  <Calculator className="h-4 w-4 mr-2" />
-                  CALCOLATORE
-                </Button>
-                <Button onClick={() => setIsAppuntamentoDialogOpen(true)} className="bg-cyan-600 hover:bg-cyan-700 text-white border-0" size="sm">
-                  <Users className="h-4 w-4 mr-2" />
-                  APPUNTAMENTO
                 </Button>
                 <NotificationCenter userId={user.id} />
                 <AudioNotificationSettings userId={user.id} />
@@ -540,10 +525,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           {/* All Counters - positioned on the right */}
           <div className="ml-4 flex flex-col gap-2">
               {/* Today, Urgent and Week counters in horizontal layout */}
-            <div className="flex gap-2">
+              <div className="flex gap-2">
                 <TodayCounter userId={user.id} key={`today-${refreshCounters}`} />
                 <UrgentCounter userId={user.id} key={`urgent-${refreshCounters}`} />
                 <WeekCounter userId={user.id} key={`week-${refreshCounters}`} />
+                <OverdueCounter userId={user.id} key={`overdue-${refreshCounters}`} onClick={onNavigateToOverdue} />
               </div>
             </div>
           </div>
@@ -610,9 +596,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             {/* Scelta Modalità Inserimento */}
             {modalitaInserimento === 'scelta' && (
               <div className="space-y-4">
-                <p className="text-gray-600 dark:text-gray-400 text-center">
-                  Come vuoi aggiungere la nuova pratica?
-                </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Button
                     onClick={() => setModalitaInserimento('manuale')}
