@@ -5,6 +5,8 @@ import { Task } from '../lib/calendar-utils'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
+import { DateInput } from '../components/ui/DateInput'
+import { TimeInput } from '../components/ui/TimeInput'
 import { Card, CardContent } from '../components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
@@ -565,29 +567,21 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="scadenza">Scadenza</Label>
-                <Input
-                  id="scadenza"
-                  type="date"
-                  value={newScadenza}
-                  onChange={(e) => setNewScadenza(e.target.value)}
-                  className="text-base text-gray-900"
-                  style={{ colorScheme: 'light' }}
-                />
-              </div>
-              <div>
-                <Label htmlFor="ora">Ora (opzionale)</Label>
-                <Input
-                  id="ora"
-                  type="time"
-                  value={newOra}
-                  onChange={(e) => setNewOra(e.target.value)}
-                  className="text-base text-gray-900"
-                  style={{ colorScheme: 'light' }}
-                  step="60"
-                />
-                  </div>
+                  <DateInput
+                    id="scadenza"
+                    label="Scadenza"
+                    value={newScadenza}
+                    onChange={setNewScadenza}
+                    className="text-base text-gray-900"
+                    required
+                  />
+                  <TimeInput
+                    id="ora"
+                    label="Ora (opzionale)"
+                    value={newOra}
+                    onChange={setNewOra}
+                    className="text-base text-gray-900"
+                  />
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
@@ -650,27 +644,23 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="w-32">
-                    <Label htmlFor="scadenza">Scadenza</Label>
-                    <Input
+                  <div className="w-40">
+                    <DateInput
                       id="scadenza"
-                      type="date"
+                      label="Scadenza"
                       value={newScadenza}
-                      onChange={(e) => setNewScadenza(e.target.value)}
+                      onChange={setNewScadenza}
                       className="text-gray-900"
-                      style={{ colorScheme: 'light' }}
+                      required
                     />
                   </div>
                   <div className="w-32">
-                    <Label htmlFor="ora">Ora (opzionale)</Label>
-                    <Input
+                    <TimeInput
                       id="ora"
-                      type="time"
+                      label="Ora (opzionale)"
                       value={newOra}
-                      onChange={(e) => setNewOra(e.target.value)}
+                      onChange={setNewOra}
                       className="text-gray-900"
-                      style={{ colorScheme: 'light' }}
-                      step="60"
                     />
                   </div>
                 </div>

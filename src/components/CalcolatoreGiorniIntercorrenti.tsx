@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { DateInput } from './ui/DateInput';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { Badge } from './ui/badge';
@@ -125,28 +125,22 @@ export function CalcolatoreGiorniIntercorrenti({ onAggiungiACalendario }: Calcol
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Data di inizio */}
-            <div>
-              <Label htmlFor="data-inizio-intercorrenti">Data di inizio *</Label>
-              <Input
-                id="data-inizio-intercorrenti"
-                type="date"
-                value={dataInizio}
-                onChange={(e) => setDataInizio(e.target.value)}
-                className="mt-1"
-              />
-            </div>
+            <DateInput
+              id="data-inizio-intercorrenti"
+              label="Data di inizio"
+              value={dataInizio}
+              onChange={setDataInizio}
+              required
+            />
 
             {/* Data di fine */}
-            <div>
-              <Label htmlFor="data-fine-intercorrenti">Data di fine *</Label>
-              <Input
-                id="data-fine-intercorrenti"
-                type="date"
-                value={dataFine}
-                onChange={(e) => setDataFine(e.target.value)}
-                className="mt-1"
-              />
-            </div>
+            <DateInput
+              id="data-fine-intercorrenti"
+              label="Data di fine"
+              value={dataFine}
+              onChange={setDataFine}
+              required
+            />
 
             {/* Opzioni */}
             <div className="space-y-3">

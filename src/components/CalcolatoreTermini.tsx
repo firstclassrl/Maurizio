@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { DateInput } from './ui/DateInput';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Switch } from './ui/switch';
@@ -298,16 +299,13 @@ export function CalcolatoreTermini({ onAggiungiACalendario }: CalcolatoreTermini
             )}
 
             {/* Data di inizio */}
-            <div>
-              <Label htmlFor="data-inizio">Data di inizio *</Label>
-              <Input
-                id="data-inizio"
-                type="date"
-                value={dataInizio}
-                onChange={(e) => setDataInizio(e.target.value)}
-                className="mt-1"
-              />
-            </div>
+            <DateInput
+              id="data-inizio"
+              label="Data di inizio"
+              value={dataInizio}
+              onChange={setDataInizio}
+              required
+            />
 
             {/* Tipo di calcolo e valore */}
             <div className="grid grid-cols-2 gap-4">
