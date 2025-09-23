@@ -1,19 +1,17 @@
 import { useState } from 'react'
 import { Task } from '../../lib/calendar-utils'
 import { Button } from '../ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { ChevronLeft, ChevronRight, Home } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useMobile } from '../../hooks/useMobile'
 
 interface WeeklyCalendarProps {
   tasks: Task[]
-  onBackToDashboard?: () => void
   onTaskClick?: (task: Task) => void
   onNavigateToMonth?: () => void
   onNavigateToDay?: () => void
 }
 
-export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick, onNavigateToMonth, onNavigateToDay }: WeeklyCalendarProps) {
+export function WeeklyCalendar({ tasks, onTaskClick, onNavigateToMonth, onNavigateToDay }: WeeklyCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const isMobile = useMobile()
 
@@ -96,12 +94,6 @@ export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick, onNaviga
     return date.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })
   }
 
-  // Format time for display
-  const formatTime = (date: Date, task: Task) => {
-    // If task has a specific time, use it, otherwise default to 09:00
-    const time = task.note?.includes('ora') ? '09:00' : '09:00'
-    return time
-  }
 
   return (
     <div className="bg-white">

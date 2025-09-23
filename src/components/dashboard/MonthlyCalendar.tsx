@@ -1,19 +1,17 @@
 import { useState } from 'react'
 import { Task } from '../../lib/calendar-utils'
 import { Button } from '../ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { ChevronLeft, ChevronRight, Home } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useMobile } from '../../hooks/useMobile'
 
 interface MonthlyCalendarProps {
   tasks: Task[]
-  onBackToDashboard?: () => void
   onTaskClick?: (task: Task) => void
   onNavigateToWeek?: () => void
   onNavigateToDay?: () => void
 }
 
-export function MonthlyCalendar({ tasks, onBackToDashboard, onTaskClick, onNavigateToWeek, onNavigateToDay }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ tasks, onTaskClick, onNavigateToWeek, onNavigateToDay }: MonthlyCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const isMobile = useMobile()
 
