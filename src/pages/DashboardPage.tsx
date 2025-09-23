@@ -10,6 +10,7 @@ import { TimeInput } from '../components/ui/TimeInput'
 import { Card, CardContent } from '../components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
+import { AppuntamentoDialog } from '../components/dashboard/AppuntamentoDialog'
 import { Logo } from '../components/ui/Logo'
 import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
@@ -22,7 +23,7 @@ import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator, PenTool, ArrowLeft } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator, PenTool, ArrowLeft, Users } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -54,6 +55,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [newParte, setNewParte] = useState('')
   const [newControparte, setNewControparte] = useState('')
   const [modalitaInserimento, setModalitaInserimento] = useState<'scelta' | 'manuale'>('scelta')
+  const [isAppuntamentoDialogOpen, setIsAppuntamentoDialogOpen] = useState(false)
 
   useEffect(() => {
     loadTasks()
@@ -223,6 +225,43 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     resetForm()
   }
 
+  // Funzione per gestire il salvataggio degli appuntamenti
+  const handleSaveAppuntamento = async (appuntamento: {
+    cliente: string;
+    data: string;
+    ora: string;
+    note?: string;
+  }) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .insert({
+          user_id: user.id,
+          pratica: `Appuntamento con ${appuntamento.cliente}`,
+          attivita: 'APPUNTAMENTO IN STUDIO',
+          scadenza: appuntamento.data,
+          stato: 'todo',
+          priorita: 5,
+          note: appuntamento.note || null,
+          parte: appuntamento.cliente,
+          controparte: null
+        })
+
+      if (error) throw error
+
+      await loadTasks()
+      // Force counter refresh after adding appuntamento
+      setTimeout(() => {
+        setRefreshCounters(prev => prev + 1)
+      }, 100)
+      showSuccess('Appuntamento aggiunto', `Appuntamento con ${appuntamento.cliente} aggiunto con successo`)
+    } catch (error) {
+      console.error('Error adding appuntamento:', error)
+      showError('Errore', 'Errore durante l\'aggiunta dell\'appuntamento')
+      throw error
+    }
+  }
+
   const handleQuickAdd = async () => {
     if (!newPratica.trim() || !newCategoria.trim() || !newScadenza.trim()) {
       showError('Campi obbligatori', 'Per favore compila tutti i campi obbligatori')
@@ -387,20 +426,24 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   </Button>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0 flex-1" size="sm">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  SETTIMANA
-                </Button>
-                <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0 flex-1" size="sm">
-                  <CalendarDays className="h-4 w-4 mr-2" />
-                  MESE
-                </Button>
-                <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0 flex-1" size="sm">
-                  <Calculator className="h-4 w-4 mr-2" />
-                  CALCOLATORE
-                </Button>
-              </div>
+            <div className="flex gap-2">
+              <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0 flex-1" size="sm">
+                <Calendar className="h-4 w-4 mr-2" />
+                SETTIMANA
+              </Button>
+              <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0 flex-1" size="sm">
+                <CalendarDays className="h-4 w-4 mr-2" />
+                MESE
+              </Button>
+              <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0 flex-1" size="sm">
+                <Calculator className="h-4 w-4 mr-2" />
+                CALCOLATORE
+              </Button>
+              <Button onClick={() => setIsAppuntamentoDialogOpen(true)} className="bg-cyan-600 hover:bg-cyan-700 text-white border-0 flex-1" size="sm">
+                <Users className="h-4 w-4 mr-2" />
+                APPUNTAMENTO
+              </Button>
+            </div>
             </div>
           ) : (
             // Desktop Header Layout
@@ -409,26 +452,30 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             <Logo size={32} className="text-blue-300" />
             <h1 className="text-2xl font-bold text-white">LexAgenda</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0" size="sm">
-              <Calendar className="h-4 w-4 mr-2" />
-              SETTIMANA
-            </Button>
-            <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0" size="sm">
-              <CalendarDays className="h-4 w-4 mr-2" />
-              MESE
-            </Button>
-            <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0" size="sm">
-              <Calculator className="h-4 w-4 mr-2" />
-              CALCOLATORE
-            </Button>
-            <NotificationCenter userId={user.id} />
-            <AudioNotificationSettings userId={user.id} />
-            <Button onClick={handleLogout} variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
-          </div>
+              <div className="flex items-center gap-4">
+                <Button onClick={onNavigateToWeek} className="bg-green-600 hover:bg-green-700 text-white border-0" size="sm">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  SETTIMANA
+                </Button>
+                <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0" size="sm">
+                  <CalendarDays className="h-4 w-4 mr-2" />
+                  MESE
+                </Button>
+                <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0" size="sm">
+                  <Calculator className="h-4 w-4 mr-2" />
+                  CALCOLATORE
+                </Button>
+                <Button onClick={() => setIsAppuntamentoDialogOpen(true)} className="bg-cyan-600 hover:bg-cyan-700 text-white border-0" size="sm">
+                  <Users className="h-4 w-4 mr-2" />
+                  APPUNTAMENTO
+                </Button>
+                <NotificationCenter userId={user.id} />
+                <AudioNotificationSettings userId={user.id} />
+                <Button onClick={handleLogout} variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -605,6 +652,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                         ATTIVITA' PROCESSUALE
                       </span>
                     </SelectItem>
+                    <SelectItem value="APPUNTAMENTO IN STUDIO">
+                      <span className="flex items-center gap-2">
+                          <span className="w-3 h-3 bg-cyan-500 rounded-full"></span>
+                        APPUNTAMENTO IN STUDIO
+                      </span>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -714,6 +767,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                           <span className="flex items-center gap-2">
                             <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
                             ATTIVITA' PROCESSUALE
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="APPUNTAMENTO IN STUDIO">
+                          <span className="flex items-center gap-2">
+                            <span className="w-3 h-3 bg-cyan-500 rounded-full"></span>
+                            APPUNTAMENTO IN STUDIO
                           </span>
                         </SelectItem>
                       </SelectContent>
@@ -1002,6 +1061,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         confirmText="Elimina"
         cancelText="Annulla"
         type="danger"
+      />
+
+      <AppuntamentoDialog
+        isOpen={isAppuntamentoDialogOpen}
+        onClose={() => setIsAppuntamentoDialogOpen(false)}
+        onSave={handleSaveAppuntamento}
       />
       
       {/* Footer */}

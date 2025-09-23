@@ -11,7 +11,8 @@ const CATEGORIES = [
   { value: 'all', label: 'Tutte le categorie' },
   { value: 'UDIENZA', label: 'Udienza' },
   { value: 'ATTIVITA\' PROCESSUALE', label: 'Attività Processuale' },
-  { value: 'SCADENZA ATTO PROCESSUALE', label: 'Scadenza Atto Processuale' }
+  { value: 'SCADENZA ATTO PROCESSUALE', label: 'Scadenza Atto Processuale' },
+  { value: 'APPUNTAMENTO IN STUDIO', label: 'Appuntamento in Studio' }
 ];
 
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({

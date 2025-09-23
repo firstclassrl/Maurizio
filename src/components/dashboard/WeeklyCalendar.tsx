@@ -24,6 +24,8 @@ export function WeeklyCalendar({ tasks, onBackToDashboard, onTaskClick }: Weekly
         return 'bg-green-100 text-green-800 border-green-200'
       case 'ATTIVITA\' PROCESSUALE':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      case 'APPUNTAMENTO IN STUDIO':
+        return 'bg-cyan-100 text-cyan-800 border-cyan-200'
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200'
     }

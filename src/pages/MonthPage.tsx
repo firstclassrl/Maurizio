@@ -150,6 +150,29 @@ export function MonthPage({ user, onBackToDashboard }: MonthPageProps) {
             tasks={tasks}
           />
         </div>
+
+        {/* Legend */}
+        <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Legenda Colori</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+              <span className="text-sm text-gray-600">Scadenza Atto Processuale</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+              <span className="text-sm text-gray-600">Udienza</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+              <span className="text-sm text-gray-600">Attività Processuale</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-cyan-500 rounded-full"></div>
+              <span className="text-sm text-gray-600">Appuntamento in Studio</span>
+            </div>
+          </div>
+        </div>
         
         <MonthlyCalendar tasks={getFilteredTasks()} onTaskClick={handleTaskClick} />
       </div>

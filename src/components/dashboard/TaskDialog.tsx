@@ -184,6 +184,12 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                     ATTIVITA' PROCESSUALE
                   </span>
                 </SelectItem>
+                <SelectItem value="APPUNTAMENTO IN STUDIO">
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 bg-cyan-500 rounded-full"></span>
+                    APPUNTAMENTO IN STUDIO
+                  </span>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
