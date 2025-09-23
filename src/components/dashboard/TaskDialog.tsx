@@ -67,7 +67,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       ...prev,
       scadenza: formattedDate
     }))
-    setShowCalculator(false)
+    // Non chiudere automaticamente il calcolatore, lascia che l'utente decida
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -223,7 +223,11 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowCalculator(true)}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setShowCalculator(!showCalculator)
+                  }}
                   className="px-3"
                   title="Calcola scadenza automaticamente"
                 >
@@ -266,8 +270,19 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
 
           {/* Calcolatore Scadenze */}
           {showCalculator && (
-            <div className="space-y-2">
-              <Label>Calcolatore Scadenze Legali</Label>
+            <div className="space-y-2 p-4 bg-gray-50 rounded-lg border">
+              <div className="flex items-center justify-between">
+                <Label className="text-base font-medium">Calcolatore Scadenze Legali</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowCalculator(false)}
+                  className="px-2 py-1"
+                >
+                  ✕
+                </Button>
+              </div>
               <ScadenzaCalculator
                 onScadenzaCalculated={handleScadenzaCalculated}
                 initialDataInizio={formData.scadenza ? new Date(formData.scadenza) : undefined}

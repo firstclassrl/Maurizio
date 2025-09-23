@@ -328,7 +328,12 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
 
         {/* Pulsante Calcola (per calcoli manuali) */}
         <Button 
-          onClick={calculateScadenza}
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            calculateScadenza()
+          }}
           disabled={!dataInizio}
           className="w-full"
         >
