@@ -87,29 +87,57 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
     try {
       setIsLoading(true)
       
+      // Pulisce i dati prima di inviarli al database
+      const cleanData = {
+        tipologia: clientData.tipologia || 'Non specificata',
+        alternativa: clientData.alternativa || false,
+        ragione: clientData.ragione || '',
+        titolo: clientData.titolo || null,
+        cognome: clientData.cognome || null,
+        nome: clientData.nome || null,
+        sesso: clientData.sesso || null,
+        data_nascita: clientData.dataNascita || null,
+        luogo_nascita: clientData.luogoNascita || null,
+        partita_iva: clientData.partitaIva || null,
+        indirizzi: JSON.stringify(clientData.indirizzi || []),
+        contatti: JSON.stringify(clientData.contatti || []),
+        codice_destinatario: clientData.codiceDestinatario || null,
+        codice_destinatario_pa: clientData.codiceDestinatarioPA || null,
+        note: clientData.note || null,
+        sigla: clientData.sigla || null
+      }
+
+      console.log('Dati da salvare:', cleanData)
+      
       if (clientData.id) {
         // Update existing client
         const { error } = await supabase
           .from('clients')
           .update({
-            ...clientData,
+            ...cleanData,
             updated_at: new Date().toISOString()
           })
           .eq('id', clientData.id)
           .eq('user_id', user.id)
 
-        if (error) throw error
+        if (error) {
+          console.error('Errore update:', error)
+          throw error
+        }
         showSuccess('Successo', 'Cliente aggiornato con successo')
       } else {
         // Create new client
         const { error } = await supabase
           .from('clients')
           .insert({
-            ...clientData,
+            ...cleanData,
             user_id: user.id
           })
 
-        if (error) throw error
+        if (error) {
+          console.error('Errore insert:', error)
+          throw error
+        }
         showSuccess('Successo', 'Cliente creato con successo')
       }
 
