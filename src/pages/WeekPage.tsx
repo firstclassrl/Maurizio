@@ -12,9 +12,11 @@ import { ArrowLeft, Plus } from 'lucide-react'
 interface WeekPageProps {
   user: User
   onBackToDashboard: () => void
+  onNavigateToMonth: () => void
+  onNavigateToDay: () => void
 }
 
-export function WeekPage({ user, onBackToDashboard }: WeekPageProps) {
+export function WeekPage({ user, onBackToDashboard, onNavigateToMonth, onNavigateToDay }: WeekPageProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
@@ -174,7 +176,12 @@ export function WeekPage({ user, onBackToDashboard }: WeekPageProps) {
           </div>
         </div>
         
-        <WeeklyCalendar tasks={getFilteredTasks()} onTaskClick={handleTaskClick} />
+        <WeeklyCalendar 
+          tasks={getFilteredTasks()} 
+          onTaskClick={handleTaskClick}
+          onNavigateToMonth={onNavigateToMonth}
+          onNavigateToDay={onNavigateToDay}
+        />
       </div>
 
       <TaskDialog

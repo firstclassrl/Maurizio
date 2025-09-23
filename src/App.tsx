@@ -65,6 +65,8 @@ function App() {
           <MonthPage 
             user={user} 
             onBackToDashboard={() => setCurrentView('dashboard')}
+            onNavigateToWeek={() => setCurrentView('week')}
+            onNavigateToDay={() => setCurrentView('dashboard')} // Per ora torna alla dashboard
           />
         )
       case 'week':
@@ -72,6 +74,8 @@ function App() {
           <WeekPage 
             user={user} 
             onBackToDashboard={() => setCurrentView('dashboard')}
+            onNavigateToMonth={() => setCurrentView('month')}
+            onNavigateToDay={() => setCurrentView('dashboard')} // Per ora torna alla dashboard
           />
         )
       case 'calcolatore-termini':
