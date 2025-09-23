@@ -28,7 +28,6 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     pratica: '',
     categoria: '',
     scadenza: '',
-    stato: 'todo' as 'todo' | 'done',
     priorita: 5,
     note: '',
     parte: '',
@@ -43,7 +42,6 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         pratica: task.pratica,
         categoria: task.attivita,
         scadenza: task.scadenza,
-        stato: task.stato,
         priorita: task.priorita,
         note: task.note || '',
         parte: task.parte || '',
@@ -53,8 +51,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       setFormData({
         pratica: '',
         categoria: '',
-        scadenza: format(new Date(), 'yyyy-MM-dd'),
-        stato: 'todo',
+        scadenza: '',
         priorita: isUrgentMode ? 10 : 5,
         note: '',
         parte: '',
@@ -74,7 +71,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
   }, [formData.pratica, formData.categoria])
 
   const handleScadenzaCalculated = (dataScadenza: Date) => {
-    const formattedDate = format(dataScadenza, 'yyyy-MM-dd')
+    const formattedDate = format(dataScadenza, 'dd/MM/yyyy')
     setFormData(prev => ({
       ...prev,
       scadenza: formattedDate
@@ -95,13 +92,20 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     }
     
     // Validate date is not in the past (only for new tasks, not updates)
-    if (!task) {
-      const selectedDate = new Date(formData.scadenza)
-      const today = new Date()
-      today.setHours(0, 0, 0, 0) // Reset time to start of day
-      
-      if (selectedDate < today) {
-        showError('Data non valida', 'Non è possibile creare pratiche con date precedenti a oggi')
+    if (!task && formData.scadenza) {
+      try {
+        // Parse Italian date format dd/mm/yyyy
+        const [day, month, year] = formData.scadenza.split('/').map(Number)
+        const selectedDate = new Date(year, month - 1, day)
+        const today = new Date()
+        today.setHours(0, 0, 0, 0) // Reset time to start of day
+        
+        if (selectedDate < today) {
+          showError('Data non valida', 'Non è possibile creare pratiche con date precedenti a oggi')
+          return
+        }
+      } catch (error) {
+        showError('Data non valida', 'Formato data non corretto. Usa gg/mm/yyyy')
         return
       }
     }
@@ -111,7 +115,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       pratica: formData.pratica,
       attivita: formData.categoria, // Map categoria to attivita for database compatibility
       scadenza: formData.scadenza,
-      stato: formData.stato,
+      stato: 'todo' as 'todo' | 'done', // Default stato
       priorita: formData.priorita,
       note: formData.note || null,
       parte: formData.parte || null,
@@ -131,7 +135,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={isMobile ? "mx-4 max-w-[95vw] max-h-[90vh] overflow-y-auto" : "sm:max-w-[800px] max-h-[90vh] overflow-y-auto"}>
+      <DialogContent className={isMobile ? "mx-4 max-w-[95vw] max-h-[95vh] overflow-y-auto" : "sm:max-w-[600px] max-h-[95vh] overflow-y-auto"}>
         <DialogHeader>
           <DialogTitle className={`flex items-center gap-2 ${isUrgentMode ? 'text-red-600' : ''}`}>
             {isUrgentMode && <AlertTriangle className="h-5 w-5" />}
@@ -139,8 +143,8 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="space-y-1">
             <Label htmlFor="pratica">Pratica *</Label>
             <Input
               id="pratica"
@@ -152,7 +156,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="categoria">Categoria Attività *</Label>
             <Select 
               value={formData.categoria} 
@@ -185,7 +189,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="parte">Parte</Label>
               <Input
                 id="parte"
@@ -195,7 +199,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                 className={isMobile ? "text-base" : ""}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="controparte">Controparte</Label>
               <Input
                 id="controparte"
@@ -207,7 +211,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="note">Note</Label>
             <textarea
               id="note"
@@ -221,7 +225,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
 
           {/* Analisi AI dell'attività */}
           {activityAnalysis && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-2 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <Brain className="h-4 w-4 text-blue-600" />
                 <span className="text-sm font-medium text-blue-800">Analisi AI</span>
@@ -233,56 +237,45 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="scadenza">Scadenza *</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="scadenza"
-                  type="date"
-                  value={formData.scadenza}
-                  onChange={(e) => handleChange('scadenza', e.target.value)}
-                  className={`flex-1 text-gray-900`}
-                  style={{ colorScheme: 'light' }}
-                  required
-                />
-                {activityAnalysis?.needsCalculator && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setShowCalculator(!showCalculator)
-                    }}
-                    className="px-3"
-                    title="Calcola scadenza automaticamente"
-                  >
-                    <Calculator className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="stato">Stato</Label>
-              <Select 
-                value={formData.stato} 
-                onValueChange={(value: 'todo' | 'done') => handleChange('stato', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todo">Da fare</SelectItem>
-                  <SelectItem value="done">Completato</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="space-y-1">
+            <Label htmlFor="scadenza">Scadenza * (gg/mm/yyyy)</Label>
+            <div className="flex gap-2">
+              <Input
+                id="scadenza"
+                type="text"
+                placeholder="gg/mm/yyyy"
+                value={formData.scadenza}
+                onChange={(e) => {
+                  // Permette solo numeri e /
+                  const value = e.target.value.replace(/[^0-9/]/g, '')
+                  // Limita la lunghezza
+                  if (value.length <= 10) {
+                    handleChange('scadenza', value)
+                  }
+                }}
+                className={`flex-1 text-gray-900`}
+                required
+              />
+              {activityAnalysis?.needsCalculator && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setShowCalculator(true)
+                  }}
+                  className="px-3"
+                  title="Calcola scadenza automaticamente"
+                >
+                  <Calculator className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -299,7 +292,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
 
           {/* Calcolatore Scadenze */}
           {showCalculator && (
-            <div className="space-y-2 p-3 bg-gray-50 rounded-lg border">
+            <div className="space-y-2 p-2 bg-gray-50 rounded-lg border">
               <div className="flex items-center justify-between">
                 <Label className="text-sm font-medium">Calcolatore Scadenze Legali</Label>
                 <Button
