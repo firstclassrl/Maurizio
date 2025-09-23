@@ -19,7 +19,20 @@ export interface ActivityAnalysis {
 }
 
 export const analyzeActivity = (categoria: string, pratica: string): ActivityAnalysis => {
-  const categoriaLower = categoria.toLowerCase()
+  // Validazione input
+  if (!categoria || !pratica) {
+    return {
+      needsCalculator: false,
+      activityType: 'event',
+      description: 'Dati insufficienti per l\'analisi',
+      displayInfo: {
+        primaryDate: 'data_evento',
+        primaryLabel: 'Data Evento'
+      }
+    }
+  }
+
+  const categoriaLower = categoria.toLowerCase().replace(/'/g, '')
   const praticaLower = pratica.toLowerCase()
 
   // EVENTI FISSI (non necessitano calcolatore)
@@ -59,8 +72,9 @@ export const analyzeActivity = (categoria: string, pratica: string): ActivityAna
     }
   }
 
-  // SCADENZE PROCESSUALI (necessitano calcolatore)
-  if (categoriaLower.includes('scadenza') && categoriaLower.includes('atto')) {
+  // SCADENZE PROCESSUALI (necessitano calcolatore) - ORDINE DI PRIORITÀ
+  // 1. SCADENZA ATTO PROCESSUALE (più specifica)
+  if (categoriaLower.includes('scadenza') && categoriaLower.includes('atto') && categoriaLower.includes('processuale')) {
     return {
       needsCalculator: true,
       activityType: 'deadline',
@@ -79,6 +93,7 @@ export const analyzeActivity = (categoria: string, pratica: string): ActivityAna
     }
   }
 
+  // 2. MEMORIA (specifica per memoria)
   if (categoriaLower.includes('memoria') || praticaLower.includes('memoria')) {
     return {
       needsCalculator: true,
@@ -191,6 +206,31 @@ export const analyzeActivity = (categoria: string, pratica: string): ActivityAna
         secondaryDate: 'data_notifica',
         primaryLabel: 'Scadenza Ricorso',
         secondaryLabel: 'Data Notifica'
+      }
+    }
+  }
+
+  // ALTRI EVENTI FISSI
+  if (praticaLower.includes('conferenza') || praticaLower.includes('riunione')) {
+    return {
+      needsCalculator: false,
+      activityType: 'event',
+      description: 'Conferenza/Riunione: evento fisso nel calendario',
+      displayInfo: {
+        primaryDate: 'data_evento',
+        primaryLabel: 'Data Conferenza'
+      }
+    }
+  }
+
+  if (praticaLower.includes('consulenza') || praticaLower.includes('parere')) {
+    return {
+      needsCalculator: false,
+      activityType: 'event',
+      description: 'Consulenza/Parere: attività senza scadenze calcolabili',
+      displayInfo: {
+        primaryDate: 'data_evento',
+        primaryLabel: 'Data Consulenza'
       }
     }
   }

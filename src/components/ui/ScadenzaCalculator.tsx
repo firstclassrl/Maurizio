@@ -15,8 +15,33 @@ const formatDateToItalian = (date: Date): string => {
 }
 
 const parseItalianDate = (dateString: string): Date => {
-  const [day, month, year] = dateString.split('/').map(Number)
-  return new Date(year, month - 1, day)
+  if (!dateString || dateString.length < 8) {
+    throw new Error('Formato data non valido')
+  }
+  
+  const parts = dateString.split('/')
+  if (parts.length !== 3) {
+    throw new Error('Formato data deve essere gg/mm/yyyy')
+  }
+  
+  const [day, month, year] = parts.map(Number)
+  
+  if (isNaN(day) || isNaN(month) || isNaN(year)) {
+    throw new Error('Data contiene caratteri non numerici')
+  }
+  
+  if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2100) {
+    throw new Error('Data non valida')
+  }
+  
+  const date = new Date(year, month - 1, day)
+  
+  // Verifica che la data sia valida
+  if (date.getDate() !== day || date.getMonth() !== month - 1 || date.getFullYear() !== year) {
+    throw new Error('Data non esistente')
+  }
+  
+  return date
 }
 
 // Funzione per riconoscere automaticamente il tipo di scadenza dalla categoria
@@ -181,11 +206,14 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
     (activityAnalysis?.suggestedCalculation?.tipoScadenza) ||
     (categoriaAttivita ? getTipoScadenzaFromCategoria(categoriaAttivita) : 'termini_processuali_civili')
   )
-  const [giorniTermine, setGiorniTermine] = useState<number>(90)
+  const [giorniTermine, setGiorniTermine] = useState<number>(
+    activityAnalysis?.suggestedCalculation?.giorniTermine || 90
+  )
   const [giorniTermineCustom, setGiorniTermineCustom] = useState<number>(30)
   const [dataScadenza, setDataScadenza] = useState<Date | null>(null)
   const [giorniRimanenti, setGiorniRimanenti] = useState<number>(0)
   const [isUrgente, setIsUrgente] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Funzione per aggiungere giorni lavorativi (esclude weekend) - per uso futuro
   // const addWorkingDays = (date: Date, days: number): Date => {
@@ -205,9 +233,13 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
 
   // Funzione per calcolare la scadenza
   const calculateScadenza = () => {
-    if (!dataInizio) return
+    if (!dataInizio) {
+      setError('Inserisci una data di inizio')
+      return
+    }
 
     try {
+      setError(null) // Reset errori
       const dataInizioDate = parseItalianDate(dataInizio)
       const giorni = tipoScadenza === 'termini_generici' ? giorniTermineCustom : giorniTermine
       
@@ -231,6 +263,8 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
         onScadenzaCalculated(scadenza, giorni)
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Errore nel calcolo della scadenza'
+      setError(errorMessage)
       console.error('Errore nel calcolo della scadenza:', error)
     }
   }
@@ -331,6 +365,14 @@ export const ScadenzaCalculator: React.FC<ScadenzaCalculatorProps> = ({
               onChange={(e) => setGiorniTermineCustom(parseInt(e.target.value) || 30)}
               className="w-full"
             />
+          </div>
+        )}
+
+        {/* Messaggio di Errore */}
+        {error && (
+          <div className="flex items-center gap-2 p-2 bg-red-100 border border-red-200 rounded-lg">
+            <AlertTriangle className="h-3 w-3 text-red-600" />
+            <span className="text-xs text-red-800 font-medium">{error}</span>
           </div>
         )}
 
