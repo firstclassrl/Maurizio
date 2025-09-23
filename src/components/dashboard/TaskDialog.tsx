@@ -6,10 +6,11 @@ import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { MessageModal } from '../ui/MessageModal'
+import { ScadenzaCalculator } from '../ui/ScadenzaCalculator'
 import { useMessage } from '../../hooks/useMessage'
 import { useMobile } from '../../hooks/useMobile'
 import { Task } from '../../lib/calendar-utils'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Calculator } from 'lucide-react'
 
 interface TaskDialogProps {
   open: boolean
@@ -32,6 +33,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     parte: '',
     controparte: ''
   })
+  const [showCalculator, setShowCalculator] = useState(false)
 
   useEffect(() => {
     if (task) {
@@ -58,6 +60,15 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       })
     }
   }, [task, open, isUrgentMode])
+
+  const handleScadenzaCalculated = (dataScadenza: Date) => {
+    const formattedDate = format(dataScadenza, 'yyyy-MM-dd')
+    setFormData(prev => ({
+      ...prev,
+      scadenza: formattedDate
+    }))
+    setShowCalculator(false)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -198,15 +209,27 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="scadenza">Scadenza *</Label>
-              <Input
-                id="scadenza"
-                type="date"
-                value={formData.scadenza}
-                onChange={(e) => handleChange('scadenza', e.target.value)}
-                className="text-gray-900"
-                style={{ colorScheme: 'light' }}
-                required
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="scadenza"
+                  type="date"
+                  value={formData.scadenza}
+                  onChange={(e) => handleChange('scadenza', e.target.value)}
+                  className={`flex-1 text-gray-900`}
+                  style={{ colorScheme: 'light' }}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowCalculator(true)}
+                  className="px-3"
+                  title="Calcola scadenza automaticamente"
+                >
+                  <Calculator className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -240,6 +263,17 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
               </label>
             </div>
           </div>
+
+          {/* Calcolatore Scadenze */}
+          {showCalculator && (
+            <div className="space-y-2">
+              <Label>Calcolatore Scadenze Legali</Label>
+              <ScadenzaCalculator
+                onScadenzaCalculated={handleScadenzaCalculated}
+                initialDataInizio={formData.scadenza ? new Date(formData.scadenza) : undefined}
+              />
+            </div>
+          )}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
