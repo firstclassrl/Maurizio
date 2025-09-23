@@ -32,10 +32,12 @@ export function useCalcolatoreTermini() {
         .insert({
           user_id: user.id,
           pratica: titolo,
-          categoria: categoria,
+          attivita: categoria,
           scadenza: dataFormattata,
           ora: oraFormattata,
           note: note || '',
+          stato: 'todo',
+          priorita: 5,
           created_at: new Date().toISOString()
         })
         .select()
