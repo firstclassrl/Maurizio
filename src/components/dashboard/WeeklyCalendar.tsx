@@ -88,9 +88,6 @@ export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
     return date.getDate()
   }
 
-  const formatMonthYear = (date: Date) => {
-    return date.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })
-  }
 
 
   return (
@@ -115,14 +112,6 @@ export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
         </div>
       </div>
 
-      {/* Calendar Title */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-800">
-            {weekStart.getDate()} - {weekDays[weekDays.length - 1].getDate()} {formatMonthYear(currentWeek).split(' ')[0]} {currentWeek.getFullYear()}
-          </h2>
-        </div>
-      </div>
 
       {/* Main Calendar Grid - Full Width */}
       <div className="px-2 py-4">

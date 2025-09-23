@@ -7,14 +7,15 @@ import { WeeklyCalendar } from '../components/dashboard/WeeklyCalendar'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { ArrowLeft, Plus } from 'lucide-react'
+import { ArrowLeft, Plus, Calendar } from 'lucide-react'
 
 interface WeekPageProps {
   user: User
   onBackToDashboard: () => void
+  onNavigateToMonth: () => void
 }
 
-export function WeekPage({ user, onBackToDashboard }: WeekPageProps) {
+export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPageProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
@@ -125,30 +126,34 @@ export function WeekPage({ user, onBackToDashboard }: WeekPageProps) {
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-6 py-4 flex justify-between items-center">
-          <Button onClick={onBackToDashboard} variant="outline" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Torna a Dashboard
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button onClick={onBackToDashboard} variant="outline" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Torna a Dashboard
+            </Button>
+            <Button onClick={onNavigateToMonth} variant="outline" size="sm">
+              <Calendar className="h-4 w-4 mr-2" />
+              Mese
+            </Button>
+          </div>
           <h1 className="text-2xl font-bold text-gray-900">Calendario Settimanale</h1>
-          <Button onClick={handleNewTask} variant="outline" size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            Nuova Attività
-          </Button>
-        </div>
-      </div>
-
-      {/* Filter Section */}
-      <div className="px-6 py-4 bg-white border-b">
-        <div className="flex gap-4">
-          <CategoryFilter 
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-          />
-          <PartyFilter 
-            selectedParty={selectedParty}
-            onPartyChange={setSelectedParty}
-            tasks={tasks}
-          />
+          <div className="flex items-center gap-4">
+            <div className="flex gap-4">
+              <CategoryFilter 
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+              />
+              <PartyFilter 
+                selectedParty={selectedParty}
+                onPartyChange={setSelectedParty}
+                tasks={tasks}
+              />
+            </div>
+            <Button onClick={handleNewTask} variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Nuova Attività
+            </Button>
+          </div>
         </div>
       </div>
 

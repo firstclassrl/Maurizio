@@ -359,6 +359,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     return tasks.filter(task => task.scadenza === today)
   }
 
+  // Generate colors based on category
+  const getTaskColor = (task: Task) => {
+    if (task.attivita === 'SCADENZA ATTO PROCESSUALE') {
+      return 'bg-red-50 border-red-200'
+    } else if (task.attivita === 'UDIENZA') {
+      return 'bg-green-50 border-green-200'
+    } else if (task.attivita === 'ATTIVITA\' PROCESSUALE') {
+      return 'bg-yellow-50 border-yellow-200'
+    } else if (task.attivita === 'APPUNTAMENTO IN STUDIO') {
+      return 'bg-cyan-50 border-cyan-200'
+    }
+    return 'bg-gray-50 border-gray-200'
+  }
+
   // Filter tasks by category and party
   const getFilteredTasks = () => {
     let filtered = tasks
@@ -537,7 +551,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             ) : (
               <div className="space-y-3">
                 {getTodayTasks().map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-4 bg-white rounded-lg border border-yellow-200">
+                  <div key={task.id} className={`flex items-center justify-between p-4 rounded-lg border ${getTaskColor(task)}`}>
                     <div className="flex-1">
                       <div className="font-medium text-gray-900">{task.pratica}</div>
                       <div className="text-sm text-gray-600">{task.attivita}</div>
