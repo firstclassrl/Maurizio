@@ -22,7 +22,7 @@ import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, RefreshCw, Trash2, Calculator, PenTool, ArrowLeft } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -53,6 +53,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [newNote, setNewNote] = useState('')
   const [newParte, setNewParte] = useState('')
   const [newControparte, setNewControparte] = useState('')
+  const [modalitaInserimento, setModalitaInserimento] = useState<'scelta' | 'manuale' | 'calcolatore'>('scelta')
 
   useEffect(() => {
     loadTasks()
@@ -191,6 +192,24 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     }
   }
 
+  // Funzione per resettare il form
+  const resetForm = () => {
+    setNewPratica('')
+    setNewCategoria('')
+    setNewScadenza('')
+    setNewOra('')
+    setNewNote('')
+    setNewParte('')
+    setNewControparte('')
+    setIsUrgentMode(false)
+  }
+
+  // Funzione per tornare alla scelta iniziale
+  const handleBackToChoice = () => {
+    setModalitaInserimento('scelta')
+    resetForm()
+  }
+
   const handleQuickAdd = async () => {
     if (!newPratica.trim() || !newCategoria.trim() || !newScadenza.trim()) {
       showError('Campi obbligatori', 'Per favore compila tutti i campi obbligatori')
@@ -225,14 +244,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       if (error) throw error
 
       // Clear form
-      setNewPratica('')
-      setNewCategoria('')
-      setNewScadenza('')
-      setNewOra('')
-      setNewNote('')
-      setNewParte('')
-      setNewControparte('')
-      setIsUrgentMode(false)
+      resetForm()
       await loadTasks()
       setRefreshCounters(prev => prev + 1) // Force counter refresh
       showSuccess('Pratica aggiunta', `La pratica ${isUrgentMode ? 'urgente' : ''} è stata aggiunta con successo`)
@@ -491,10 +503,54 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         {/* Quick Add Form */}
         <Card className="mb-6">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
-            <h3 className="text-lg font-semibold mb-4">Aggiungi Nuova Pratica</h3>
-            {isMobile ? (
-              // Mobile Layout - Vertical
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Aggiungi Nuova Pratica</h3>
+              {modalitaInserimento !== 'scelta' && (
+                <Button
+                  onClick={handleBackToChoice}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Indietro
+                </Button>
+              )}
+            </div>
+            
+            {/* Scelta Modalità Inserimento */}
+            {modalitaInserimento === 'scelta' && (
               <div className="space-y-4">
+                <p className="text-gray-600 dark:text-gray-400 text-center">
+                  Come vuoi aggiungere la nuova pratica?
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button
+                    onClick={() => setModalitaInserimento('manuale')}
+                    className="h-20 flex flex-col items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <PenTool className="h-6 w-6" />
+                    <span className="font-medium">Inserimento Manuale</span>
+                    <span className="text-sm opacity-90">Compila i campi direttamente</span>
+                  </Button>
+                  <Button
+                    onClick={() => setModalitaInserimento('calcolatore')}
+                    className="h-20 flex flex-col items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    <Calculator className="h-6 w-6" />
+                    <span className="font-medium">Calcolatore Scadenze</span>
+                    <span className="text-sm opacity-90">Calcola termini processuali</span>
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Form Inserimento Manuale */}
+            {modalitaInserimento === 'manuale' && (
+              <>
+                {isMobile ? (
+                  // Mobile Layout - Vertical
+                  <div className="space-y-4">
               <div>
                 <Label htmlFor="pratica">Pratica</Label>
                 <Input
@@ -713,6 +769,30 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 Aggiungi Pratica
               </Button>
             </div>
+              </div>
+            )}
+              </>
+            )}
+
+            {/* Calcolatore Scadenze */}
+            {modalitaInserimento === 'calcolatore' && (
+              <div className="space-y-4">
+                <div className="text-center py-8">
+                  <Calculator className="h-12 w-12 mx-auto mb-4 text-purple-600" />
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Calcolatore Scadenze
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    Calcola automaticamente le scadenze processuali e aggiungi le pratiche al calendario
+                  </p>
+                  <Button
+                    onClick={onNavigateToCalcolatore}
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    <Calculator className="h-4 w-4 mr-2" />
+                    Apri Calcolatore
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
