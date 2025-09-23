@@ -536,7 +536,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         )}
 
         {/* Today's Tasks Section */}
-        <Card className="mb-6 bg-yellow-50 border-yellow-200">
+        <Card className="mb-6 bg-yellow-50 border-2 border-yellow-500">
           <CardContent className="p-6">
             <h3 className="text-lg font-semibold mb-4 text-yellow-800">GLI IMPEGNI PER OGGI</h3>
             {getTodayTasks().length === 0 ? (
@@ -866,7 +866,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         </Card>
 
         {/* All Tasks Section */}
-        <Card className="bg-purple-50 border-purple-200">
+        <Card className="bg-purple-50 border-2 border-purple-500">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
             <div className="bg-purple-800 h-1 w-full mb-4 rounded"></div>
             <div className={`flex justify-between items-center mb-4 ${isMobile ? 'flex-col gap-2' : ''}`}>
