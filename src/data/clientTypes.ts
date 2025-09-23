@@ -25,7 +25,6 @@ export type ClientType = typeof CLIENT_TYPES[number]
 
 // Titoli disponibili per le persone fisiche
 export const TITLES = [
-  { value: '', label: '-' },
   { value: 'Dott.', label: 'Dott.' },
   { value: 'Dott.ssa', label: 'Dott.ssa' },
   { value: 'Avv.', label: 'Avv.' },

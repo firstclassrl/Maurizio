@@ -179,7 +179,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               <div>
                 <Label htmlFor="tipologia">Tipologia</Label>
                 <Select 
-                  value={formData.tipologia} 
+                  value={formData.tipologia || 'Non specificata'} 
                   onValueChange={(value) => handleInputChange('tipologia', value)}
                 >
                   <SelectTrigger>
@@ -223,7 +223,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               <div>
                 <Label htmlFor="titolo">Titolo</Label>
                 <Select 
-                  value={formData.titolo} 
+                  value={formData.titolo || undefined} 
                   onValueChange={(value) => handleInputChange('titolo', value)}
                 >
                   <SelectTrigger>
