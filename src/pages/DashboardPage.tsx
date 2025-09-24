@@ -330,14 +330,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 CALCOLATORE
                       </Button>
               
-                <Button
-                onClick={onNavigateToClients}
-                className="bg-orange-600 hover:bg-orange-700 text-white border-0"
-                  size="sm"
-                >
-                <Users className="h-4 w-4 mr-2" />
-                Clienti
-                </Button>
             
                   <Button
                 onClick={() => setIsOptionsModalOpen(true)}
@@ -393,6 +385,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           <CardContent className={isMobile ? "p-4" : "p-6"}>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Gestione Attività</h3>
+              
               <div className="flex gap-2">
                 <Button
                   onClick={() => setIsNewActivityWizardOpen(true)}
@@ -412,6 +405,15 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   Aggiungi Attività
               </Button>
             </div>
+
+            <Button
+              onClick={onNavigateToClients}
+              className="bg-orange-600 hover:bg-orange-700 text-white border-0"
+              size="sm"
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Gestioni
+            </Button>
               </div>
           </CardContent>
         </Card>
