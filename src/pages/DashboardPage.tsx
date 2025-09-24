@@ -51,7 +51,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
-  const [userProfile, setUserProfile] = useState<{full_name: string} | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedParty, setSelectedParty] = useState<string>('all')
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
@@ -65,7 +64,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   useEffect(() => {
     loadTasks()
-    loadUserProfile()
     loadClients()
   }, [])
 
@@ -100,20 +98,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     }
   }
 
-  const loadUserProfile = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
-        .single()
-
-      if (error) throw error
-      setUserProfile(data)
-    } catch (error) {
-      console.error('Errore nel caricamento del profilo:', error)
-    }
-  }
 
   const loadClients = async () => {
     try {
@@ -168,8 +152,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const handleToggleEvased = async (task: Task) => {
     try {
       const newEvasedStatus = !task.evaso
-      const { error } = await supabase
-        .from('tasks')
+        const { error } = await supabase
+          .from('tasks')
         .update({ evaso: newEvasedStatus })
         .eq('id', task.id)
 
@@ -183,7 +167,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         return
       }
 
-      if (error) throw error
+        if (error) throw error
 
       // Remove task from current list (it will go to storage)
       setTasks(tasks.filter(t => t.id !== task.id))
@@ -234,12 +218,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     if (!taskToDelete) return
 
     try {
-        const { error } = await supabase
-          .from('tasks')
+      const { error } = await supabase
+        .from('tasks')
         .delete()
         .eq('id', taskToDelete.id)
 
-        if (error) throw error
+      if (error) throw error
 
       setTasks(prev => prev.filter(task => task.id !== taskToDelete.id))
       setIsConfirmDialogOpen(false)
@@ -299,7 +283,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut()
+    await supabase.auth.signOut()
     } catch (error) {
       console.error('Errore durante il logout:', error)
     }
@@ -308,13 +292,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-slate-900 shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Logo className="h-8 w-auto" />
-              <h1 className="ml-3 text-xl font-semibold text-gray-900">
-                {userProfile?.full_name || 'Dashboard'}
+              <h1 className="ml-3 text-xl font-semibold text-white">
+                LexAgenda
               </h1>
                 </div>
             
@@ -333,29 +317,29 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 className="bg-green-600 hover:bg-green-700 text-white border-0"
                 size="sm"
               >
-                <Calendar className="h-4 w-4 mr-2" />
+                  <Calendar className="h-4 w-4 mr-2" />
                 Mese
-              </Button>
+                </Button>
               
-              <Button
+                      <Button
                 onClick={onNavigateToCalcolatore}
                 className="bg-purple-600 hover:bg-purple-700 text-white border-0"
-                size="sm"
-              >
+                        size="sm"
+                      >
                 <Calculator className="h-4 w-4 mr-2" />
                 CALCOLATORE
-              </Button>
+                      </Button>
               
-              <Button
+                <Button
                 onClick={onNavigateToClients}
                 className="bg-orange-600 hover:bg-orange-700 text-white border-0"
-                size="sm"
-              >
+                  size="sm"
+                >
                 <Users className="h-4 w-4 mr-2" />
                 Clienti
-              </Button>
-              
-              <Button
+                </Button>
+            
+                  <Button
                 onClick={() => setIsOptionsModalOpen(true)}
                 variant="outline"
                 size="sm"
@@ -363,20 +347,21 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               >
                 <Settings className="h-4 w-4 mr-2" />
                 Opzioni
-              </Button>
+                  </Button>
               
-              <Button
+                  <Button
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
+                className="border-white text-white hover:bg-white hover:text-slate-900"
               >
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
-                </Button>
+                  </Button>
+                </div>
               </div>
-            </div>
-        </div>
-      </div>
+              </div>
+              </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -395,11 +380,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 day: 'numeric' 
               })}
             </p>
-          </div>
-          <div className="flex items-center gap-4">
+                </div>
+                <div className="flex items-center gap-4">
             <UrgentCounter userId={user.id} onClick={handleUrgentCounterClick} />
             <OverdueCounter userId={user.id} />
-          </div>
+                  </div>
         </div>
 
 
@@ -414,20 +399,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                   size="sm"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4 mr-2" />
                   Nuova Pratica
-                </Button>
+                  </Button>
                 
                 <Button
                   onClick={handleAddActivityClick}
                   className="bg-green-600 hover:bg-green-700 text-white"
                   size="sm"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-4 w-4 mr-2" />
                   Aggiungi Attività
-                </Button>
-              </div>
+              </Button>
             </div>
+              </div>
           </CardContent>
         </Card>
 
@@ -443,17 +428,17 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 tasks={tasks}
                 className={isMobile ? "w-full" : ""}
               />
-              <CategoryFilter 
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
+                  <CategoryFilter 
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
                 className={isMobile ? "w-full" : ""}
-              />
-              <PartyFilter 
-                selectedParty={selectedParty}
-                onPartyChange={setSelectedParty}
-                tasks={tasks}
+                  />
+                  <PartyFilter 
+                    selectedParty={selectedParty}
+                    onPartyChange={setSelectedParty}
+                    tasks={tasks}
                 className={isMobile ? "w-full" : ""}
-              />
+                  />
             </div>
             {getFilteredTasks().length === 0 ? (
               <p className="text-gray-500 text-center py-8">
@@ -476,33 +461,24 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                         <span className="text-sm font-medium">
                             {task.categoria}
                             </span>
-                          {task.stato === 'done' && (
+                            {task.stato === 'done' && (
                             <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                               Completata
-                            </span>
+                              </span>
                           )}
-                          {/* Semaphore */}
+                          {/* Semaphore - Visual indicator only */}
                           <div className="flex items-center gap-1 ml-auto">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleToggleEvased(task)
-                              }}
-                              className={`p-1 rounded-full transition-colors ${
-                                task.evaso 
-                                  ? 'bg-green-500 hover:bg-green-600' 
-                                  : 'bg-red-500 hover:bg-red-600'
-                              }`}
-                              title={task.evaso ? 'Evasa - Click per ripristinare' : 'Non evasa - Click per marcare come evasa'}
-                            >
+                            <div className={`p-1 rounded-full ${
+                              task.evaso ? 'bg-green-500' : 'bg-red-500'
+                            }`}>
                               {task.evaso ? (
                                 <CheckCircle2 className="h-4 w-4 text-white" />
                               ) : (
                                 <XCircle className="h-4 w-4 text-white" />
-                              )}
-                            </button>
+                            )}
                           </div>
-                        </div>
+                            </div>
+                          </div>
                         <h4 className="font-medium text-gray-900 mb-1">{task.pratica}</h4>
                         <p className="text-sm text-gray-600 mb-2">
                           <strong>Cliente:</strong> {task.cliente}
@@ -513,24 +489,24 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                         <p className="text-sm text-gray-500">
                           <strong>Data:</strong> {new Date(task.scadenza).toLocaleDateString('it-IT')}
                         </p>
-                        {task.note && (
+                          {task.note && (
                           <p className="text-sm text-gray-500 mt-1">
                             <strong>Note:</strong> {task.note}
                           </p>
-                        )}
-                      </div>
-                            <Button
+                          )}
+                        </div>
+                          <Button
                         onClick={(e) => {
                           e.stopPropagation()
                           handleTaskDelete(task)
-                              }}
-                              variant="outline"
-                              size="sm"
+                            }}
+                            variant="outline"
+                            size="sm"
                         className="text-red-600 border-red-600 hover:bg-red-50"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                   </div>
                 ))}
               </div>
@@ -587,7 +563,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onOpenChange={setIsOptionsModalOpen}
         user={user}
       />
-
+      
       <MessageModal
         open={!!message}
         type={message?.type || 'info'}
@@ -653,8 +629,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                               <XCircle className="h-4 w-4 text-white" />
                             )}
                           </button>
-                        </div>
-                      </div>
+            </div>
+              </div>
                       <h4 className="font-medium text-gray-900 mb-1">{task.pratica}</h4>
                       <p className="text-sm text-gray-600 mb-2">
                         <strong>Cliente:</strong> {task.cliente}
@@ -670,7 +646,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                           <strong>Note:</strong> {task.note}
                         </p>
                       )}
-                    </div>
+              </div>
                     <Button
                       onClick={(e) => {
                         e.stopPropagation()
@@ -683,8 +659,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  </div>
-                </div>
+            </div>
+              </div>
               ))
             )}
           </div>
