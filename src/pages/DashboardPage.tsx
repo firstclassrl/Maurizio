@@ -488,6 +488,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       />
 
       <NewActivityWizard
+        key={isNewActivityWizardOpen ? 'open' : 'closed'}
         open={isNewActivityWizardOpen}
         onOpenChange={(open) => {
           console.log('DashboardPage: onOpenChange called with:', open)
