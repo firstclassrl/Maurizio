@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
-import { Plus, ArrowRight, FileText, Calendar, X } from 'lucide-react'
+import { Plus, ArrowRight, FileText, Calendar } from 'lucide-react'
 import { Practice, Activity } from '../../types/practice'
 import { Client } from '../../types/client'
 import { PracticeForm } from './PracticeForm'
@@ -163,58 +164,35 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     </div>
   )
 
-  const handleClose = () => {
-    console.log('handleClose called at:', new Date().toISOString())
-    setStep('practice')
-    setCurrentPractice(null)
-    onOpenChange(false)
+  const handleDialogClose = (open: boolean) => {
+    console.log('Dialog onOpenChange called with:', open)
+    if (!open) {
+      setStep('practice')
+      setCurrentPractice(null)
+    }
+    onOpenChange(open)
   }
-
-
-  const handleCancelClick = () => {
-    console.log('Cancel button clicked at:', new Date().toISOString())
-    handleClose()
-  }
-
-  if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={handleClose}
-      />
-      
-      {/* Modal Content */}
-      <div className={`relative bg-white rounded-lg shadow-lg max-w-6xl max-h-[90vh] overflow-y-auto w-full mx-4 ${isMobile ? 'mx-2' : ''}`}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
+    <Dialog open={open} onOpenChange={handleDialogClose}>
+      <DialogContent className={`max-w-6xl max-h-[90vh] overflow-y-auto ${isMobile ? 'mx-2' : ''}`}>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
             <Plus className="w-5 h-5" />
             Nuova Attività
-          </h2>
-          <button
-            onClick={handleClose}
-            className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 p-1"
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
-        {/* Content */}
-        <div className="p-6">
-          {renderStepIndicator()}
-          {step === 'practice' ? renderPracticeStep() : renderActivityStep()}
-        </div>
+        {renderStepIndicator()}
 
-        {/* Footer */}
-        <div className="flex justify-between p-6 border-t bg-gray-50">
+        {step === 'practice' ? renderPracticeStep() : renderActivityStep()}
+
+        {/* Pulsanti di navigazione */}
+        <div className="flex justify-between pt-6 border-t">
           <Button
             type="button"
             variant="outline"
-            onClick={handleCancelClick}
+            onClick={() => handleDialogClose(false)}
             disabled={isCreatingPractice || isCreatingActivity}
           >
             Annulla
@@ -231,7 +209,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
             </Button>
           )}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
