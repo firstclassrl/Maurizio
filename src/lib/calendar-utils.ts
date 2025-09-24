@@ -35,6 +35,7 @@ export interface Task {
   note?: string | null
   cliente?: string | null
   controparte?: string | null
+  evaso?: boolean // New field for semaphore status
   created_at: string
   updated_at: string
 }

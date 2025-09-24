@@ -22,7 +22,7 @@ import { PartyFilter } from '../components/ui/PartyFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { OptionsModal } from '../components/ui/OptionsModal'
-import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, Archive, CheckCircle2, XCircle } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -30,11 +30,12 @@ interface DashboardPageProps {
   onNavigateToWeek: () => void
   onNavigateToCalcolatore: () => void
   onNavigateToClients: () => void
+  onNavigateToStorage: () => void
 }
 
-export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore, onNavigateToClients }: DashboardPageProps) {
+export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage }: DashboardPageProps) {
   const { message, showError, hideMessage } = useMessage()
-  const { toasts, removeToast, showSuccess: showToastSuccess } = useToast()
+  const { toasts, removeToast, showSuccess: showToastSuccess, addToast } = useToast()
   const isMobile = useMobile()
 
   // Function to get category color
@@ -72,6 +73,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         .from('tasks')
         .select('*')
         .eq('user_id', user.id)
+        .eq('evaso', false) // Only load non-evased tasks
         .order('scadenza', { ascending: true })
 
       if (error) throw error
@@ -145,6 +147,30 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   const handleAddActivityClick = () => {
     setIsAddActivityModalOpen(true)
+  }
+
+  const handleToggleEvased = async (task: Task) => {
+    try {
+      const newEvasedStatus = !task.evaso
+      const { error } = await supabase
+        .from('tasks')
+        .update({ evaso: newEvasedStatus })
+        .eq('id', task.id)
+
+      if (error) throw error
+
+      // Remove task from current list (it will go to storage)
+      setTasks(tasks.filter(t => t.id !== task.id))
+      
+      const message = newEvasedStatus 
+        ? 'Attività marcata come evasa e spostata nello storage'
+        : 'Attività ripristinata nella lista principale'
+      
+      addToast({ type: 'success', title: 'Stato Aggiornato', message })
+    } catch (error) {
+      console.error('Error toggling evased status:', error)
+      addToast({ type: 'error', title: 'Errore', message: 'Errore nell\'aggiornamento dello stato' })
+    }
   }
 
   const handleTaskClick = (task: Task) => {
@@ -305,6 +331,15 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <Users className="h-4 w-4 mr-2" />
                 Clienti
               </Button>
+
+              <Button
+                onClick={onNavigateToStorage}
+                className="bg-orange-600 hover:bg-orange-700 text-white border-0"
+                size="sm"
+              >
+                <Archive className="h-4 w-4 mr-2" />
+                Storage
+              </Button>
               
               <Button
                 onClick={() => setIsOptionsModalOpen(true)}
@@ -430,6 +465,27 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                               Completata
                             </span>
                           )}
+                          {/* Semaphore */}
+                          <div className="flex items-center gap-1 ml-auto">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleToggleEvased(task)
+                              }}
+                              className={`p-1 rounded-full transition-colors ${
+                                task.evaso 
+                                  ? 'bg-green-500 hover:bg-green-600' 
+                                  : 'bg-red-500 hover:bg-red-600'
+                              }`}
+                              title={task.evaso ? 'Evasa - Click per ripristinare' : 'Non evasa - Click per marcare come evasa'}
+                            >
+                              {task.evaso ? (
+                                <CheckCircle2 className="h-4 w-4 text-white" />
+                              ) : (
+                                <XCircle className="h-4 w-4 text-white" />
+                              )}
+                            </button>
+                          </div>
                         </div>
                         <h4 className="font-medium text-gray-900 mb-1">{task.pratica}</h4>
                         <p className="text-sm text-gray-600 mb-2">
@@ -561,6 +617,27 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                             URGENTE
                           </span>
                         )}
+                        {/* Semaphore */}
+                        <div className="flex items-center gap-1 ml-auto">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleToggleEvased(task)
+                            }}
+                            className={`p-1 rounded-full transition-colors ${
+                              task.evaso 
+                                ? 'bg-green-500 hover:bg-green-600' 
+                                : 'bg-red-500 hover:bg-red-600'
+                            }`}
+                            title={task.evaso ? 'Evasa - Click per ripristinare' : 'Non evasa - Click per marcare come evasa'}
+                          >
+                            {task.evaso ? (
+                              <CheckCircle2 className="h-4 w-4 text-white" />
+                            ) : (
+                              <XCircle className="h-4 w-4 text-white" />
+                            )}
+                          </button>
+                        </div>
                       </div>
                       <h4 className="font-medium text-gray-900 mb-1">{task.pratica}</h4>
                       <p className="text-sm text-gray-600 mb-2">
