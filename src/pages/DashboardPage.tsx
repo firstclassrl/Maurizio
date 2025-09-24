@@ -750,7 +750,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                         <SelectValue placeholder={loadingClients ? "Caricamento..." : "Seleziona cliente"} />
                       </SelectTrigger>
                       <SelectContent>
-                        {clients.map((client) => (
+                        {clients.filter(client => client.ragione && client.ragione.trim()).map((client) => (
                           <SelectItem key={client.id} value={client.ragione}>
                             {client.ragione}
                           </SelectItem>
@@ -898,7 +898,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                         <SelectValue placeholder={loadingClients ? "Caricamento..." : "Seleziona cliente"} />
                       </SelectTrigger>
                       <SelectContent>
-                        {clients.map((client) => (
+                        {clients.filter(client => client.ragione && client.ragione.trim()).map((client) => (
                           <SelectItem key={client.id} value={client.ragione}>
                             {client.ragione}
                           </SelectItem>

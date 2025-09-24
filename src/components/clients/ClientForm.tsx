@@ -206,7 +206,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
                     <SelectValue placeholder="Seleziona tipologia" />
                   </SelectTrigger>
                   <SelectContent>
-                    {CLIENT_TYPES.map(type => (
+                    {CLIENT_TYPES.filter(type => type && type.trim()).map(type => (
                       <SelectItem key={type} value={type}>
                         {type}
                       </SelectItem>
@@ -250,7 +250,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
                     <SelectValue placeholder="Seleziona titolo" />
                   </SelectTrigger>
                   <SelectContent>
-                    {TITLES.map(title => (
+                    {TITLES.filter(title => title.value && title.value.trim()).map(title => (
                       <SelectItem key={title.value} value={title.value}>
                         {title.label}
                       </SelectItem>
@@ -289,7 +289,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
                     <SelectValue placeholder="Seleziona sesso" />
                   </SelectTrigger>
                   <SelectContent>
-                    {GENDER_OPTIONS.map(gender => (
+                    {GENDER_OPTIONS.filter(gender => gender.value && gender.value.trim()).map(gender => (
                       <SelectItem key={gender.value} value={gender.value}>
                         {gender.label}
                       </SelectItem>
@@ -458,7 +458,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
                         <SelectValue placeholder="Seleziona tipo" />
                       </SelectTrigger>
                       <SelectContent>
-                        {CONTACT_TYPES.map(type => (
+                        {CONTACT_TYPES.filter(type => type && type.trim()).map(type => (
                           <SelectItem key={type} value={type}>
                             {type}
                           </SelectItem>

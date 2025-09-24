@@ -241,7 +241,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                   <SelectValue placeholder={loadingClients ? "Caricamento..." : "Seleziona cliente"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {clients.map((client) => (
+                  {clients.filter(client => client.ragione && client.ragione.trim()).map((client) => (
                     <SelectItem key={client.id} value={client.ragione}>
                       {client.ragione}
                     </SelectItem>
