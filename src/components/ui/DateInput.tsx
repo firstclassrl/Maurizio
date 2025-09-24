@@ -25,6 +25,7 @@ export function DateInput({
   const [isFocused, setIsFocused] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isValid, setIsValid] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
 
@@ -60,8 +61,42 @@ export function DateInput({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const isoValue = formatToISO(inputValue);
-    onChange(isoValue);
+    
+    // Permette di digitare liberamente, ma formatta automaticamente
+    let formattedValue = inputValue;
+    
+    // Auto-formatta mentre l'utente digita
+    const cleanValue = inputValue.replace(/[^\d]/g, '');
+    if (cleanValue.length >= 2 && cleanValue.length < 4) {
+      formattedValue = `${cleanValue.slice(0, 2)}/`;
+    } else if (cleanValue.length >= 4 && cleanValue.length < 8) {
+      formattedValue = `${cleanValue.slice(0, 2)}/${cleanValue.slice(2, 4)}/`;
+    } else if (cleanValue.length >= 8) {
+      formattedValue = `${cleanValue.slice(0, 2)}/${cleanValue.slice(2, 4)}/${cleanValue.slice(4, 8)}`;
+    }
+    
+    // Aggiorna il valore visualizzato
+    e.target.value = formattedValue;
+    
+    // Converte in ISO solo se è una data valida
+    const isoValue = formatToISO(formattedValue);
+    if (isoValue) {
+      // Valida che la data sia effettivamente valida
+      const testDate = new Date(isoValue);
+      const isValidDate = testDate.toISOString().startsWith(isoValue);
+      setIsValid(isValidDate);
+      
+      if (isValidDate) {
+        onChange(isoValue);
+      }
+    } else if (formattedValue.length === 0) {
+      // Permette di cancellare tutto
+      onChange('');
+      setIsValid(true);
+    } else {
+      // Data non valida
+      setIsValid(false);
+    }
   };
 
   const handleFocus = () => {
@@ -168,7 +203,7 @@ export function DateInput({
           onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={placeholder}
-          className={`pr-10 ${className} ${isFocused ? 'ring-2 ring-blue-500 border-blue-500' : ''}`}
+          className={`pr-10 ${className} ${isFocused ? 'ring-2 ring-blue-500 border-blue-500' : ''} ${!isValid && formatToItalian(value).length > 0 ? 'border-red-500 bg-red-50' : ''}`}
           required={required}
         />
         <button
@@ -270,6 +305,20 @@ export function DateInput({
             </button>
           </div>
         </div>
+      )}
+
+      {/* Messaggio di aiuto */}
+      {!isValid && formatToItalian(value).length > 0 && (
+        <p className="text-sm text-red-500 mt-1">
+          Data non valida. Usa il formato gg/mm/aaaa (es. 15/03/2024)
+        </p>
+      )}
+      
+      {/* Messaggio di aiuto quando il campo è vuoto */}
+      {isFocused && formatToItalian(value).length === 0 && (
+        <p className="text-sm text-gray-500 mt-1">
+          Digita la data nel formato gg/mm/aaaa o usa il calendario
+        </p>
       )}
     </div>
   );
