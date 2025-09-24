@@ -233,7 +233,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
             <div className="space-y-1">
               <Label htmlFor="cliente">Cliente</Label>
               <Select 
-                value={formData.cliente} 
+                value={formData.cliente || undefined} 
                 onValueChange={(value) => handleChange('cliente', value)}
                 disabled={loadingClients}
               >

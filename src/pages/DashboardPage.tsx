@@ -57,7 +57,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [newScadenza, setNewScadenza] = useState('')
   const [newOra, setNewOra] = useState('')
   const [newNote, setNewNote] = useState('')
-  const [newCliente, setNewCliente] = useState('')
+  const [newCliente, setNewCliente] = useState<string>('')
   const [newControparte, setNewControparte] = useState('')
   const [modalitaInserimento, setModalitaInserimento] = useState<'scelta' | 'manuale'>('scelta')
   const [isAppuntamentoDialogOpen, setIsAppuntamentoDialogOpen] = useState(false)
@@ -742,7 +742,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   <div>
                     <Label htmlFor="cliente">Cliente</Label>
                     <Select 
-                      value={newCliente} 
+                      value={newCliente || undefined} 
                       onValueChange={(value) => setNewCliente(value)}
                       disabled={loadingClients}
                     >
@@ -890,7 +890,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   <div className="w-48">
                     <Label htmlFor="cliente">Cliente</Label>
                     <Select 
-                      value={newCliente} 
+                      value={newCliente || undefined} 
                       onValueChange={(value) => setNewCliente(value)}
                       disabled={loadingClients}
                     >
