@@ -284,27 +284,33 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    className={`text-xs p-2 rounded border cursor-pointer hover:shadow-md transition-shadow ${
+                                    className={`text-xs p-1 rounded border cursor-pointer hover:shadow-md transition-shadow ${
                                       task.stato === 'done' 
                                         ? 'bg-green-100 text-green-800 border-green-200' 
                                         : getTaskColor(task)
                                     } ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                     onClick={() => onTaskClick?.(task)}
                                   >
-                                    <div className="flex items-start gap-2">
-                                           <div className="flex-shrink-0 mt-1">
-                                             <div className={`w-2 h-2 rounded-full ${
-                                               task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
-                                             }`}></div>
-                                           </div>
-                                      <div className="flex-1 min-w-0">
-                                        <div className="font-medium text-xs truncate">{task.pratica}</div>
-                                        <div className="text-xs text-gray-600 mt-1">
-                                          <span className="text-gray-900 font-bold">{task.cliente || 'N/A'}</span> - <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span>
-                                        </div>
-                                        <div className="text-xs opacity-80 mt-1 truncate">{task.attivita}</div>
+                                    <div className="flex items-center gap-1">
+                                      <div className="flex-shrink-0">
+                                        <div className={`w-1.5 h-1.5 rounded-full ${
+                                          task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
+                                        }`}></div>
+                                      </div>
+                                      <div className="flex-1 min-w-0 text-xs">
+                                        {task.ora && (
+                                          <span className="font-medium text-gray-600 mr-1">{task.ora}</span>
+                                        )}
+                                        <span className="font-bold text-gray-900 mr-1">{task.cliente || 'N/A'}</span>
+                                        {task.controparte && (
+                                          <>
+                                            <span className="text-gray-500">/</span>
+                                            <span className="font-bold text-gray-900 ml-1">{task.controparte}</span>
+                                          </>
+                                        )}
+                                        <span className="text-gray-600 ml-1">- {task.attivita}</span>
                                         {isUrgentTask(task.priorita) && (
-                                          <div className="text-xs text-red-600 font-bold mt-1">URGENTE</div>
+                                          <span className="text-red-600 font-bold ml-1">URGENTE</span>
                                         )}
                                       </div>
                                     </div>
@@ -371,27 +377,33 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    className={`text-xs p-3 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${
+                                    className={`text-xs p-2 rounded border cursor-pointer hover:shadow-md transition-shadow ${
                                       task.stato === 'done' 
                                         ? 'bg-green-100 text-green-800 border-green-200' 
                                         : getTaskColor(task)
                                     } ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                     onClick={() => onTaskClick?.(task)}
                                   >
-                                    <div className="flex items-start gap-3">
-                                           <div className="flex-shrink-0 mt-1">
-                                             <div className={`w-3 h-3 rounded-full ${
-                                               task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
-                                             }`}></div>
-                                           </div>
-                                      <div className="flex-1 min-w-0">
-                                        <div className="font-medium text-sm mb-1">{task.pratica}</div>
-                                        <div className="text-xs text-gray-600 mb-1">
-                                          <span className="text-gray-900 font-bold">{task.cliente || 'N/A'}</span> - <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span>
-                                        </div>
-                                        <div className="text-xs opacity-80 mb-1">{task.attivita}</div>
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex-shrink-0">
+                                        <div className={`w-2 h-2 rounded-full ${
+                                          task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
+                                        }`}></div>
+                                      </div>
+                                      <div className="flex-1 min-w-0 text-xs">
+                                        {task.ora && (
+                                          <span className="font-medium text-gray-600 mr-2">{task.ora}</span>
+                                        )}
+                                        <span className="font-bold text-gray-900 mr-1">{task.cliente || 'N/A'}</span>
+                                        {task.controparte && (
+                                          <>
+                                            <span className="text-gray-500">/</span>
+                                            <span className="font-bold text-gray-900 ml-1">{task.controparte}</span>
+                                          </>
+                                        )}
+                                        <span className="text-gray-600 ml-2">- {task.attivita}</span>
                                         {isUrgentTask(task.priorita) && (
-                                          <div className="text-xs text-red-600 font-bold">URGENTE</div>
+                                          <span className="text-red-600 font-bold ml-2">URGENTE</span>
                                         )}
                                       </div>
                                     </div>

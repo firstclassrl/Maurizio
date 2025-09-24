@@ -41,7 +41,8 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
     autorita_giudiziaria: '',
     rg: '',
     giudice: '',
-    note: ''
+    note: '',
+    priorita: 5
   })
 
   // Reset when modal opens/closes
@@ -57,7 +58,8 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         autorita_giudiziaria: '',
         rg: '',
         giudice: '',
-        note: ''
+        note: '',
+        priorita: 5
       })
       loadPractices()
     }
@@ -406,6 +408,23 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
+                </div>
+
+                {/* Urgent Checkbox */}
+                <div className="flex items-center gap-2 mb-4">
+                  <input
+                    type="checkbox"
+                    id="urgent"
+                    checked={activityData.priorita === 10}
+                    onChange={(e) => setActivityData(prev => ({ 
+                      ...prev, 
+                      priorita: e.target.checked ? 10 : 5 
+                    }))}
+                    className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500 cursor-pointer"
+                  />
+                  <label htmlFor="urgent" className="text-red-600 font-medium cursor-pointer">
+                    URGENTE
+                  </label>
                 </div>
 
                 <div>
