@@ -178,6 +178,12 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
       }
 
       console.log('Saving task to database:', taskData)
+      console.log('Task data details:', {
+        pratica: taskData.pratica,
+        attivita: taskData.attivita,
+        categoria: taskData.categoria,
+        scadenza: taskData.scadenza
+      })
 
       // Save to database
       const { data, error } = await supabase
