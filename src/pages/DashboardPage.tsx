@@ -25,6 +25,7 @@ import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { OverdueCounter } from '../components/notifications/OverdueCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
+import { GoogleCalendarSync } from '../components/google-calendar/GoogleCalendarSync'
 import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, PenTool, ArrowLeft, AlertTriangle, Users } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -635,6 +636,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             )}
           </CardContent>
         </Card>
+
+        {/* Google Calendar Sync */}
+        <div className="mb-6">
+          <GoogleCalendarSync user={user} />
+        </div>
 
         {/* Quick Add Form */}
         <Card className="mb-6 border-2 border-black">
