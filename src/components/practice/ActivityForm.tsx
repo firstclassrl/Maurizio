@@ -27,7 +27,7 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
   
   const [formData, setFormData] = useState<ActivityFormData>({
     pratica_id: practice.id || '',
-    categoria: 'APPUNTAMENTO',
+    categoria: 'Appuntamento',
     attivita: '',
     data: '',
     ora: '',
@@ -56,7 +56,7 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
       // Reset form for new activity
       setFormData({
         pratica_id: practice.id || '',
-        categoria: 'APPUNTAMENTO',
+        categoria: 'Appuntamento',
         attivita: '',
         data: '',
         ora: '',

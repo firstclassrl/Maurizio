@@ -55,7 +55,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [clients, setClients] = useState<Client[]>([])
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
-  const [isAddActivityModalOpen, setIsAddActivityModalOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
 
