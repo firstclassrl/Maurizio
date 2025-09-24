@@ -73,34 +73,59 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         throw new Error('User not authenticated')
       }
 
-      // For now, we'll get practices from tasks table since we don't have a separate practices table yet
-      const { data: tasks, error } = await supabase
-        .from('tasks')
-        .select('pratica, cliente, controparte, categoria')
+      // Load practices from the practices table
+      const { data: practices, error } = await supabase
+        .from('practices')
+        .select('*')
         .eq('user_id', user.id)
-        .not('pratica', 'is', null)
+        .order('numero', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.error('Error loading practices:', error)
+        throw error
+      }
 
-      // Group by pratica to get unique practices
-      const practiceMap = new Map()
-      tasks?.forEach(task => {
-        if (!practiceMap.has(task.pratica)) {
-          practiceMap.set(task.pratica, {
-            id: `practice_${task.pratica.replace(/\//g, '_')}`,
-            numero: task.pratica,
-            cliente_id: '', // We'll need to find this from clients
-            controparti_ids: [],
-            tipo_procedura: 'STRAGIUDIZIALE' as const, // Default, we'll need to determine this
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-        }
-      })
-
-      setPractices(Array.from(practiceMap.values()))
+      console.log('Loaded practices:', practices)
+      setPractices(practices || [])
     } catch (error) {
       console.error('Error loading practices:', error)
+      // Fallback: try to load from tasks table if practices table doesn't exist
+      try {
+        const { data: { user: fallbackUser } } = await supabase.auth.getUser()
+        if (!fallbackUser) {
+          throw new Error('User not authenticated')
+        }
+        
+        const { data: tasks, error: tasksError } = await supabase
+          .from('tasks')
+          .select('pratica, cliente, controparte, categoria')
+          .eq('user_id', fallbackUser.id)
+          .not('pratica', 'is', null)
+
+        if (tasksError) throw tasksError
+
+        // Group by pratica to get unique practices
+        const practiceMap = new Map()
+        tasks?.forEach(task => {
+          if (!practiceMap.has(task.pratica)) {
+            practiceMap.set(task.pratica, {
+              id: `practice_${task.pratica.replace(/\//g, '_')}`,
+              numero: task.pratica,
+              cliente_id: '', // We'll need to find this from clients
+              controparti_ids: [],
+              tipo_procedura: 'STRAGIUDIZIALE' as const, // Default, we'll need to determine this
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+          }
+        })
+
+        const fallbackPractices = Array.from(practiceMap.values())
+        setPractices(fallbackPractices)
+      } catch (fallbackError) {
+        console.error('Fallback loading failed:', fallbackError)
+        setPractices([])
+      }
     } finally {
       setLoading(false)
     }
@@ -139,45 +164,88 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         .map(c => c!.ragione || `${c!.nome} ${c!.cognome}`)
         .join(', ')
 
-      // Map Activity data to Task format for database
-      const taskData = {
-        user_id: user.id,
-        pratica: selectedPractice!.numero,
-        attivita: activityData.attivita,
-        scadenza: activityData.data,
-        ora: activityData.ora || null,
-        categoria: activityData.categoria,
-        autorita_giudiziaria: activityData.autorita_giudiziaria || null,
-        rg: activityData.rg || null,
-        giudice: activityData.giudice || null,
-        note: activityData.note || null,
-        stato: 'todo' as const,
-        urgent: false,
-        cliente: cliente?.ragione || `${cliente?.nome} ${cliente?.cognome}` || null,
-        controparte: controparti || null
+      console.log('Debug client data:', {
+        selectedPractice: selectedPractice,
+        clients: clients,
+        cliente: cliente,
+        controparti: controparti
+      })
+
+      // Check if this is a real practice (from practices table) or a fallback practice
+      const isRealPractice = selectedPractice!.id && !selectedPractice!.id.startsWith('practice_')
+      
+      let data, error
+      
+      if (isRealPractice) {
+        // Save to activities table
+        const activityRecord = {
+          user_id: user.id,
+          pratica_id: selectedPractice!.id,
+          categoria: activityData.categoria,
+          attivita: activityData.attivita,
+          data: activityData.data,
+          ora: activityData.ora || null,
+          autorita_giudiziaria: activityData.autorita_giudiziaria || null,
+          rg: activityData.rg || null,
+          giudice: activityData.giudice || null,
+          note: activityData.note || null,
+          stato: 'todo' as const,
+          urgent: activityData.urgent
+        }
+
+        console.log('Saving activity to database:', activityRecord)
+        
+        const result = await supabase
+          .from('activities')
+          .insert(activityRecord)
+          .select()
+          .single()
+        
+        data = result.data
+        error = result.error
+      } else {
+        // Save to tasks table (fallback)
+        const taskData = {
+          user_id: user.id,
+          pratica: selectedPractice!.numero,
+          attivita: activityData.attivita,
+          scadenza: activityData.data,
+          ora: activityData.ora || null,
+          categoria: activityData.categoria,
+          autorita_giudiziaria: activityData.autorita_giudiziaria || null,
+          rg: activityData.rg || null,
+          giudice: activityData.giudice || null,
+          note: activityData.note || null,
+          stato: 'todo' as const,
+          urgent: activityData.urgent,
+          cliente: cliente ? (cliente.ragione || `${cliente.nome} ${cliente.cognome}`) : null,
+          controparte: controparti || null
+        }
+
+        console.log('Saving task to database:', taskData)
+
+        const result = await supabase
+          .from('tasks')
+          .insert(taskData)
+          .select()
+          .single()
+        
+        data = result.data
+        error = result.error
       }
-
-      console.log('Saving task to database:', taskData)
-
-      // Save to database
-      const { data, error } = await supabase
-        .from('tasks')
-        .insert(taskData)
-        .select()
-        .single()
 
       if (error) {
         console.error('Database error:', error)
         throw error
       }
 
-      console.log('Task saved successfully:', data)
+      console.log('Record saved successfully:', data)
 
       // Create Activity object for callback
       const newActivity: Activity = {
         id: data.id,
         user_id: data.user_id,
-        pratica_id: selectedPractice!.id,
+        pratica_id: isRealPractice ? selectedPractice!.id : `practice_${selectedPractice!.numero.replace(/\//g, '_')}`,
         categoria: activityData.categoria,
         attivita: activityData.attivita,
         data: activityData.data,
@@ -187,7 +255,7 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         giudice: activityData.giudice,
         note: activityData.note,
         stato: 'todo',
-        urgent: false,
+        urgent: activityData.urgent,
         created_at: data.created_at,
         updated_at: data.updated_at
       }
