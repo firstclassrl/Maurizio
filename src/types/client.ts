@@ -35,12 +35,18 @@ export interface Client {
   dataNascita?: string
   luogoNascita?: string
   partitaIva?: string
+  codiceFiscale?: string
+  denominazione?: string
   
   // Indirizzi
   indirizzi: Address[]
   
   // Contatti
   contatti: Contact[]
+  
+  // Ruoli
+  cliente: boolean
+  controparte: boolean
   
   // Destinatario (per PA)
   codiceDestinatario?: string
@@ -68,9 +74,15 @@ export interface ClientFormData {
   dataNascita: string
   luogoNascita: string
   partitaIva: string
+  codiceFiscale: string
+  denominazione: string
   
   indirizzi: Address[]
   contatti: Contact[]
+  
+  // Ruoli
+  cliente: boolean
+  controparte: boolean
   
   codiceDestinatario: string
   codiceDestinatarioPA: string

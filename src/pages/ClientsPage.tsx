@@ -118,7 +118,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
       
       // Pulisce i dati prima di inviarli al database
       const cleanData = {
-        tipologia: clientData.tipologia || 'Non specificata',
+        tipologia: clientData.tipologia || 'Persona fisica',
         alternativa: clientData.alternativa || false,
         ragione: clientData.ragione || '',
         titolo: clientData.titolo || null,

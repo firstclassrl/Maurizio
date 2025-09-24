@@ -1,24 +1,9 @@
 // Tipologie di clienti disponibili nel sistema
 export const CLIENT_TYPES = [
-  'Non specificata',
-  'Associazione',
-  'Comitato',
-  'Condominio',
-  'Consorzio',
-  'Cooperativa',
-  'Ditta individuale',
-  'Ente pubblico',
-  'Ente religioso',
-  'Enti di gestione',
-  'Istituto di Credito',
-  'Organizzazione o stato estero',
-  'Partito o sindacato',
   'Persona fisica',
-  'Persona giuridica',
-  'Pubblica amministrazione',
-  'Pubblico Ministero',
-  'Società',
-  'Società di persone'
+  'Persona Giuridica',
+  'Ditta Individuale',
+  'Altro ente'
 ] as const
 
 export type ClientType = typeof CLIENT_TYPES[number]
