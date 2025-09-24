@@ -60,7 +60,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         .from('tasks')
         .select('*')
         .eq('user_id', user.id)
-        .order('data', { ascending: true })
+        .order('scadenza', { ascending: true })
 
       if (error) throw error
       setTasks(data || [])
@@ -165,10 +165,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         .insert({
           user_id: user.id,
           pratica: `Appuntamento con ${appuntamento.cliente}`,
-          categoria: 'APPUNTAMENTO IN STUDIO',
+          attivita: `Appuntamento con ${appuntamento.cliente}`,
+          categoria: 'Appuntamento',
           cliente: appuntamento.cliente,
           controparte: '',
-          data: appuntamento.data,
+          scadenza: appuntamento.data,
           ora: appuntamento.ora,
           note: appuntamento.note || '',
           stato: 'todo',
