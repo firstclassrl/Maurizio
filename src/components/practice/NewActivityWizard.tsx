@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
-import { Plus, ArrowRight, FileText, Calendar } from 'lucide-react'
+import { Plus, ArrowRight, FileText, Calendar, X } from 'lucide-react'
 import { Practice, Activity } from '../../types/practice'
 import { Client } from '../../types/client'
 import { PracticeForm } from './PracticeForm'
@@ -165,25 +165,33 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
   )
 
   const handleClose = () => {
+    console.log('handleClose called')
     setStep('practice')
     setCurrentPractice(null)
     onOpenChange(false)
   }
 
-  const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen) {
-      handleClose()
-    }
+
+  const handleCancelClick = () => {
+    console.log('Cancel button clicked')
+    handleClose()
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open}>
       <DialogContent className={`max-w-6xl max-h-[90vh] overflow-y-auto ${isMobile ? 'mx-2' : ''}`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Plus className="w-5 h-5" />
             Nuova Attività
           </DialogTitle>
+          <button
+            onClick={handleClose}
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </button>
         </DialogHeader>
 
         {renderStepIndicator()}
@@ -195,7 +203,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
           <Button
             type="button"
             variant="outline"
-            onClick={handleClose}
+            onClick={handleCancelClick}
             disabled={isCreatingPractice || isCreatingActivity}
           >
             Annulla
