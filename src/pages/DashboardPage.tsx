@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { AppuntamentoDialog } from '../components/dashboard/AppuntamentoDialog'
 import { Logo } from '../components/ui/Logo'
+import { Footer } from '../components/ui/Footer'
 import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
@@ -769,6 +770,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
+      
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

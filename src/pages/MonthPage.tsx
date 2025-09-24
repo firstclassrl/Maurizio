@@ -7,6 +7,7 @@ import { MonthlyCalendar } from '../components/dashboard/MonthlyCalendar'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
+import { Footer } from '../components/ui/Footer'
 import { ArrowLeft, CalendarDays } from 'lucide-react'
 
 interface MonthPageProps {
@@ -165,6 +166,9 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         task={selectedTask}
         onSave={handleTaskSave}
       />
+      
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

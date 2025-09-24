@@ -5,6 +5,7 @@ import { Card } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { ClientForm } from '../components/clients/ClientForm'
+import { Footer } from '../components/ui/Footer'
 import { Client } from '../types/client'
 import { supabase } from '../lib/supabase'
 import { useMessage } from '../hooks/useMessage'
@@ -453,6 +454,9 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
           </div>
         </div>
       )}
+      
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

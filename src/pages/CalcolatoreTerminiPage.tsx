@@ -2,6 +2,7 @@ import { User } from '@supabase/supabase-js';
 import { Button } from '../components/ui/button';
 import { CalcolatoreTermini } from '../components/CalcolatoreTermini';
 import { useCalcolatoreTermini } from '../hooks/useCalcolatoreTermini';
+import { Footer } from '../components/ui/Footer';
 import { ArrowLeft, Calculator } from 'lucide-react';
 
 interface CalcolatoreTerminiPageProps {
@@ -55,6 +56,9 @@ export function CalcolatoreTerminiPage({ user, onBackToDashboard }: CalcolatoreT
       <div className="py-8">
         <CalcolatoreTermini onAggiungiACalendario={handleAggiungiACalendario} />
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Logo } from '../components/ui/Logo'
+import { Footer } from '../components/ui/Footer'
 import { LogIn, Eye, EyeOff, UserPlus, CheckCircle } from 'lucide-react'
 
 export function LoginPage() {
@@ -199,25 +200,7 @@ export function LoginPage() {
       </div>
 
       {/* Footer */}
-      <footer className="absolute bottom-0 left-0 right-0 py-4 bg-slate-900">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center gap-2">
-            <div className="text-white text-sm">
-              Created by Abruzzo.AI
-            </div>
-            <div className="text-white text-xs opacity-75">
-              Copyright 2025
-            </div>
-            <div className="mt-2">
-              <img 
-                src="/Marchio AbruzzoAI.png" 
-                alt="Abruzzo.AI" 
-                className="h-8 w-auto"
-              />
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer absolute />
     </div>
   )
 }

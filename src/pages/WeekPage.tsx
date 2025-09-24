@@ -7,6 +7,7 @@ import { WeeklyCalendar } from '../components/dashboard/WeeklyCalendar'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
+import { Footer } from '../components/ui/Footer'
 import { ArrowLeft, Calendar } from 'lucide-react'
 
 interface WeekPageProps {
@@ -182,6 +183,9 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
         task={selectedTask}
         onSave={handleTaskSave}
       />
+      
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

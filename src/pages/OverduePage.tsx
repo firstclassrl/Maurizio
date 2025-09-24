@@ -5,6 +5,7 @@ import { User } from '@supabase/supabase-js'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
+import { Footer } from '../components/ui/Footer'
 import { ArrowLeft, AlertTriangle } from 'lucide-react'
 
 interface OverduePageProps {
@@ -249,6 +250,9 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
         isUrgentMode={true}
         onSave={selectedTask ? handleSaveTask : handleSaveNewTask}
       />
+      
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

@@ -8,6 +8,7 @@ import { Card } from '../components/ui/card'
 // import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { Logo } from '../components/ui/Logo'
+import { Footer } from '../components/ui/Footer'
 import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
@@ -366,6 +367,9 @@ export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
       />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
+      
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }
