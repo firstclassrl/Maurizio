@@ -32,7 +32,7 @@ export const PartyFilter: React.FC<PartyFilterProps> = ({
         Filtra per cliente/controparte:
       </label>
       <Select value={selectedParty} onValueChange={onPartyChange}>
-        <SelectTrigger id="party-filter" className="min-w-[160px] max-w-[200px]">
+        <SelectTrigger id="party-filter" className="min-w-[160px] max-w-[180px]">
           <SelectValue placeholder="Seleziona cliente/controparte" />
         </SelectTrigger>
         <SelectContent>

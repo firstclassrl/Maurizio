@@ -436,26 +436,24 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           <CardContent className={isMobile ? "p-4" : "p-6"}>
             <h3 className="text-lg font-semibold text-purple-900 text-center mb-4">Tutte le Attività</h3>
             <div className="bg-purple-800 h-1 w-full mb-4 rounded"></div>
-            <div className={`flex justify-center items-center mb-4 ${isMobile ? 'flex-col gap-2' : 'gap-3'}`}>
-              <div className={`flex items-center gap-2 ${isMobile ? 'w-full justify-center' : 'flex-wrap justify-center'}`}>
-                  <PracticeFilter 
-                    selectedPractice={selectedPractice}
-                    onPracticeChange={setSelectedPractice}
-                    tasks={tasks}
-                    className={isMobile ? "flex-1" : ""}
-                  />
-                  <CategoryFilter 
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                    className={isMobile ? "flex-1" : ""}
-                  />
-                  <PartyFilter 
-                    selectedParty={selectedParty}
-                    onPartyChange={setSelectedParty}
-                    tasks={tasks}
-                    className={isMobile ? "flex-1" : ""}
-                  />
-                </div>
+            <div className={`flex items-center gap-4 mb-4 ${isMobile ? 'flex-col' : 'flex-row'}`}>
+              <PracticeFilter 
+                selectedPractice={selectedPractice}
+                onPracticeChange={setSelectedPractice}
+                tasks={tasks}
+                className={isMobile ? "w-full" : ""}
+              />
+              <CategoryFilter 
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                className={isMobile ? "w-full" : ""}
+              />
+              <PartyFilter 
+                selectedParty={selectedParty}
+                onPartyChange={setSelectedParty}
+                tasks={tasks}
+                className={isMobile ? "w-full" : ""}
+              />
             </div>
             {getFilteredTasks().length === 0 ? (
               <p className="text-gray-500 text-center py-8">

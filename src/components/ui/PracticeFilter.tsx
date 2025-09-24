@@ -13,10 +13,10 @@ export function PracticeFilter({ selectedPractice, onPracticeChange, tasks, clas
   const practices = Array.from(new Set(tasks.map(task => task.pratica).filter(Boolean))).sort()
 
   return (
-    <div className={`space-y-1 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700">Pratica</label>
+    <div className={`flex items-center gap-2 ${className}`}>
+      <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Pratica:</label>
       <Select value={selectedPractice} onValueChange={onPracticeChange}>
-        <SelectTrigger className="min-w-[120px] max-w-[150px]">
+        <SelectTrigger className="min-w-[140px] max-w-[160px]">
           <SelectValue placeholder="Tutte le pratiche" />
         </SelectTrigger>
         <SelectContent>
