@@ -675,33 +675,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           </CardContent>
         </Card>
 
-        {/* Tasks List */}
-        <Card>
-          <CardContent className={isMobile ? "p-4" : "p-6"}>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">Le Tue Attività</h3>
-              <div className="flex gap-2">
-                <CategoryFilter 
-                  selectedCategory={selectedCategory}
-                  onCategoryChange={setSelectedCategory}
-                />
-                <PartyFilter 
-                  selectedParty={selectedParty}
-                  onPartyChange={setSelectedParty}
-                  tasks={tasks}
-                />
-              </div>
-            </div>
-            
-            {getFilteredTasks().length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <div className="text-4xl mb-4">📋</div>
-                <p>Nessuna attività trovata</p>
-                <p className="text-sm">Crea la tua prima attività utilizzando il pulsante sopra</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {getFilteredTasks().map((task) => (
+            {/* Form Inserimento Manuale */}
+            {modalitaInserimento === 'manuale' && (
               <>
                 {isMobile ? (
                   // Mobile Layout - Vertical
