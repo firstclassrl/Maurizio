@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
-import { Plus, ArrowRight, FileText, Calendar, X, ArrowLeft } from 'lucide-react'
+import { Plus, ArrowRight, FileText, Calendar, ArrowLeft } from 'lucide-react'
 import { Practice, Activity } from '../../types/practice'
 import { Client } from '../../types/client'
 import { useMobile } from '../../hooks/useMobile'
@@ -20,7 +20,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
   const [currentPractice, setCurrentPractice] = useState<Practice | null>(null)
   const [isCreatingPractice, setIsCreatingPractice] = useState(false)
   const [isCreatingActivity, setIsCreatingActivity] = useState(false)
-  const [loadingNumber, setLoadingNumber] = useState(false)
 
   // Form data for practice
   const [practiceData, setPracticeData] = useState({
@@ -69,8 +68,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
   // Function to generate practice number
   const generatePracticeNumber = async () => {
     try {
-      setLoadingNumber(true)
-      
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         throw new Error('User not authenticated')
@@ -97,8 +94,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
       const currentYear = new Date().getFullYear()
       const randomNum = Math.floor(Math.random() * 999) + 1
       return `${currentYear}/${randomNum.toString().padStart(3, '0')}`
-    } finally {
-      setLoadingNumber(false)
     }
   }
 
@@ -151,15 +146,15 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
       const newActivity: Activity = {
         id: `activity_${Date.now()}`,
         user_id: 'current_user_id',
-        pratica_id: currentPractice!.id,
+        pratica_id: currentPractice!.id!,
         categoria: activityData.categoria,
         attivita: activityData.attivita,
         data: activityData.data,
-        ora: activityData.ora || undefined,
-        autorita_giudiziaria: activityData.autorita_giudiziaria || undefined,
-        rg: activityData.rg || undefined,
-        giudice: activityData.giudice || undefined,
-        note: activityData.note || undefined,
+        ora: activityData.ora,
+        autorita_giudiziaria: activityData.autorita_giudiziaria,
+        rg: activityData.rg,
+        giudice: activityData.giudice,
+        note: activityData.note,
         stato: 'todo',
         priorita: 5,
         created_at: new Date().toISOString(),
