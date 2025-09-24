@@ -6,6 +6,7 @@ import { useMobile } from '../../hooks/useMobile'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 import { format } from 'date-fns'
 import { PracticeFilter } from '../ui/PracticeFilter'
+import { formatTimeWithoutSeconds } from '../../lib/time-utils'
 
 interface WeeklyCalendarProps {
   tasks: Task[]
@@ -243,21 +244,25 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
                                         task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
                                       }`}></div>
                                     </div>
-                                    <div className="flex-1 min-w-0 text-xs">
-                                      {task.ora && (
-                                        <span className="font-medium text-gray-600 mr-2">{task.ora}</span>
-                                      )}
-                                      <span className="font-bold text-gray-900 mr-1">{task.cliente || 'N/A'}</span>
-                                      {task.controparte && (
-                                        <>
-                                          <span className="text-gray-500">/</span>
-                                          <span className="font-bold text-gray-900 ml-1">{task.controparte}</span>
-                                        </>
-                                      )}
-                                      <span className="text-gray-600 ml-2">- {task.attivita}</span>
-                                      {isUrgentTask(task.urgent) && (
-                                        <span className="text-red-600 font-bold ml-2">URGENTE</span>
-                                      )}
+                                    <div className="flex-1 min-w-0 text-xs overflow-hidden">
+                                      <div className="flex items-center gap-1 whitespace-nowrap">
+                                        {task.ora && (
+                                          <span className="font-medium text-gray-600 text-xs">
+                                            {formatTimeWithoutSeconds(task.ora)}
+                                          </span>
+                                        )}
+                                        <span className="font-bold text-gray-900 text-xs">{task.cliente || 'N/A'}</span>
+                                        {task.controparte && (
+                                          <>
+                                            <span className="text-gray-500 text-xs">/</span>
+                                            <span className="font-bold text-gray-900 text-xs">{task.controparte}</span>
+                                          </>
+                                        )}
+                                        <span className="text-gray-600 text-xs">- {task.attivita}</span>
+                                        {isUrgentTask(task.urgent) && (
+                                          <span className="text-red-600 font-bold text-xs">URGENTE</span>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -327,21 +332,25 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
                                         task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
                                       }`}></div>
                                     </div>
-                                    <div className="flex-1 min-w-0 text-xs">
-                                      {task.ora && (
-                                        <span className="font-medium text-gray-600 mr-2">{task.ora}</span>
-                                      )}
-                                      <span className="font-bold text-gray-900 mr-1">{task.cliente || 'N/A'}</span>
-                                      {task.controparte && (
-                                        <>
-                                          <span className="text-gray-500">/</span>
-                                          <span className="font-bold text-gray-900 ml-1">{task.controparte}</span>
-                                        </>
-                                      )}
-                                      <span className="text-gray-600 ml-2">- {task.attivita}</span>
-                                      {isUrgentTask(task.urgent) && (
-                                        <span className="text-red-600 font-bold ml-2">URGENTE</span>
-                                      )}
+                                    <div className="flex-1 min-w-0 text-xs overflow-hidden">
+                                      <div className="flex items-center gap-1 whitespace-nowrap">
+                                        {task.ora && (
+                                          <span className="font-medium text-gray-600 text-xs">
+                                            {formatTimeWithoutSeconds(task.ora)}
+                                          </span>
+                                        )}
+                                        <span className="font-bold text-gray-900 text-xs">{task.cliente || 'N/A'}</span>
+                                        {task.controparte && (
+                                          <>
+                                            <span className="text-gray-500 text-xs">/</span>
+                                            <span className="font-bold text-gray-900 text-xs">{task.controparte}</span>
+                                          </>
+                                        )}
+                                        <span className="text-gray-600 text-xs">- {task.attivita}</span>
+                                        {isUrgentTask(task.urgent) && (
+                                          <span className="text-red-600 font-bold text-xs">URGENTE</span>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
