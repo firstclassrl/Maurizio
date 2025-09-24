@@ -26,6 +26,7 @@ import { OverdueCounter } from '../components/notifications/OverdueCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
 import { GoogleCalendarSync } from '../components/google-calendar/GoogleCalendarSync'
+import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, PenTool, ArrowLeft, AlertTriangle, Users } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -48,6 +49,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [userProfile, setUserProfile] = useState<{full_name: string} | null>(null)
   const [isUrgentMode, setIsUrgentMode] = useState(false)
   const [refreshCounters, setRefreshCounters] = useState(0)
+  const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedParty, setSelectedParty] = useState('all')
 
@@ -527,6 +529,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   <Calendar className="h-4 w-4 mr-2" />
                   SETTIMANA
                 </Button>
+                <Button onClick={onNavigateToCalcolatore} className="bg-purple-600 hover:bg-purple-700 text-white border-0" size="sm">
+                  <Calculator className="h-4 w-4 mr-2" />
+                  CALCOLATORE
+                </Button>
                 <Button onClick={onNavigateToMonth} className="bg-blue-600 hover:bg-blue-700 text-white border-0" size="sm">
                   <CalendarDays className="h-4 w-4 mr-2" />
                   MESE
@@ -646,50 +652,56 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         <Card className="mb-6 border-2 border-black">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Aggiungi Nuova Attività</h3>
-              {modalitaInserimento !== 'scelta' && (
-                <Button
-                  onClick={handleBackToChoice}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Indietro
-                </Button>
-              )}
+              <h3 className="text-lg font-semibold">Gestione Attività</h3>
+              <Button
+                onClick={() => setIsNewActivityWizardOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                size="sm"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Nuova Attività
+              </Button>
             </div>
             
-            {/* Scelta Modalità Inserimento */}
-            {modalitaInserimento === 'scelta' && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button
-                    onClick={() => setModalitaInserimento('manuale')}
-                    className="h-16 flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    <PenTool className="h-5 w-5" />
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium text-sm">Inserimento Manuale</span>
-                      <span className="text-xs opacity-90">Compila i campi direttamente</span>
-                    </div>
-                  </Button>
-                  <Button
-                    onClick={onNavigateToCalcolatore}
-                    className="h-16 flex items-center justify-center gap-3 bg-purple-600 hover:bg-purple-700 text-white"
-                  >
-                    <Calculator className="h-5 w-5" />
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium text-sm">Calcolatore Scadenze</span>
-                      <span className="text-xs opacity-90">Calcola termini processuali</span>
-                    </div>
-                  </Button>
-                </div>
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-4">
+                Crea una nuova pratica e aggiungi attività utilizzando il nuovo sistema basato su pratiche.
+              </p>
+              <div className="text-sm text-gray-500">
+                Il sistema ora organizza le attività per pratica con clienti e controparti specifici.
               </div>
-            )}
+            </div>
+            
+          </CardContent>
+        </Card>
 
-            {/* Form Inserimento Manuale */}
-            {modalitaInserimento === 'manuale' && (
+        {/* Tasks List */}
+        <Card>
+          <CardContent className={isMobile ? "p-4" : "p-6"}>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Le Tue Attività</h3>
+              <div className="flex gap-2">
+                <CategoryFilter 
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                />
+                <PartyFilter 
+                  selectedParty={selectedParty}
+                  onPartyChange={setSelectedParty}
+                  tasks={tasks}
+                />
+              </div>
+            </div>
+            
+            {getFilteredTasks().length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <div className="text-4xl mb-4">📋</div>
+                <p>Nessuna attività trovata</p>
+                <p className="text-sm">Crea la tua prima attività utilizzando il pulsante sopra</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {getFilteredTasks().map((task) => (
               <>
                 {isMobile ? (
                   // Mobile Layout - Vertical
@@ -1121,6 +1133,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           </CardContent>
         </Card>
       </div>
+
+      <NewActivityWizard
+        open={isNewActivityWizardOpen}
+        onOpenChange={setIsNewActivityWizardOpen}
+        clients={clients}
+        onActivityCreated={(activity) => {
+          console.log('New activity created:', activity)
+          // Ricarica le attività
+          loadTasks()
+          setRefreshCounters(prev => prev + 1)
+        }}
+      />
 
       <TaskDialog
         open={isTaskDialogOpen}
