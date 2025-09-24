@@ -24,6 +24,7 @@ import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { OptionsModal } from '../components/ui/OptionsModal'
 import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
+import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
 interface DashboardPageProps {
   user: User
@@ -138,6 +139,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       console.error('Errore nel caricamento delle scadenze urgenti:', error)
       showError('Errore nel caricamento delle scadenze urgenti', 'Errore')
     }
+  }
+
+  // Funzione per filtrare le attività di oggi
+  const getTodayTasks = () => {
+    const today = new Date().toISOString().split('T')[0]
+    return tasks.filter(task => task.scadenza === today && !task.evaso)
   }
 
   const handleUrgentCounterClick = () => {
@@ -379,12 +386,87 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   </div>
         </div>
 
+        {/* Today's Activities Section */}
+        {getTodayTasks().length > 0 && (
+          <Card className="mb-6 border-2 border-yellow-400 bg-yellow-50">
+            <CardContent className={isMobile ? "p-4" : "p-6"}>
+              <div className="flex items-center gap-2 mb-4">
+                <Calendar className="h-5 w-5 text-yellow-700" />
+                <h3 className="text-lg font-semibold text-yellow-800">Attività di Oggi</h3>
+                <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                  {getTodayTasks().length}
+                </span>
+              </div>
+              <div className="space-y-3">
+                {getTodayTasks().map((task) => (
+                  <div
+                    key={task.id}
+                    className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${
+                      task.stato === 'done' 
+                        ? 'bg-green-50 text-green-800 border-green-200' 
+                        : getCategoryColor(task.categoria)
+                    }`}
+                    onClick={() => handleTaskClick(task)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="flex-shrink-0">
+                        <div className={`w-2 h-2 rounded-full ${
+                          task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
+                        }`}></div>
+                      </div>
+                      <div className="flex-1 min-w-0 text-xs overflow-hidden">
+                        <div className="flex items-center gap-1 whitespace-nowrap">
+                          {task.ora && (
+                            <span className="font-medium text-gray-600 text-xs">
+                              {formatTimeWithoutSeconds(task.ora)}
+                            </span>
+                          )}
+                          <span className="font-bold text-gray-900 text-xs">{task.cliente || 'N/A'}</span>
+                          {task.controparte && (
+                            <>
+                              <span className="text-gray-500 text-xs">/</span>
+                              <span className="font-bold text-gray-900 text-xs">{task.controparte}</span>
+                            </>
+                          )}
+                          <span className="text-gray-600 text-xs">- {task.attivita}</span>
+                          {task.urgent && (
+                            <span className="text-red-600 font-bold text-xs">URGENTE</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleToggleEvased(task)
+                          }}
+                          className={`p-1 rounded-full transition-colors ${
+                            task.evaso 
+                              ? 'bg-green-500 hover:bg-green-600' 
+                              : 'bg-red-500 hover:bg-red-600'
+                          }`}
+                          title={task.evaso ? 'Evasa - Click per ripristinare' : 'Non evasa - Click per marcare come evasa'}
+                        >
+                          {task.evaso ? (
+                            <CheckCircle2 className="h-4 w-4 text-white" />
+                          ) : (
+                            <XCircle className="h-4 w-4 text-white" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* New Activity System */}
         <Card className="mb-6 border-2 border-black">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Gestione Attività</h3>
+              <h3 className="text-lg font-semibold">Azioni</h3>
               
               <div className="flex gap-2">
                 <Button
