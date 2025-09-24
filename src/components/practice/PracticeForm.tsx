@@ -9,6 +9,7 @@ import { Plus, Minus, ArrowLeft } from 'lucide-react'
 import { Practice, PracticeFormData, ProcedureType } from '../../types/practice'
 import { Client } from '../../types/client'
 import { useMobile } from '../../hooks/useMobile'
+import { supabase } from '../../lib/supabase'
 
 interface PracticeFormProps {
   open: boolean
@@ -22,6 +23,7 @@ interface PracticeFormProps {
 export function PracticeForm({ open, onOpenChange, practice, onSave, clients, isLoading = false }: PracticeFormProps) {
   const isMobile = useMobile()
   const [step, setStep] = useState<'form' | 'activity'>('form')
+  const [loadingNumber, setLoadingNumber] = useState(false)
   
   const [formData, setFormData] = useState<PracticeFormData>({
     numero: '',
@@ -29,6 +31,34 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
     controparti_ids: [],
     tipo_procedura: 'STRAGIUDIZIALE'
   })
+
+  // Function to generate next practice number
+  const generatePracticeNumber = async () => {
+    try {
+      setLoadingNumber(true)
+      const { data, error } = await supabase
+        .rpc('get_next_practice_number', { user_id_param: supabase.auth.getUser().then(u => u.data.user?.id) })
+      
+      if (error) throw error
+      
+      // Fallback to manual generation if function doesn't exist
+      if (!data) {
+        const currentYear = new Date().getFullYear()
+        const randomNum = Math.floor(Math.random() * 999) + 1
+        return `${currentYear}/${randomNum.toString().padStart(3, '0')}`
+      }
+      
+      return data
+    } catch (error) {
+      console.error('Error generating practice number:', error)
+      // Fallback to manual generation
+      const currentYear = new Date().getFullYear()
+      const randomNum = Math.floor(Math.random() * 999) + 1
+      return `${currentYear}/${randomNum.toString().padStart(3, '0')}`
+    } finally {
+      setLoadingNumber(false)
+    }
+  }
 
   useEffect(() => {
     if (practice) {
@@ -40,14 +70,21 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
       })
       setStep('form')
     } else {
-      // Reset form for new practice
-      setFormData({
-        numero: '',
-        cliente_id: '',
-        controparti_ids: [],
-        tipo_procedura: 'STRAGIUDIZIALE'
-      })
-      setStep('form')
+      // Reset form for new practice and generate number
+      const initializeNewPractice = async () => {
+        const newNumber = await generatePracticeNumber()
+        setFormData({
+          numero: newNumber,
+          cliente_id: '',
+          controparti_ids: [],
+          tipo_procedura: 'STRAGIUDIZIALE'
+        })
+        setStep('form')
+      }
+      
+      if (open) {
+        initializeNewPractice()
+      }
     }
   }, [practice, open])
 
@@ -108,10 +145,14 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
             <Input
               id="numero"
               value={formData.numero}
-              onChange={(e) => handleInputChange('numero', e.target.value)}
-              placeholder="es. 2024/001"
+              readOnly
+              placeholder={loadingNumber ? "Generazione numero..." : "es. 2024/001"}
+              className="bg-gray-50"
               required
             />
+            {loadingNumber && (
+              <p className="text-sm text-gray-500 mt-1">Generazione automatica in corso...</p>
+            )}
           </div>
           
           <div>

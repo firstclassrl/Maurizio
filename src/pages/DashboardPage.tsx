@@ -11,6 +11,7 @@ import { Logo } from '../components/ui/Logo'
 import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
+import { useToast, ToastContainer } from '../components/ui/Toast'
 import { useMobile } from '../hooks/useMobile'
 import { WeekCounter } from '../components/notifications/WeekCounter'
 import { TodayCounter } from '../components/notifications/TodayCounter'
@@ -31,7 +32,8 @@ interface DashboardPageProps {
 }
 
 export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore, onNavigateToClients }: DashboardPageProps) {
-  const { message, showError, showSuccess, hideMessage } = useMessage()
+  const { message, showError, hideMessage } = useMessage()
+  const { toasts, removeToast, showSuccess: showToastSuccess } = useToast()
   const isMobile = useMobile()
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
@@ -118,7 +120,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       ))
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
-      showSuccess('Attività aggiornata con successo', 'Successo')
+      showToastSuccess('Successo', 'Attività aggiornata con successo')
     } catch (error) {
       console.error('Errore nell\'aggiornamento dell\'attività:', error)
       showError('Errore nell\'aggiornamento dell\'attività', 'Errore')
@@ -134,17 +136,17 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     if (!taskToDelete) return
 
     try {
-      const { error } = await supabase
-        .from('tasks')
+        const { error } = await supabase
+          .from('tasks')
         .delete()
         .eq('id', taskToDelete.id)
 
-      if (error) throw error
+        if (error) throw error
 
       setTasks(prev => prev.filter(task => task.id !== taskToDelete.id))
       setIsConfirmDialogOpen(false)
       setTaskToDelete(null)
-      showSuccess('Attività eliminata con successo', 'Successo')
+      showToastSuccess('Successo', 'Attività eliminata con successo')
     } catch (error) {
       console.error('Errore nell\'eliminazione dell\'attività:', error)
       showError('Errore nell\'eliminazione dell\'attività', 'Errore')
@@ -177,7 +179,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       if (error) throw error
 
       await loadTasks()
-      showSuccess('Appuntamento aggiunto con successo', 'Successo')
+      showToastSuccess('Successo', 'Appuntamento aggiunto con successo')
     } catch (error) {
       console.error('Errore nell\'aggiunta dell\'appuntamento:', error)
       showError('Errore nell\'aggiunta dell\'appuntamento', 'Errore')
@@ -219,7 +221,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               <h1 className="ml-3 text-xl font-semibold text-gray-900">
                 {userProfile?.full_name || 'Dashboard'}
               </h1>
-            </div>
+                </div>
             
             <div className="flex items-center space-x-2">
               <Button
@@ -272,11 +274,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 variant="outline"
                 size="sm"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
             </div>
-          </div>
         </div>
       </div>
 
@@ -297,14 +299,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           <CardContent className={isMobile ? "p-4" : "p-6"}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Gestione Attività</h3>
-              <Button
+                <Button
                 onClick={() => setIsNewActivityWizardOpen(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
-                size="sm"
-              >
+                  size="sm"
+                >
                 <Plus className="h-4 w-4 mr-2" />
                 Nuova Pratica
-              </Button>
+                </Button>
             </div>
             
             <div className="text-center py-8">
@@ -338,7 +340,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     className={isMobile ? "flex-1" : ""}
                   />
                 </div>
-              </div>
+            </div>
             </div>
             {getFilteredTasks().length === 0 ? (
               <p className="text-gray-500 text-center py-8">
@@ -366,7 +368,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                             'bg-gray-100 text-gray-800'
                           }`}>
                             {task.categoria}
-                          </span>
+                            </span>
                           {task.stato === 'done' && (
                             <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                               Completata
@@ -389,18 +391,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                           </p>
                         )}
                       </div>
-                      <Button
+                            <Button
                         onClick={(e) => {
                           e.stopPropagation()
                           handleTaskDelete(task)
-                        }}
-                        variant="outline"
-                        size="sm"
+                              }}
+                              variant="outline"
+                              size="sm"
                         className="text-red-600 border-red-600 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                   </div>
                 ))}
               </div>
@@ -426,7 +428,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onClose={() => setIsAppuntamentoDialogOpen(false)}
         onSave={handleSaveAppuntamento}
       />
-
+      
       <ConfirmDialog
         open={isConfirmDialogOpen}
         onClose={() => {
@@ -461,6 +463,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         message={message?.message || ''}
         onClose={hideMessage}
       />
+
+      <ToastContainer toasts={toasts} onClose={removeToast} />
     </div>
   )
 }
