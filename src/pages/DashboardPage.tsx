@@ -129,7 +129,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         .select('*')
         .eq('user_id', user.id)
         .eq('stato', 'todo')
-        .or(`priorita.eq.10,scadenza.lt.${today}`)
+        .or(`urgent.eq.true,scadenza.lt.${today}`)
         .order('scadenza', { ascending: true })
 
       if (error) throw error
@@ -267,7 +267,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           ora: appuntamento.ora,
           note: appuntamento.note || '',
           stato: 'todo',
-          priorita: 5
+          urgent: false
         })
 
       if (error) throw error
@@ -603,7 +603,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                         <span className="text-sm font-medium">
                           {task.categoria}
                         </span>
-                        {task.priorita === 10 && (
+                        {task.urgent && (
                           <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                             URGENTE
                           </span>

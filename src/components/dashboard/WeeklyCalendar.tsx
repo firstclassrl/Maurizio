@@ -39,8 +39,8 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
   }
 
   // Check if task is urgent
-  const isUrgentTask = (priorita: number) => {
-    return priorita === 10
+  const isUrgentTask = (urgent: boolean) => {
+    return urgent
   }
 
   // Get the start of the week (Monday)
@@ -255,7 +255,7 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
                                         </>
                                       )}
                                       <span className="text-gray-600 ml-2">- {task.attivita}</span>
-                                      {isUrgentTask(task.priorita) && (
+                                      {isUrgentTask(task.urgent) && (
                                         <span className="text-red-600 font-bold ml-2">URGENTE</span>
                                       )}
                                     </div>
@@ -339,7 +339,7 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
                                         </>
                                       )}
                                       <span className="text-gray-600 ml-2">- {task.attivita}</span>
-                                      {isUrgentTask(task.priorita) && (
+                                      {isUrgentTask(task.urgent) && (
                                         <span className="text-red-600 font-bold ml-2">URGENTE</span>
                                       )}
                                     </div>

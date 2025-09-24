@@ -32,7 +32,7 @@ export interface Task {
   scadenza: string
   ora?: string | null // Time field
   stato: 'todo' | 'done'
-  priorita: number
+  urgent: boolean // Simplified: urgent or not urgent
   note?: string | null
   cliente?: string | null
   controparte?: string | null

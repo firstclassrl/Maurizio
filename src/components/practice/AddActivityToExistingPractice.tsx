@@ -42,7 +42,7 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
     rg: '',
     giudice: '',
     note: '',
-    priorita: 5
+    urgent: false
   })
 
   // Reset when modal opens/closes
@@ -59,7 +59,7 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         rg: '',
         giudice: '',
         note: '',
-        priorita: 5
+        urgent: false
       })
       loadPractices()
     }
@@ -152,7 +152,7 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         giudice: activityData.giudice || null,
         note: activityData.note || null,
         stato: 'todo' as const,
-        priorita: 5,
+        urgent: false,
         cliente: cliente?.ragione || `${cliente?.nome} ${cliente?.cognome}` || null,
         controparte: controparti || null
       }
@@ -187,7 +187,7 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         giudice: activityData.giudice,
         note: activityData.note,
         stato: 'todo',
-        priorita: 5,
+        urgent: false,
         created_at: data.created_at,
         updated_at: data.updated_at
       }
@@ -415,10 +415,10 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
                   <input
                     type="checkbox"
                     id="urgent"
-                    checked={activityData.priorita === 10}
+                    checked={activityData.urgent}
                     onChange={(e) => setActivityData(prev => ({ 
                       ...prev, 
-                      priorita: e.target.checked ? 10 : 5 
+                      urgent: e.target.checked
                     }))}
                     className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500 cursor-pointer"
                   />

@@ -37,7 +37,7 @@ export function useCalcolatoreTermini() {
           ora: oraFormattata,
           note: note || '',
           stato: 'todo',
-          priorita: 5,
+          urgent: false,
           created_at: new Date().toISOString()
         })
         .select()

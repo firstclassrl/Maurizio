@@ -17,14 +17,14 @@ export function UrgentCounter({ userId, onClick }: UrgentCounterProps) {
       setLoading(true)
       const today = new Date().toISOString().split('T')[0]
 
-      // Get urgent tasks (priority 10) OR overdue tasks, excluding evaded tasks
+      // Get urgent tasks OR overdue tasks, excluding evaded tasks
       const { data: urgentTasks, error: urgentError } = await supabase
         .from('tasks')
         .select('id')
         .eq('user_id', userId)
         .eq('stato', 'todo')
         .eq('evaso', false) // Exclude evaded tasks
-        .or(`priorita.eq.10,scadenza.lt.${today}`)
+        .or(`urgent.eq.true,scadenza.lt.${today}`)
 
       if (urgentError) throw urgentError
 

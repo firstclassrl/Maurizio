@@ -36,7 +36,7 @@ export type Database = {
           attivita: string
           scadenza: string
           stato: 'todo' | 'done'
-          priorita: number
+          urgent: boolean
           created_at: string
           updated_at: string
         }
@@ -47,7 +47,7 @@ export type Database = {
           attivita: string
           scadenza: string
           stato?: 'todo' | 'done'
-          priorita?: number
+          urgent?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -58,7 +58,7 @@ export type Database = {
           attivita?: string
           scadenza?: string
           stato?: 'todo' | 'done'
-          priorita?: number
+          urgent?: boolean
           created_at?: string
           updated_at?: string
         }

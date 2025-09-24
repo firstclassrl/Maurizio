@@ -197,7 +197,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
                             <span className="font-medium">Scadenza:</span> {new Date(task.scadenza).toLocaleDateString('it-IT')}
                           </div>
                           <div>
-                            <span className="font-medium">Priorità:</span> {task.priorita}/10
+                            <span className="font-medium">Urgente:</span> {task.urgent ? 'Sì' : 'No'}
                           </div>
                         </div>
 

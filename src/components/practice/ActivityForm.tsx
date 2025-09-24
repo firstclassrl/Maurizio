@@ -35,7 +35,7 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
     rg: '',
     giudice: '',
     note: '',
-    priorita: 5
+    urgent: false
   })
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
         rg: activity.rg || '',
         giudice: activity.giudice || '',
         note: activity.note || '',
-        priorita: activity.priorita
+        urgent: activity.urgent
       })
     } else {
       // Reset form for new activity
@@ -64,7 +64,7 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
         rg: '',
         giudice: '',
         note: '',
-        priorita: 5
+        urgent: false
       })
     }
   }, [activity, practice, open])
@@ -250,28 +250,17 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
                 />
               </div>
               
-              <div>
-                <Label htmlFor="priorita">Priorità</Label>
-                <Select 
-                  value={formData.priorita.toString()} 
-                  onValueChange={(value) => handleInputChange('priorita', parseInt(value))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleziona priorità" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 - Bassa</SelectItem>
-                    <SelectItem value="2">2 - Bassa</SelectItem>
-                    <SelectItem value="3">3 - Media</SelectItem>
-                    <SelectItem value="4">4 - Media</SelectItem>
-                    <SelectItem value="5">5 - Media</SelectItem>
-                    <SelectItem value="6">6 - Alta</SelectItem>
-                    <SelectItem value="7">7 - Alta</SelectItem>
-                    <SelectItem value="8">8 - Alta</SelectItem>
-                    <SelectItem value="9">9 - Molto Alta</SelectItem>
-                    <SelectItem value="10">10 - Urgente</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="urgent"
+                  checked={formData.urgent}
+                  onChange={(e) => handleInputChange('urgent', e.target.checked)}
+                  className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500 cursor-pointer"
+                />
+                <label htmlFor="urgent" className="text-red-600 font-medium cursor-pointer">
+                  URGENTE
+                </label>
               </div>
             </div>
           </Card>

@@ -21,7 +21,7 @@ interface TaskListProps {
   onDelete: (taskId: string) => void
 }
 
-type SortField = 'pratica' | 'attivita' | 'scadenza' | 'stato' | 'priorita'
+type SortField = 'pratica' | 'attivita' | 'scadenza' | 'stato' | 'urgent'
 type SortDirection = 'asc' | 'desc'
 
 export function TaskList({ tasks, onEdit, onDelete }: TaskListProps) {
@@ -56,16 +56,12 @@ export function TaskList({ tasks, onEdit, onDelete }: TaskListProps) {
     return sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />
   }
 
-  const getPriorityColor = (priority: number) => {
-    if (priority >= 8) return 'bg-red-100 text-red-800'
-    if (priority >= 5) return 'bg-yellow-100 text-yellow-800'
-    return 'bg-green-100 text-green-800'
+  const getUrgentColor = (urgent: boolean) => {
+    return urgent ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
   }
 
-  const getPriorityLabel = (priority: number) => {
-    if (priority >= 8) return 'Alta'
-    if (priority >= 5) return 'Media'
-    return 'Bassa'
+  const getUrgentLabel = (urgent: boolean) => {
+    return urgent ? 'Sì' : 'No'
   }
 
   const isOverdue = (scadenza: string) => {
@@ -118,10 +114,10 @@ export function TaskList({ tasks, onEdit, onDelete }: TaskListProps) {
                 Stato {getSortIcon('stato')}
               </button>
               <button
-                onClick={() => handleSort('priorita')}
+                onClick={() => handleSort('urgent')}
                 className="col-span-1 flex items-center gap-1 hover:text-gray-900 text-left"
               >
-                Priorità {getSortIcon('priorita')}
+                Urgente {getSortIcon('urgent')}
               </button>
               <div className="col-span-2 text-right">Azioni</div>
             </div>
@@ -180,8 +176,8 @@ export function TaskList({ tasks, onEdit, onDelete }: TaskListProps) {
                   </div>
                   
                   <div className="col-span-1">
-                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priorita)}`}>
-                      {getPriorityLabel(task.priorita)}
+                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getUrgentColor(task.urgent)}`}>
+                      {getUrgentLabel(task.urgent)}
                     </div>
                   </div>
                   

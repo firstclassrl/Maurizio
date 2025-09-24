@@ -172,7 +172,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         giudice: activityData.giudice || null,
         note: activityData.note || null,
         stato: 'todo' as const,
-        priorita: 5,
+        urgent: false,
         cliente: cliente?.ragione || `${cliente?.nome} ${cliente?.cognome}` || null,
         controparte: controparti || null
       }
@@ -213,7 +213,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         giudice: activityData.giudice,
         note: activityData.note,
         stato: 'todo',
-        priorita: 5,
+        urgent: false,
         created_at: data.created_at,
         updated_at: data.updated_at
       }

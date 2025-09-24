@@ -67,13 +67,9 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
         <div className="truncate text-xs opacity-90">
           {task.attivita}
         </div>
-        {task.priorita >= 5 && (
-          <div className={`mt-1 inline-flex items-center px-1 py-0.5 rounded text-xs font-medium ${
-            task.priorita >= 8 
-              ? 'bg-red-200 text-red-800' 
-              : 'bg-yellow-200 text-yellow-800'
-          }`}>
-            {task.priorita >= 8 ? 'Alta' : 'Media'}
+        {task.urgent && (
+          <div className="mt-1 inline-flex items-center px-1 py-0.5 rounded text-xs font-medium bg-red-200 text-red-800">
+            URGENTE
           </div>
         )}
       </div>

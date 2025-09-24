@@ -51,7 +51,7 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         attivita: taskData.categoria || taskData.attivita,
         scadenza: taskData.scadenza,
         stato: taskData.stato,
-        priorita: taskData.priorita,
+        urgent: taskData.urgent,
         note: taskData.note || null,
         cliente: taskData.cliente || null,
         controparte: taskData.controparte || null,

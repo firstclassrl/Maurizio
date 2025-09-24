@@ -48,7 +48,7 @@ export interface Activity {
   giudice?: string // Solo per GIUDIZIALE
   note?: string
   stato: 'todo' | 'done'
-  priorita: number
+  urgent: boolean // Simplified: urgent or not urgent
   created_at?: string
   updated_at?: string
 }
@@ -72,7 +72,7 @@ export interface ActivityFormData {
   rg: string
   giudice: string
   note: string
-  priorita: number
+  urgent: boolean // Simplified: urgent or not urgent
 }
 
 // Interfaccia per la risposta dell'API pratiche

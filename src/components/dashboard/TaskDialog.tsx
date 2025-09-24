@@ -29,7 +29,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     categoria: '',
     scadenza: '',
     ora: '',
-    priorita: 5,
+    urgent: false,
     note: '',
     cliente: '',
     controparte: '',
@@ -46,7 +46,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         categoria: task.categoria || '', // Categoria dell'attività
         scadenza: task.scadenza,
         ora: task.ora || '',
-        priorita: task.priorita,
+        urgent: task.urgent || false,
         note: task.note || '',
         cliente: task.cliente || '',
         controparte: task.controparte || '',
@@ -60,7 +60,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         categoria: '',
         scadenza: '',
         ora: '',
-        priorita: isUrgentMode ? 10 : 5,
+        urgent: isUrgentMode,
         note: '',
         cliente: '',
         controparte: '',
@@ -110,7 +110,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       scadenza: formData.scadenza,
       ora: formData.ora || null,
       stato: formData.stato,
-      priorita: formData.priorita,
+      urgent: formData.urgent,
       note: formData.note || null,
       cliente: formData.cliente || null,
       controparte: formData.controparte || null,
@@ -296,8 +296,8 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
               <input
                 type="checkbox"
                 id="urgente"
-                checked={formData.priorita === 10}
-                onChange={(e) => handleChange('priorita', e.target.checked ? 10 : 5)}
+                checked={formData.urgent}
+                onChange={(e) => handleChange('urgent', e.target.checked)}
                 className="w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500 cursor-pointer"
               />
               <label htmlFor="urgente" className="text-red-600 font-medium cursor-pointer">

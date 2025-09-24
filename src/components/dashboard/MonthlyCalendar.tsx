@@ -40,8 +40,8 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
   }
 
   // Check if task is urgent
-  const isUrgentTask = (priorita: number) => {
-    return priorita === 10
+  const isUrgentTask = (urgent: boolean) => {
+    return urgent
   }
 
   // Get the first day of the month
@@ -309,7 +309,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                           </>
                                         )}
                                         <span className="text-gray-600 ml-1">- {task.attivita}</span>
-                                        {isUrgentTask(task.priorita) && (
+                                        {isUrgentTask(task.urgent) && (
                                           <span className="text-red-600 font-bold ml-1">URGENTE</span>
                                         )}
                                       </div>
@@ -402,7 +402,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                           </>
                                         )}
                                         <span className="text-gray-600 ml-2">- {task.attivita}</span>
-                                        {isUrgentTask(task.priorita) && (
+                                        {isUrgentTask(task.urgent) && (
                                           <span className="text-red-600 font-bold ml-2">URGENTE</span>
                                         )}
                                       </div>
