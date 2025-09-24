@@ -84,8 +84,13 @@ export function TimeInput({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const formattedTime = formatInputTime(inputValue);
-    onChange(formattedTime);
+    // Per input type="time", il valore è già nel formato HH:MM
+    if (inputValue && inputValue.includes(':')) {
+      onChange(inputValue);
+    } else {
+      const formattedTime = formatInputTime(inputValue);
+      onChange(formattedTime);
+    }
   };
 
   const handleFocus = () => {
@@ -134,11 +139,11 @@ export function TimeInput({
     setShowTimePicker(false);
   };
 
-  // Genera le ore (0-23)
+  // Genera le ore (0-23) - formato 24h
   const hours = Array.from({ length: 24 }, (_, i) => i);
   
-  // Genera i minuti (0, 15, 30, 45)
-  const minutes = [0, 15, 30, 45];
+  // Genera i minuti (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55) per più opzioni
+  const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
   return (
     <div className="space-y-1 relative">
@@ -152,7 +157,9 @@ export function TimeInput({
         <Input
           ref={inputRef}
           id={id}
-          type="text"
+          type="time"
+          step="60"
+          data-format="24"
           value={formatTime(value)}
           onChange={handleInputChange}
           onFocus={handleFocus}
@@ -241,7 +248,13 @@ export function TimeInput({
               type="button"
               onClick={() => {
                 const now = new Date();
-                handleTimeSelect(now.getHours(), now.getMinutes());
+                // Arrotonda ai minuti più vicini disponibili
+                const availableMinutes = minutes;
+                const currentMinute = now.getMinutes();
+                const closestMinute = availableMinutes.reduce((prev, curr) => 
+                  Math.abs(curr - currentMinute) < Math.abs(prev - currentMinute) ? curr : prev
+                );
+                handleTimeSelect(now.getHours(), closestMinute);
               }}
               className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
             >
