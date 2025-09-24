@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { Plus, ArrowRight, FileText, Calendar, X } from 'lucide-react'
@@ -177,29 +176,41 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     handleClose()
   }
 
+  if (!open) return null
+
   return (
-    <Dialog open={open}>
-      <DialogContent className={`max-w-6xl max-h-[90vh] overflow-y-auto ${isMobile ? 'mx-2' : ''}`}>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={handleClose}
+      />
+      
+      {/* Modal Content */}
+      <div className={`relative bg-white rounded-lg shadow-lg max-w-6xl max-h-[90vh] overflow-y-auto w-full mx-4 ${isMobile ? 'mx-2' : ''}`}>
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
             <Plus className="w-5 h-5" />
             Nuova Attività
-          </DialogTitle>
+          </h2>
           <button
             onClick={handleClose}
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+            className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 p-1"
           >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </button>
-        </DialogHeader>
+        </div>
 
-        {renderStepIndicator()}
+        {/* Content */}
+        <div className="p-6">
+          {renderStepIndicator()}
+          {step === 'practice' ? renderPracticeStep() : renderActivityStep()}
+        </div>
 
-        {step === 'practice' ? renderPracticeStep() : renderActivityStep()}
-
-        {/* Pulsanti di navigazione */}
-        <div className="flex justify-between pt-6 border-t">
+        {/* Footer */}
+        <div className="flex justify-between p-6 border-t bg-gray-50">
           <Button
             type="button"
             variant="outline"
@@ -220,7 +231,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
             </Button>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   )
 }
