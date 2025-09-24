@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Badge } from '../ui/badge'
@@ -37,8 +37,8 @@ export function GoogleCalendarSync({ user, onSyncStatusChange }: GoogleCalendarS
 
       if (error) throw error
 
-      setSyncStatus(data)
-      onSyncStatusChange?.(data)
+      setSyncStatus(data as SyncStatus)
+      onSyncStatusChange?.(data as SyncStatus)
     } catch (error) {
       console.error('Error loading sync status:', error)
     }
