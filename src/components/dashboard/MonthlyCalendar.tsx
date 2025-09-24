@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useMobile } from '../../hooks/useMobile'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 import { supabase } from '../../lib/supabase'
+import { PracticeFilter } from '../ui/PracticeFilter'
 
 interface MonthlyCalendarProps {
   tasks: Task[]
@@ -15,6 +16,7 @@ interface MonthlyCalendarProps {
 
 export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: MonthlyCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const isMobile = useMobile()
 
   // Generate colors based on category
@@ -76,7 +78,11 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
   // Get tasks for a specific date
   const getTasksForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0]
-    return tasks.filter(task => task.scadenza === dateStr)
+    return tasks.filter(task => {
+      const matchesDate = task.scadenza === dateStr
+      const matchesPractice = selectedPractice === 'all' || task.pratica === selectedPractice
+      return matchesDate && matchesPractice
+    })
   }
 
   // Calculate dynamic height based on number of tasks
@@ -184,6 +190,13 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
             <Button onClick={goToNextMonth} variant="outline" size="sm">
               <ChevronRight className="h-4 w-4" />
             </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <PracticeFilter 
+              selectedPractice={selectedPractice}
+              onPracticeChange={setSelectedPractice}
+              tasks={tasks}
+            />
           </div>
         </div>
       </div>

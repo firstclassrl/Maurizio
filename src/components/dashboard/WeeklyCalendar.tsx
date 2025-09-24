@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useMobile } from '../../hooks/useMobile'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 import { format } from 'date-fns'
+import { PracticeFilter } from '../ui/PracticeFilter'
 
 interface WeeklyCalendarProps {
   tasks: Task[]
@@ -14,6 +15,7 @@ interface WeeklyCalendarProps {
 
 export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
+  const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const isMobile = useMobile()
 
   // Generate colors based on category
@@ -65,7 +67,11 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
   // Get tasks for a specific date
   const getTasksForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0]
-    return tasks.filter(task => task.scadenza === dateStr)
+    return tasks.filter(task => {
+      const matchesDate = task.scadenza === dateStr
+      const matchesPractice = selectedPractice === 'all' || task.pratica === selectedPractice
+      return matchesDate && matchesPractice
+    })
   }
 
   // Navigate to previous week
@@ -125,6 +131,13 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
             <Button onClick={goToNextWeek} variant="outline" size="sm">
               <ChevronRight className="h-4 w-4" />
             </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <PracticeFilter 
+              selectedPractice={selectedPractice}
+              onPracticeChange={setSelectedPractice}
+              tasks={tasks}
+            />
           </div>
         </div>
       </div>

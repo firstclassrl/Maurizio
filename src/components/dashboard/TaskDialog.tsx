@@ -12,8 +12,7 @@ import { ScadenzaCalculator } from '../ui/ScadenzaCalculator'
 import { useMessage } from '../../hooks/useMessage'
 import { useMobile } from '../../hooks/useMobile'
 import { Task } from '../../lib/calendar-utils'
-import { analyzeActivity, getActivityDescription, getActivityIcon } from '../../lib/activity-intelligence'
-import { AlertTriangle, Calculator, Brain } from 'lucide-react'
+import { AlertTriangle, Calculator } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { Client } from '../../types/client'
 
@@ -30,6 +29,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
   const { message, showError, hideMessage } = useMessage()
   const isMobile = useMobile()
   const [formData, setFormData] = useState({
+    pratica: '',
     attivita: '',
     categoria: '',
     scadenza: '',
@@ -42,7 +42,6 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     evaso: false
   })
   const [showCalculator, setShowCalculator] = useState(false)
-  const [activityAnalysis, setActivityAnalysis] = useState<any>(null)
   const [clients, setClients] = useState<Client[]>([])
   const [loadingClients, setLoadingClients] = useState(false)
 
@@ -56,6 +55,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
   useEffect(() => {
     if (task) {
       setFormData({
+        pratica: task.pratica || '', // Numero pratica (non modificabile)
         attivita: task.attivita || '', // Attività da svolgere
         categoria: task.categoria || '', // Categoria dell'attività
         scadenza: task.scadenza,
@@ -69,6 +69,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
       })
     } else {
       setFormData({
+        pratica: '',
         attivita: '',
         categoria: '',
         scadenza: '',
@@ -102,15 +103,6 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     }
   }
 
-  // Analizza l'attività quando cambiano attivita o categoria
-  useEffect(() => {
-    if (formData.attivita && formData.categoria) {
-      const analysis = analyzeActivity(formData.categoria, formData.attivita)
-      setActivityAnalysis(analysis)
-    } else {
-      setActivityAnalysis(null)
-    }
-  }, [formData.attivita, formData.categoria])
 
   const handleScadenzaCalculated = (dataScadenza: Date) => {
     const formattedDate = format(dataScadenza, 'yyyy-MM-dd')
@@ -188,6 +180,19 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Numero Pratica (solo visualizzazione) */}
+          {task && (
+            <div className="space-y-1">
+              <Label htmlFor="pratica">Numero Pratica</Label>
+              <Input
+                id="pratica"
+                value={formData.pratica}
+                disabled
+                className="bg-gray-100 text-gray-600 cursor-not-allowed"
+              />
+            </div>
+          )}
+
           <div className="space-y-1">
             <Label htmlFor="attivita">Attività *</Label>
             <Input
@@ -309,19 +314,6 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
             />
           </div>
 
-          {/* Analisi AI dell'attività */}
-          {activityAnalysis && (
-            <div className="p-2 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <Brain className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-800">Analisi AI</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{getActivityIcon(activityAnalysis)}</span>
-                <span className="text-sm text-blue-700">{getActivityDescription(activityAnalysis)}</span>
-              </div>
-            </div>
-          )}
 
           <div className="space-y-1">
             <div className="flex gap-2">
@@ -344,22 +336,20 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                   className="text-gray-900"
                 />
               </div>
-              {activityAnalysis?.needsCalculator && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    setShowCalculator(true)
-                  }}
-                  className="px-3"
-                  title="Calcola scadenza automaticamente"
-                >
-                  <Calculator className="h-4 w-4" />
-                </Button>
-              )}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setShowCalculator(true)
+                }}
+                className="px-3"
+                title="Calcola scadenza automaticamente"
+              >
+                <Calculator className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
@@ -397,10 +387,10 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                 onScadenzaCalculated={handleScadenzaCalculated}
                 initialDataInizio={formData.scadenza ? new Date(formData.scadenza) : undefined}
                 categoriaAttivita={formData.categoria}
-                activityAnalysis={activityAnalysis}
               />
             </div>
           )}
+
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

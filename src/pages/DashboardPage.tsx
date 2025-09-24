@@ -19,6 +19,7 @@ import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { OverdueCounter } from '../components/notifications/OverdueCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
+import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { OptionsModal } from '../components/ui/OptionsModal'
@@ -53,6 +54,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [userProfile, setUserProfile] = useState<{full_name: string} | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedParty, setSelectedParty] = useState<string>('all')
+  const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const [isAppuntamentoDialogOpen, setIsAppuntamentoDialogOpen] = useState(false)
   const [clients, setClients] = useState<Client[]>([])
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
@@ -249,6 +251,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     }
   }
 
+  const getFilteredTasks = () => {
+    return tasks.filter(task => {
+      const matchesCategory = selectedCategory === 'all' || task.categoria === selectedCategory
+      const matchesParty = selectedParty === 'all' || 
+        (selectedParty === 'cliente' && task.cliente) ||
+        (selectedParty === 'controparte' && task.controparte)
+      const matchesPractice = selectedPractice === 'all' || task.pratica === selectedPractice
+      
+      return matchesCategory && matchesParty && matchesPractice
+    })
+  }
+
   const handleSaveAppuntamento = async (appuntamento: {
     cliente: string;
     data: string;
@@ -282,21 +296,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     }
   }
 
-  const getFilteredTasks = () => {
-    let filtered = tasks
-
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(task => task.categoria === selectedCategory)
-    }
-
-    if (selectedParty !== 'all') {
-      filtered = filtered.filter(task => 
-        task.cliente === selectedParty || task.controparte === selectedParty
-      )
-    }
-
-    return filtered
-  }
 
   const handleLogout = async () => {
     try {
@@ -449,6 +448,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               <h3 className="text-lg font-semibold text-purple-900">Tutte le Attività</h3>
               <div className={`flex items-center gap-2 ${isMobile ? 'w-full flex-col' : ''}`}>
                 <div className={`flex items-center gap-2 ${isMobile ? 'w-full' : ''}`}>
+                  <PracticeFilter 
+                    selectedPractice={selectedPractice}
+                    onPracticeChange={setSelectedPractice}
+                    tasks={tasks}
+                    className={isMobile ? "flex-1" : ""}
+                  />
                   <CategoryFilter 
                     selectedCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
@@ -465,7 +470,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             </div>
             {getFilteredTasks().length === 0 ? (
               <p className="text-gray-500 text-center py-8">
-                {selectedCategory === 'all' && selectedParty === 'all'
+                {selectedCategory === 'all' && selectedParty === 'all' && selectedPractice === 'all'
                   ? 'Nessuna attività trovata. Aggiungi la tua prima pratica!'
                   : `Nessuna attività trovata per i filtri selezionati.`
                 }
