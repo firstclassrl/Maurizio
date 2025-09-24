@@ -98,9 +98,11 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
   }
 
   const handleClose = () => {
+    console.log('handleClose called')
     setStep('practice')
     setCurrentPractice(null)
     onOpenChange(false)
+    console.log('onOpenChange(false) called')
   }
 
   const handlePracticeSubmit = async () => {
@@ -161,7 +163,9 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         updated_at: new Date().toISOString()
       }
 
+      console.log('Activity created successfully:', newActivity)
       onActivityCreated(newActivity)
+      console.log('Calling handleClose...')
       handleClose()
     } catch (error) {
       console.error('Error creating activity:', error)
