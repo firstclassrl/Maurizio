@@ -43,19 +43,30 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
   const generatePracticeNumber = async () => {
     try {
       setLoadingNumber(true)
-      const { data, error } = await supabase
-        .rpc('get_next_practice_number', { user_id_param: supabase.auth.getUser().then(u => u.data.user?.id) })
       
-      if (error) throw error
-      
-      // Fallback to manual generation if function doesn't exist
-      if (!data) {
-        const currentYear = new Date().getFullYear()
-        const randomNum = Math.floor(Math.random() * 999) + 1
-        return `${currentYear}/${randomNum.toString().padStart(3, '0')}`
+      // Get current user ID first
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('User not authenticated')
       }
       
-      return data
+      // Try to get next practice number from database
+      const { data, error } = await supabase
+        .rpc('get_next_practice_number', { user_id_param: user.id })
+      
+      if (error) {
+        console.warn('Practice number function not available, using fallback:', error)
+        throw error
+      }
+      
+      if (data) {
+        return data
+      }
+      
+      // Fallback to manual generation
+      const currentYear = new Date().getFullYear()
+      const randomNum = Math.floor(Math.random() * 999) + 1
+      return `${currentYear}/${randomNum.toString().padStart(3, '0')}`
     } catch (error) {
       console.error('Error generating practice number:', error)
       // Fallback to manual generation
@@ -193,7 +204,7 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
               <SelectValue placeholder="Seleziona cliente" />
             </SelectTrigger>
             <SelectContent>
-              {clients.filter(client => client.cliente === true).map(client => (
+              {clients.map(client => (
                 <SelectItem key={client.id} value={client.id!}>
                   {client.ragione || `${client.nome} ${client.cognome}`}
                 </SelectItem>
@@ -230,7 +241,7 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
                   <SelectValue placeholder="Seleziona controparte" />
                 </SelectTrigger>
                 <SelectContent>
-                  {clients.filter(client => client.controparte === true).map(client => (
+                  {clients.map(client => (
                     <SelectItem key={client.id} value={client.id!}>
                       {client.ragione || `${client.nome} ${client.cognome}`}
                     </SelectItem>

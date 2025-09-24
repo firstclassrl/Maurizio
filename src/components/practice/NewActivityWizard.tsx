@@ -170,8 +170,14 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     onOpenChange(false)
   }
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      handleClose()
+    }
+  }
+
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className={`max-w-6xl max-h-[90vh] overflow-y-auto ${isMobile ? 'mx-2' : ''}`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

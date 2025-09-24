@@ -318,11 +318,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
         {/* Welcome Message and Counters */}
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
-            <UrgentCounter userId={user.id} onClick={handleUrgentCounterClick} />
-            <OverdueCounter userId={user.id} />
-          </div>
-          <div className="text-right">
+          <div className="text-left">
             <h2 className="text-2xl font-semibold text-gray-800">
               Buongiorno Avvocato
             </h2>
@@ -334,6 +330,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 day: 'numeric' 
               })}
             </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <UrgentCounter userId={user.id} onClick={handleUrgentCounterClick} />
+            <OverdueCounter userId={user.id} />
           </div>
         </div>
 
