@@ -315,13 +315,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 month: 'long', 
                 day: 'numeric' 
               })}
-            </p>
-                </div>
+              </p>
+            </div>
                 <div className="flex items-center gap-4">
             <UrgentCounter userId={user.id} onClick={handleUrgentCounterClick} />
             <OverdueCounter userId={user.id} />
-                  </div>
-        </div>
+            </div>
+          </div>
 
         {/* Today's Activities Section */}
         {getTodayTasks().length > 0 && (
@@ -351,23 +351,23 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                           task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
                         }`}></div>
                       </div>
-                      <div className="flex-1 min-w-0 text-xs overflow-hidden">
+                      <div className="flex-1 min-w-0 text-[10px] overflow-hidden">
                         <div className="flex items-center gap-0.5 whitespace-nowrap">
                           {task.ora && (
-                            <span className="font-medium text-gray-600 text-xs leading-tight">
+                            <span className="font-medium text-gray-600 text-[10px] leading-tight">
                               {formatTimeWithoutSeconds(task.ora)}
-                            </span>
-                          )}
-                          <span className="font-semibold text-gray-900 text-xs leading-tight">{task.cliente || 'N/A'}</span>
+                        </span>
+                      )}
+                          <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.cliente || 'N/A'}</span>
                           {task.controparte && (
                             <>
-                              <span className="text-gray-500 text-xs leading-tight">/</span>
-                              <span className="font-semibold text-gray-900 text-xs leading-tight">{task.controparte}</span>
+                              <span className="text-gray-500 text-[10px] leading-tight">/</span>
+                              <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.controparte}</span>
                             </>
                           )}
-                          <span className="text-gray-600 text-xs leading-tight">- {task.attivita}</span>
+                          <span className="text-gray-600 text-[10px] leading-tight">- {task.attivita}</span>
                           {task.urgent && (
-                            <span className="text-red-600 font-semibold text-xs leading-tight">URGENTE</span>
+                            <span className="text-red-600 font-semibold text-[10px] leading-tight">URGENTE</span>
                           )}
                         </div>
                       </div>
@@ -395,8 +395,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+          </CardContent>
+        </Card>
         )}
 
         {/* New Activity System */}
@@ -413,17 +413,17 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 >
                     <Plus className="h-4 w-4 mr-2" />
                   Nuova Pratica
-                  </Button>
-                
-                <Button
+                </Button>
+            
+                  <Button
                   onClick={handleAddActivityClick}
                   className="bg-green-600 hover:bg-green-700 text-white"
                   size="sm"
                 >
-                <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4 mr-2" />
                   Aggiungi Attività
-              </Button>
-            </div>
+                  </Button>
+                </div>
 
             <Button
               onClick={onNavigateToClients}
@@ -432,8 +432,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             >
               <Users className="h-4 w-4 mr-2" />
               Clienti
-            </Button>
-              </div>
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -716,7 +716,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               <h1 className="ml-3 text-xl font-semibold text-white">
                 LexAgenda
               </h1>
-            </div>
+              </div>
             
             <div className="flex items-center space-x-2">
               <Button
@@ -765,10 +765,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
               </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       
       {/* Footer */}
       <Footer />

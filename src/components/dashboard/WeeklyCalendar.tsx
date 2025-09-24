@@ -244,23 +244,23 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
                                         task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
                                       }`}></div>
                                     </div>
-                                    <div className="flex-1 min-w-0 text-xs overflow-hidden">
+                                    <div className="flex-1 min-w-0 text-[10px] overflow-hidden">
                                       <div className="flex items-center gap-0.5 whitespace-nowrap">
                                         {task.ora && (
-                                          <span className="font-medium text-gray-600 text-xs leading-tight">
+                                          <span className="font-medium text-gray-600 text-[10px] leading-tight">
                                             {formatTimeWithoutSeconds(task.ora)}
                                           </span>
                                         )}
-                                        <span className="font-semibold text-gray-900 text-xs leading-tight">{task.cliente || 'N/A'}</span>
+                                        <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.cliente || 'N/A'}</span>
                                         {task.controparte && (
                                           <>
-                                            <span className="text-gray-500 text-xs leading-tight">/</span>
-                                            <span className="font-semibold text-gray-900 text-xs leading-tight">{task.controparte}</span>
+                                            <span className="text-gray-500 text-[10px] leading-tight">/</span>
+                                            <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.controparte}</span>
                                           </>
                                         )}
-                                        <span className="text-gray-600 text-xs leading-tight">- {task.attivita}</span>
+                                        <span className="text-gray-600 text-[10px] leading-tight">- {task.attivita}</span>
                                         {isUrgentTask(task.urgent) && (
-                                          <span className="text-red-600 font-semibold text-xs leading-tight">URGENTE</span>
+                                          <span className="text-red-600 font-semibold text-[10px] leading-tight">URGENTE</span>
                                         )}
                                       </div>
                                     </div>
@@ -332,23 +332,23 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
                                         task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
                                       }`}></div>
                                     </div>
-                                    <div className="flex-1 min-w-0 text-xs overflow-hidden">
+                                    <div className="flex-1 min-w-0 text-[10px] overflow-hidden">
                                       <div className="flex items-center gap-0.5 whitespace-nowrap">
                                         {task.ora && (
-                                          <span className="font-medium text-gray-600 text-xs leading-tight">
+                                          <span className="font-medium text-gray-600 text-[10px] leading-tight">
                                             {formatTimeWithoutSeconds(task.ora)}
                                           </span>
                                         )}
-                                        <span className="font-semibold text-gray-900 text-xs leading-tight">{task.cliente || 'N/A'}</span>
+                                        <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.cliente || 'N/A'}</span>
                                         {task.controparte && (
                                           <>
-                                            <span className="text-gray-500 text-xs leading-tight">/</span>
-                                            <span className="font-semibold text-gray-900 text-xs leading-tight">{task.controparte}</span>
+                                            <span className="text-gray-500 text-[10px] leading-tight">/</span>
+                                            <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.controparte}</span>
                                           </>
                                         )}
-                                        <span className="text-gray-600 text-xs leading-tight">- {task.attivita}</span>
+                                        <span className="text-gray-600 text-[10px] leading-tight">- {task.attivita}</span>
                                         {isUrgentTask(task.urgent) && (
-                                          <span className="text-red-600 font-semibold text-xs leading-tight">URGENTE</span>
+                                          <span className="text-red-600 font-semibold text-[10px] leading-tight">URGENTE</span>
                                         )}
                                       </div>
                                     </div>
