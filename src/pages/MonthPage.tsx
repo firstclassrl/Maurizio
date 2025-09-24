@@ -151,28 +151,6 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="px-6 py-2 bg-white border-b">
-        <div className="flex items-center gap-4 text-xs text-gray-600">
-          <span className="font-medium">Legenda:</span>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span>Scadenza Atto Processuale</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span>Udienza</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <span>Attività Processuale</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-cyan-500 rounded-full"></div>
-            <span>Appuntamento in Studio</span>
-          </div>
-        </div>
-      </div>
       
       <MonthlyCalendar 
         tasks={getFilteredTasks()} 

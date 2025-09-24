@@ -142,6 +142,37 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
         </div>
       </div>
 
+      {/* Legend - Single Row */}
+      <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
+        <div className="flex items-center gap-4 text-xs text-gray-600">
+          <span className="font-medium">Legenda Categorie:</span>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-gray-100 border border-gray-200 rounded"></div>
+            <span>Appuntamento</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-orange-100 border border-orange-200 rounded"></div>
+            <span>Scadenza</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
+            <span>Attività da Svolgere</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
+            <span>Udienza</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-red-100 border border-red-200 rounded"></div>
+            <span>Scadenza Processuale</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-yellow-100 border border-yellow-200 rounded"></div>
+            <span>Attività Processuale</span>
+          </div>
+        </div>
+      </div>
+
 
       {/* Main Calendar Grid - Full Width */}
       <div className="px-2 py-4">
@@ -320,36 +351,6 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
         </DragDropContext>
       </div>
 
-      {/* Legend */}
-      <div className="bg-gray-50 border-t border-gray-200 px-6 py-4">
-        <div className="text-sm font-medium text-gray-700 mb-3">Legenda Categorie</div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-gray-100 border border-gray-200 rounded"></div>
-            <span>Appuntamento</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-orange-100 border border-orange-200 rounded"></div>
-            <span>Scadenza</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
-            <span>Attività da Svolgere</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
-            <span>Udienza</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-red-100 border border-red-200 rounded"></div>
-            <span>Scadenza Processuale</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-yellow-100 border border-yellow-200 rounded"></div>
-            <span>Attività Processuale</span>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
