@@ -285,7 +285,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    className={`text-xs p-1 rounded border cursor-pointer hover:shadow-md transition-shadow ${
+                                    className={`text-xs p-0.5 rounded border cursor-pointer hover:shadow-md transition-shadow ${
                                       task.stato === 'done' 
                                         ? 'bg-green-100 text-green-800 border-green-200' 
                                         : getTaskColor(task)
@@ -378,7 +378,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    className={`text-xs p-2 rounded border cursor-pointer hover:shadow-md transition-shadow ${
+                                    className={`text-xs p-1.5 rounded border cursor-pointer hover:shadow-md transition-shadow ${
                                       task.stato === 'done' 
                                         ? 'bg-green-100 text-green-800 border-green-200' 
                                         : getTaskColor(task)
@@ -392,22 +392,22 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                         }`}></div>
                                       </div>
                                       <div className="flex-1 min-w-0 text-xs overflow-hidden">
-                                        <div className="flex items-center gap-1 whitespace-nowrap">
+                                        <div className="flex items-center gap-0.5 whitespace-nowrap">
                                           {task.ora && (
-                                            <span className="font-medium text-gray-600 text-xs">
+                                            <span className="font-medium text-gray-600 text-xs leading-tight">
                                               {formatTimeWithoutSeconds(task.ora)}
                                             </span>
                                           )}
-                                          <span className="font-bold text-gray-900 text-xs">{task.cliente || 'N/A'}</span>
+                                          <span className="font-semibold text-gray-900 text-xs leading-tight">{task.cliente || 'N/A'}</span>
                                           {task.controparte && (
                                             <>
-                                              <span className="text-gray-500 text-xs">/</span>
-                                              <span className="font-bold text-gray-900 text-xs">{task.controparte}</span>
+                                              <span className="text-gray-500 text-xs leading-tight">/</span>
+                                              <span className="font-semibold text-gray-900 text-xs leading-tight">{task.controparte}</span>
                                             </>
                                           )}
-                                          <span className="text-gray-600 text-xs">- {task.attivita}</span>
+                                          <span className="text-gray-600 text-xs leading-tight">- {task.attivita}</span>
                                           {isUrgentTask(task.urgent) && (
-                                            <span className="text-red-600 font-bold text-xs">URGENTE</span>
+                                            <span className="text-red-600 font-semibold text-xs leading-tight">URGENTE</span>
                                           )}
                                         </div>
                                       </div>
