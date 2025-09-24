@@ -12,28 +12,25 @@ import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
 import { useMobile } from '../hooks/useMobile'
-import { NotificationCenter } from '../components/notifications/NotificationCenter'
-import { AudioNotificationSettings } from '../components/notifications/AudioNotificationSettings'
 import { WeekCounter } from '../components/notifications/WeekCounter'
 import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { OverdueCounter } from '../components/notifications/OverdueCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { GoogleCalendarSync } from '../components/google-calendar/GoogleCalendarSync'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
-import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, AlertTriangle, Users } from 'lucide-react'
+import { OptionsModal } from '../components/ui/OptionsModal'
+import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
   onNavigateToMonth: () => void
   onNavigateToWeek: () => void
-  onNavigateToOverdue: () => void
   onNavigateToCalcolatore: () => void
   onNavigateToClients: () => void
 }
 
-export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToOverdue, onNavigateToCalcolatore, onNavigateToClients }: DashboardPageProps) {
+export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore, onNavigateToClients }: DashboardPageProps) {
   const { message, showError, showSuccess, hideMessage } = useMessage()
   const isMobile = useMobile()
   const [tasks, setTasks] = useState<Task[]>([])
@@ -47,6 +44,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [isAppuntamentoDialogOpen, setIsAppuntamentoDialogOpen] = useState(false)
   const [clients, setClients] = useState<Client[]>([])
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
+  const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
 
   useEffect(() => {
     loadTasks()
@@ -223,7 +221,25 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               </h1>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={onNavigateToMonth}
+                className="bg-green-600 hover:bg-green-700 text-white border-0"
+                size="sm"
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Mese
+              </Button>
+              
+              <Button
+                onClick={onNavigateToWeek}
+                className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                size="sm"
+              >
+                <CalendarDays className="h-4 w-4 mr-2" />
+                Settimana
+              </Button>
+              
               <Button
                 onClick={onNavigateToCalcolatore}
                 className="bg-purple-600 hover:bg-purple-700 text-white border-0"
@@ -231,6 +247,15 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               >
                 <Calculator className="h-4 w-4 mr-2" />
                 CALCOLATORE
+              </Button>
+              
+              <Button
+                onClick={() => setIsOptionsModalOpen(true)}
+                variant="outline"
+                size="sm"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Opzioni
               </Button>
               
               <Button
@@ -257,36 +282,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Navigation */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
-            <Button
-              onClick={onNavigateToMonth}
-              variant="outline"
-              size="sm"
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Mese
-            </Button>
-            <Button
-              onClick={onNavigateToWeek}
-              variant="outline"
-              size="sm"
-            >
-              <CalendarDays className="h-4 w-4 mr-2" />
-              Settimana
-            </Button>
-            <Button
-              onClick={onNavigateToOverdue}
-              variant="outline"
-              size="sm"
-              className="text-red-600 border-red-600 hover:bg-red-50"
-            >
-              <AlertTriangle className="h-4 w-4 mr-2" />
-              Scadute
-            </Button>
-          </div>
-        </div>
 
         {/* Counters */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -296,20 +291,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           <OverdueCounter userId={user.id} />
         </div>
 
-        {/* Notification Center */}
-        <div className="mb-6">
-          <NotificationCenter userId={user.id} />
-        </div>
-
-        {/* Audio Settings */}
-        <div className="mb-6">
-          <AudioNotificationSettings userId={user.id} />
-        </div>
-
-        {/* Google Calendar Sync */}
-        <div className="mb-6">
-          <GoogleCalendarSync user={user} />
-        </div>
 
         {/* New Activity System */}
         <Card className="mb-6 border-2 border-black">
@@ -322,7 +303,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 size="sm"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Nuova Attività
+                Nuova Pratica
               </Button>
             </div>
             
@@ -465,6 +446,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           console.log('New activity created:', activity)
           loadTasks()
         }}
+      />
+
+      <OptionsModal
+        open={isOptionsModalOpen}
+        onOpenChange={setIsOptionsModalOpen}
+        user={user}
       />
 
       <MessageModal
