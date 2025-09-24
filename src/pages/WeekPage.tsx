@@ -7,7 +7,7 @@ import { WeeklyCalendar } from '../components/dashboard/WeeklyCalendar'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { ArrowLeft, Plus, Calendar } from 'lucide-react'
+import { ArrowLeft, Calendar } from 'lucide-react'
 
 interface WeekPageProps {
   user: User
@@ -88,10 +88,6 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
     }
   }
 
-  const handleNewTask = () => {
-    setSelectedTask(null)
-    setIsTaskDialogOpen(true)
-  }
 
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task)
@@ -169,10 +165,6 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
                 tasks={tasks}
               />
             </div>
-            <Button onClick={handleNewTask} variant="outline" size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Nuova Attività
-            </Button>
           </div>
         </div>
       </div>

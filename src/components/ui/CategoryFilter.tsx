@@ -26,7 +26,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
         Filtra per categoria:
       </label>
       <Select value={selectedCategory} onValueChange={onCategoryChange}>
-        <SelectTrigger id="category-filter" className="w-64">
+        <SelectTrigger id="category-filter" className="min-w-[140px] max-w-[180px]">
           <SelectValue placeholder="Seleziona categoria" />
         </SelectTrigger>
         <SelectContent>

@@ -23,7 +23,7 @@ import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { OptionsModal } from '../components/ui/OptionsModal'
-import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, Archive, CheckCircle2, XCircle } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -320,21 +320,21 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             
             <div className="flex items-center space-x-2">
               <Button
-                onClick={onNavigateToMonth}
-                className="bg-green-600 hover:bg-green-700 text-white border-0"
-                size="sm"
-              >
-                <Calendar className="h-4 w-4 mr-2" />
-                Mese
-              </Button>
-              
-              <Button
                 onClick={onNavigateToWeek}
                 className="bg-blue-600 hover:bg-blue-700 text-white border-0"
                 size="sm"
               >
                 <CalendarDays className="h-4 w-4 mr-2" />
                 Settimana
+              </Button>
+              
+              <Button
+                onClick={onNavigateToMonth}
+                className="bg-green-600 hover:bg-green-700 text-white border-0"
+                size="sm"
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Mese
               </Button>
               
               <Button
@@ -348,20 +348,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               
               <Button
                 onClick={onNavigateToClients}
-                className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                className="bg-orange-600 hover:bg-orange-700 text-white border-0"
                 size="sm"
               >
                 <Users className="h-4 w-4 mr-2" />
                 Clienti
-              </Button>
-
-              <Button
-                onClick={onNavigateToStorage}
-                className="bg-orange-600 hover:bg-orange-700 text-white border-0"
-                size="sm"
-              >
-                <Archive className="h-4 w-4 mr-2" />
-                Storage
               </Button>
               
               <Button
@@ -443,11 +434,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         {/* All Tasks Section */}
         <Card className="bg-purple-50 border-2 border-purple-500">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
+            <h3 className="text-lg font-semibold text-purple-900 text-center mb-4">Tutte le Attività</h3>
             <div className="bg-purple-800 h-1 w-full mb-4 rounded"></div>
-            <div className={`flex justify-between items-center mb-4 ${isMobile ? 'flex-col gap-2' : ''}`}>
-              <h3 className="text-lg font-semibold text-purple-900">Tutte le Attività</h3>
-              <div className={`flex items-center gap-2 ${isMobile ? 'w-full flex-col' : ''}`}>
-                <div className={`flex items-center gap-2 ${isMobile ? 'w-full' : ''}`}>
+            <div className={`flex justify-center items-center mb-4 ${isMobile ? 'flex-col gap-2' : 'gap-3'}`}>
+              <div className={`flex items-center gap-2 ${isMobile ? 'w-full justify-center' : 'flex-wrap justify-center'}`}>
                   <PracticeFilter 
                     selectedPractice={selectedPractice}
                     onPracticeChange={setSelectedPractice}
@@ -466,7 +456,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     className={isMobile ? "flex-1" : ""}
                   />
                 </div>
-            </div>
             </div>
             {getFilteredTasks().length === 0 ? (
               <p className="text-gray-500 text-center py-8">
@@ -713,6 +702,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           console.log('Activity created from existing practice:', activity)
           loadTasks() // Reload tasks to show the new activity
         }}
+      />
+
+      <OptionsModal
+        open={isOptionsModalOpen}
+        onOpenChange={setIsOptionsModalOpen}
+        user={user}
+        onNavigateToStorage={onNavigateToStorage}
       />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />

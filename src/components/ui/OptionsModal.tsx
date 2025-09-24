@@ -5,16 +5,17 @@ import { Button } from './button'
 import { AudioNotificationSettings } from '../notifications/AudioNotificationSettings'
 import { PushNotificationSettings } from '../notifications/PushNotificationSettings'
 import { GoogleCalendarSync } from '../google-calendar/GoogleCalendarSync'
-import { Settings, Bell, Volume2, Calendar } from 'lucide-react'
+import { Settings, Bell, Volume2, Calendar, Archive } from 'lucide-react'
 
 interface OptionsModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   user: User
+  onNavigateToStorage?: () => void
 }
 
-export function OptionsModal({ open, onOpenChange, user }: OptionsModalProps) {
-  const [activeTab, setActiveTab] = useState<'audio' | 'push' | 'calendar'>('audio')
+export function OptionsModal({ open, onOpenChange, user, onNavigateToStorage }: OptionsModalProps) {
+  const [activeTab, setActiveTab] = useState<'audio' | 'push' | 'calendar' | 'storage'>('audio')
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -55,6 +56,15 @@ export function OptionsModal({ open, onOpenChange, user }: OptionsModalProps) {
             <Calendar className="h-4 w-4 mr-2" />
             Calendar
           </Button>
+          <Button
+            variant={activeTab === 'storage' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveTab('storage')}
+            className="flex-1"
+          >
+            <Archive className="h-4 w-4 mr-2" />
+            Storage
+          </Button>
         </div>
 
         {/* Tab Content */}
@@ -77,6 +87,27 @@ export function OptionsModal({ open, onOpenChange, user }: OptionsModalProps) {
             <div>
               <h3 className="text-lg font-semibold mb-4">Sincronizzazione Google Calendar</h3>
               <GoogleCalendarSync user={user} />
+            </div>
+          )}
+
+          {activeTab === 'storage' && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Storage Attività Evase</h3>
+              <p className="text-gray-600 mb-4">
+                Accedi allo storage per visualizzare e gestire tutte le attività marcate come evase.
+              </p>
+              {onNavigateToStorage && (
+                <Button
+                  onClick={() => {
+                    onNavigateToStorage()
+                    onOpenChange(false)
+                  }}
+                  className="bg-orange-600 hover:bg-orange-700 text-white"
+                >
+                  <Archive className="h-4 w-4 mr-2" />
+                  Apri Storage
+                </Button>
+              )}
             </div>
           )}
         </div>

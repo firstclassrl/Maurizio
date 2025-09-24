@@ -16,7 +16,7 @@ export function PracticeFilter({ selectedPractice, onPracticeChange, tasks, clas
     <div className={`space-y-1 ${className}`}>
       <label className="block text-sm font-medium text-gray-700">Pratica</label>
       <Select value={selectedPractice} onValueChange={onPracticeChange}>
-        <SelectTrigger className="min-w-[150px]">
+        <SelectTrigger className="min-w-[120px] max-w-[150px]">
           <SelectValue placeholder="Tutte le pratiche" />
         </SelectTrigger>
         <SelectContent>

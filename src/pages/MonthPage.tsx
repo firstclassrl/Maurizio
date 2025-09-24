@@ -7,7 +7,7 @@ import { MonthlyCalendar } from '../components/dashboard/MonthlyCalendar'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
-import { ArrowLeft, Plus, CalendarDays } from 'lucide-react'
+import { ArrowLeft, CalendarDays } from 'lucide-react'
 
 interface MonthPageProps {
   user: User
@@ -88,10 +88,6 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
     }
   }
 
-  const handleNewTask = () => {
-    setSelectedTask(null)
-    setIsTaskDialogOpen(true)
-  }
 
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task)
@@ -151,10 +147,6 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
                 tasks={tasks}
               />
             </div>
-            <Button onClick={handleNewTask} variant="outline" size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Nuova Attività
-            </Button>
           </div>
         </div>
       </div>
