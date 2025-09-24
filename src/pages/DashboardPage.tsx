@@ -5,6 +5,7 @@ import { Task } from '../lib/calendar-utils'
 import { Client } from '../types/client'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { AppuntamentoDialog } from '../components/dashboard/AppuntamentoDialog'
 import { Logo } from '../components/ui/Logo'
@@ -13,15 +14,13 @@ import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
 import { useToast, ToastContainer } from '../components/ui/Toast'
 import { useMobile } from '../hooks/useMobile'
-import { WeekCounter } from '../components/notifications/WeekCounter'
-import { TodayCounter } from '../components/notifications/TodayCounter'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { OverdueCounter } from '../components/notifications/OverdueCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { OptionsModal } from '../components/ui/OptionsModal'
-import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle } from 'lucide-react'
 
 interface DashboardPageProps {
   user: User
@@ -47,6 +46,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [clients, setClients] = useState<Client[]>([])
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
+  const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
+  const [showUrgentTasks, setShowUrgentTasks] = useState(false)
 
   useEffect(() => {
     loadTasks()
@@ -99,6 +100,30 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       console.error('Errore nel caricamento dei clienti:', error)
       showError('Errore nel caricamento dei clienti', 'Errore')
     }
+  }
+
+  const loadUrgentTasks = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('stato', 'todo')
+        .or(`priorita.eq.10,scadenza.lt.${today}`)
+        .order('scadenza', { ascending: true })
+
+      if (error) throw error
+      setUrgentTasks(data || [])
+    } catch (error) {
+      console.error('Errore nel caricamento delle scadenze urgenti:', error)
+      showError('Errore nel caricamento delle scadenze urgenti', 'Errore')
+    }
+  }
+
+  const handleUrgentCounterClick = () => {
+    loadUrgentTasks()
+    setShowUrgentTasks(true)
   }
 
   const handleTaskClick = (task: Task) => {
@@ -285,12 +310,25 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        {/* Counters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <WeekCounter userId={user.id} />
-          <TodayCounter userId={user.id} />
-          <UrgentCounter userId={user.id} />
-          <OverdueCounter userId={user.id} />
+        {/* Welcome Message and Counters */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-4">
+            <UrgentCounter userId={user.id} onClick={handleUrgentCounterClick} />
+            <OverdueCounter userId={user.id} />
+          </div>
+          <div className="text-right">
+            <h2 className="text-2xl font-semibold text-gray-800">
+              Buongiorno Avvocato
+            </h2>
+            <p className="text-sm text-gray-600">
+              {new Date().toLocaleDateString('it-IT', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </p>
+          </div>
         </div>
 
 
@@ -463,6 +501,86 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         message={message?.message || ''}
         onClose={hideMessage}
       />
+
+      {/* Urgent Tasks Modal */}
+      <Dialog open={showUrgentTasks} onOpenChange={setShowUrgentTasks}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
+              Scadenze Urgenti
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-3">
+            {urgentTasks.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                Nessuna scadenza urgente trovata.
+              </p>
+            ) : (
+              urgentTasks.map((task) => (
+                <div
+                  key={task.id}
+                  className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => {
+                    setSelectedTask(task)
+                    setIsTaskDialogOpen(true)
+                    setShowUrgentTasks(false)
+                  }}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          task.categoria === 'SCADENZA ATTO PROCESSUALE' ? 'bg-red-100 text-red-800' :
+                          task.categoria === 'UDIENZA' ? 'bg-green-100 text-green-800' :
+                          task.categoria === 'ATTIVITA\' PROCESSUALE' ? 'bg-yellow-100 text-yellow-800' :
+                          task.categoria === 'APPUNTAMENTO IN STUDIO' ? 'bg-cyan-100 text-cyan-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {task.categoria}
+                        </span>
+                        {task.priorita === 10 && (
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            URGENTE
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="font-medium text-gray-900 mb-1">{task.pratica}</h4>
+                      <p className="text-sm text-gray-600 mb-2">
+                        <strong>Cliente:</strong> {task.cliente}
+                        {task.controparte && (
+                          <span> | <strong>Controparte:</strong> {task.controparte}</span>
+                        )}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        <strong>Data:</strong> {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                      </p>
+                      {task.note && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          <strong>Note:</strong> {task.note}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleTaskDelete(task)
+                        setShowUrgentTasks(false)
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 border-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
     </div>

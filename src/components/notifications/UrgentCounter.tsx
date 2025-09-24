@@ -5,9 +5,10 @@ import { AlertTriangle } from 'lucide-react'
 
 interface UrgentCounterProps {
   userId: string
+  onClick?: () => void
 }
 
-export function UrgentCounter({ userId }: UrgentCounterProps) {
+export function UrgentCounter({ userId, onClick }: UrgentCounterProps) {
   const [urgentCount, setUrgentCount] = useState(0)
   const [loading, setLoading] = useState(false)
 
@@ -75,7 +76,10 @@ export function UrgentCounter({ userId }: UrgentCounterProps) {
   // Always show the counter, even when count is 0
 
   return (
-    <Card className="border-red-200 bg-red-50">
+    <Card 
+      className={`border-red-200 bg-red-50 ${onClick ? 'cursor-pointer hover:bg-red-100 transition-colors' : ''}`}
+      onClick={onClick}
+    >
       <CardContent className="p-3">
         <div className="flex items-center justify-between">
           <div>
