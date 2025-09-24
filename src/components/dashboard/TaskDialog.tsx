@@ -283,6 +283,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                 <Input
                   id="ora"
                   type="time"
+                  step="60"
                   value={formData.ora || ''}
                   onChange={(e) => handleChange('ora', e.target.value)}
                   className="text-gray-900"
