@@ -98,6 +98,24 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
     setIsTaskDialogOpen(true)
   }
 
+  const handleTaskMove = async (taskId: string, newDate: string) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ 
+          scadenza: newDate,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', taskId)
+
+      if (error) throw error
+
+      await loadTasks()
+    } catch (error) {
+      console.error('Error moving task:', error)
+    }
+  }
+
   // Filter tasks by category and party
   const getFilteredTasks = () => {
     let filtered = tasks
@@ -185,6 +203,7 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
       <WeeklyCalendar 
         tasks={getFilteredTasks()} 
         onTaskClick={handleTaskClick}
+        onTaskMove={handleTaskMove}
       />
 
       <TaskDialog

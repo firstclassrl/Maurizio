@@ -3,13 +3,16 @@ import { Task } from '../../lib/calendar-utils'
 import { Button } from '../ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useMobile } from '../../hooks/useMobile'
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
+import { format } from 'date-fns'
 
 interface WeeklyCalendarProps {
   tasks: Task[]
   onTaskClick?: (task: Task) => void
+  onTaskMove?: (taskId: string, newDate: string) => void
 }
 
-export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
+export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const isMobile = useMobile()
 
@@ -88,6 +91,16 @@ export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
     return date.getDate()
   }
 
+  // Handle drag and drop
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination || !onTaskMove) return
+
+    const { draggableId, destination } = result
+    const newDate = format(weekDays[parseInt(destination.droppableId)], 'yyyy-MM-dd')
+    
+    onTaskMove(draggableId, newDate)
+  }
+
 
 
   return (
@@ -115,9 +128,10 @@ export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
 
       {/* Main Calendar Grid - Full Width */}
       <div className="px-2 py-4">
-        {isMobile ? (
-          // Mobile Layout - Vertical
-          <div className="space-y-4">
+        <DragDropContext onDragEnd={handleDragEnd}>
+          {isMobile ? (
+            // Mobile Layout - Vertical
+            <div className="space-y-4">
             {weekDays.map((day, index) => {
               const dayTasks = getTasksForDate(day)
               const isToday = day.toDateString() === new Date().toDateString()
@@ -149,45 +163,60 @@ export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
                     </div>
                   </div>
                   
-                  <div className="p-3 space-y-2">
-                    {dayTasks.length === 0 ? (
-                      <div className="text-center text-gray-400 text-sm py-4">
-                        Nessuna attività
-                      </div>
-                    ) : (
-                      dayTasks.map((task) => (
-                        <div
-                          key={task.id}
-                          className={`p-3 rounded border cursor-pointer hover:shadow-md transition-shadow ${
-                            task.stato === 'done' 
-                              ? 'bg-green-50 text-green-800 border-green-200' 
-                              : getTaskColor(task)
-                          }`}
-                          onClick={() => onTaskClick?.(task)}
-                        >
-                          <div className="flex items-start gap-2">
-                                <div className="flex-shrink-0 mt-1">
-                                  <div className={`w-2 h-2 rounded-full ${
-                                    task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
-                                  }`}></div>
-                                </div>
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">{task.pratica}</div>
-                              <div className="text-xs text-gray-600 mt-1">
-                                <span>Cliente: <span className="text-gray-900 font-bold">{task.cliente || 'N/A'}</span></span>
-                                <span className="text-gray-400 mx-1">•</span>
-                                <span>Controparte: <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span></span>
-                              </div>
-                              <div className="text-xs opacity-80 mt-1">{task.attivita}</div>
-                              {isUrgentTask(task.priorita) && (
-                                <div className="text-xs text-red-600 font-bold mt-1">URGENTE</div>
-                              )}
-                            </div>
+                  <Droppable droppableId={index.toString()}>
+                    {(provided) => (
+                      <div 
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className="p-3 space-y-2 min-h-[100px]"
+                      >
+                        {dayTasks.length === 0 ? (
+                          <div className="text-center text-gray-400 text-sm py-4">
+                            Nessuna attività
                           </div>
-                        </div>
-                      ))
+                        ) : (
+                          dayTasks.map((task, taskIndex) => (
+                            <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`p-3 rounded border cursor-pointer hover:shadow-md transition-shadow ${
+                                    task.stato === 'done' 
+                                      ? 'bg-green-50 text-green-800 border-green-200' 
+                                      : getTaskColor(task)
+                                  } ${snapshot.isDragging ? 'opacity-50' : ''}`}
+                                  onClick={() => onTaskClick?.(task)}
+                                >
+                                  <div className="flex items-start gap-2">
+                                    <div className="flex-shrink-0 mt-1">
+                                      <div className={`w-2 h-2 rounded-full ${
+                                        task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
+                                      }`}></div>
+                                    </div>
+                                    <div className="flex-1">
+                                      <div className="font-medium text-sm">{task.pratica}</div>
+                                      <div className="text-xs text-gray-600 mt-1">
+                                        <span>Cliente: <span className="text-gray-900 font-bold">{task.cliente || 'N/A'}</span></span>
+                                        <span className="text-gray-400 mx-1">•</span>
+                                        <span>Controparte: <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span></span>
+                                      </div>
+                                      <div className="text-xs opacity-80 mt-1">{task.attivita}</div>
+                                      {isUrgentTask(task.priorita) && (
+                                        <div className="text-xs text-red-600 font-bold mt-1">URGENTE</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))
+                        )}
+                        {provided.placeholder}
+                      </div>
                     )}
-                  </div>
+                  </Droppable>
                 </div>
               )
             })}
@@ -214,48 +243,64 @@ export function WeeklyCalendar({ tasks, onTaskClick }: WeeklyCalendarProps) {
                     </div>
                   </div>
                   
-                  <div className="p-4 space-y-3">
-                    {dayTasks.length === 0 ? (
-                      <div className="text-center text-gray-400 text-sm py-8">
-                        Nessuna attività
-                      </div>
-                    ) : (
-                      dayTasks.map((task) => (
-                        <div
-                          key={task.id}
-                          className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${
-                            task.stato === 'done' 
-                              ? 'bg-green-50 text-green-800 border-green-200' 
-                              : getTaskColor(task)
-                          }`}
-                          onClick={() => onTaskClick?.(task)}
-                        >
-                          <div className="flex items-start gap-3">
-                                <div className="flex-shrink-0 mt-1">
-                                  <div className={`w-3 h-3 rounded-full ${
-                                    task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
-                                  }`}></div>
-                                </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm mb-1">{task.pratica}</div>
-                              <div className="text-xs text-gray-600 mb-1">
-                                <span className="text-gray-900 font-bold">{task.cliente || 'N/A'}</span> - <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span>
-                              </div>
-                              <div className="text-xs opacity-80 mb-1">{task.attivita}</div>
-                              {isUrgentTask(task.priorita) && (
-                                <div className="text-xs text-red-600 font-bold">URGENTE</div>
-                              )}
-                            </div>
+                  <Droppable droppableId={index.toString()}>
+                    {(provided) => (
+                      <div 
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className="p-4 space-y-3 min-h-[300px]"
+                      >
+                        {dayTasks.length === 0 ? (
+                          <div className="text-center text-gray-400 text-sm py-8">
+                            Nessuna attività
                           </div>
-                        </div>
-                      ))
+                        ) : (
+                          dayTasks.map((task, taskIndex) => (
+                            <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${
+                                    task.stato === 'done' 
+                                      ? 'bg-green-50 text-green-800 border-green-200' 
+                                      : getTaskColor(task)
+                                  } ${snapshot.isDragging ? 'opacity-50' : ''}`}
+                                  onClick={() => onTaskClick?.(task)}
+                                >
+                                  <div className="flex items-start gap-3">
+                                    <div className="flex-shrink-0 mt-1">
+                                      <div className={`w-3 h-3 rounded-full ${
+                                        task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
+                                      }`}></div>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="font-medium text-sm mb-1">{task.pratica}</div>
+                                      <div className="text-xs text-gray-600 mb-1">
+                                        <span className="text-gray-900 font-bold">{task.cliente || 'N/A'}</span> - <span className="text-gray-900 font-bold">{task.controparte || 'N/A'}</span>
+                                      </div>
+                                      <div className="text-xs opacity-80 mb-1">{task.attivita}</div>
+                                      {isUrgentTask(task.priorita) && (
+                                        <div className="text-xs text-red-600 font-bold">URGENTE</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))
+                        )}
+                        {provided.placeholder}
+                      </div>
                     )}
-                  </div>
+                  </Droppable>
                 </div>
               )
             })}
           </div>
         )}
+        </DragDropContext>
       </div>
     </div>
   )
