@@ -283,21 +283,22 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               </Button>
               
               <Button
-                onClick={() => setIsOptionsModalOpen(true)}
-                variant="outline"
-                size="sm"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Opzioni
-              </Button>
-              
-              <Button
                 onClick={onNavigateToClients}
-                variant="outline"
+                className="bg-blue-600 hover:bg-blue-700 text-white border-0"
                 size="sm"
               >
                 <Users className="h-4 w-4 mr-2" />
                 Clienti
+              </Button>
+              
+              <Button
+                onClick={() => setIsOptionsModalOpen(true)}
+                variant="outline"
+                size="sm"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Opzioni
               </Button>
               
               <Button
