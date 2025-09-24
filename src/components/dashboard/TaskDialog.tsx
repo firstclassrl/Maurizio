@@ -33,11 +33,13 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     attivita: '',
     categoria: '',
     scadenza: '',
+    ora: '',
     priorita: 5,
     note: '',
     cliente: '',
     controparte: '',
-    stato: 'todo' as 'todo' | 'done'
+    stato: 'todo' as 'todo' | 'done',
+    evaso: false
   })
   const [showCalculator, setShowCalculator] = useState(false)
   const [activityAnalysis, setActivityAnalysis] = useState<any>(null)
@@ -54,25 +56,29 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
   useEffect(() => {
     if (task) {
       setFormData({
-        attivita: task.pratica || '', // Mappa da pratica a attivita
-        categoria: task.attivita,
+        attivita: task.attivita || '', // Attività da svolgere
+        categoria: task.categoria || '', // Categoria dell'attività
         scadenza: task.scadenza,
+        ora: task.ora || '',
         priorita: task.priorita,
         note: task.note || '',
         cliente: task.cliente || '',
         controparte: task.controparte || '',
-        stato: task.stato || 'todo'
+        stato: task.stato || 'todo',
+        evaso: task.evaso || false
       })
     } else {
       setFormData({
         attivita: '',
         categoria: '',
         scadenza: '',
+        ora: '',
         priorita: isUrgentMode ? 10 : 5,
         note: '',
         cliente: '',
         controparte: '',
-        stato: 'todo'
+        stato: 'todo',
+        evaso: false
       })
     }
   }, [task, open, isUrgentMode])
@@ -147,26 +153,29 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     
     // Prepare data for save
     const taskData = {
-      pratica: formData.attivita, // Map attivita to pratica for database compatibility
-      attivita: formData.categoria, // Map categoria to attivita for database compatibility
+      attivita: formData.attivita, // Attività da svolgere
+      categoria: formData.categoria, // Categoria dell'attività
       scadenza: formData.scadenza,
+      ora: formData.ora || null,
       stato: formData.stato,
       priorita: formData.priorita,
       note: formData.note || null,
       cliente: formData.cliente || null,
-      controparte: formData.controparte || null
+      controparte: formData.controparte || null,
+      evaso: formData.evaso
     }
     
     console.log('TaskDialog calling onSave with:', taskData)
     onSave(taskData)
   }
 
-  const handleChange = (field: string, value: string | number | 'todo' | 'done') => {
+  const handleChange = (field: string, value: string | number | 'todo' | 'done' | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }))
   }
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -201,28 +210,40 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                 <SelectValue placeholder="Seleziona categoria" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="SCADENZA ATTO PROCESSUALE">
+                <SelectItem value="Appuntamento">
                   <span className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-                    SCADENZA ATTO PROCESSUALE
+                    <span className="w-3 h-3 bg-gray-500 rounded-full"></span>
+                    Appuntamento
                   </span>
                 </SelectItem>
-                <SelectItem value="UDIENZA">
+                <SelectItem value="Scadenza">
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 bg-orange-500 rounded-full"></span>
+                    Scadenza
+                  </span>
+                </SelectItem>
+                <SelectItem value="Attività da Svolgere">
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
+                    Attività da Svolgere
+                  </span>
+                </SelectItem>
+                <SelectItem value="Udienza">
                   <span className="flex items-center gap-2">
                     <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-                    UDIENZA
+                    Udienza
                   </span>
                 </SelectItem>
-                <SelectItem value="ATTIVITA' PROCESSUALE">
+                <SelectItem value="Scadenza Processuale">
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                    Scadenza Processuale
+                  </span>
+                </SelectItem>
+                <SelectItem value="Attività Processuale">
                   <span className="flex items-center gap-2">
                     <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
-                    ATTIVITA' PROCESSUALE
-                  </span>
-                </SelectItem>
-                <SelectItem value="APPUNTAMENTO IN STUDIO">
-                  <span className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-cyan-500 rounded-full"></span>
-                    APPUNTAMENTO IN STUDIO
+                    Attività Processuale
                   </span>
                 </SelectItem>
               </SelectContent>
@@ -276,15 +297,15 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
           {/* Semaforo Evaso/Non Evaso */}
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
             <div className="flex items-center gap-3">
-              <div className={`w-4 h-4 rounded-full ${formData.stato === 'done' ? 'bg-green-500' : 'bg-red-500'}`}></div>
-              <Label htmlFor="stato" className="text-sm font-medium">
-                {formData.stato === 'done' ? 'Evaso' : 'Non Evaso'}
+              <div className={`w-4 h-4 rounded-full ${formData.evaso ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <Label htmlFor="evaso" className="text-sm font-medium">
+                {formData.evaso ? 'Evaso' : 'Non Evaso'}
               </Label>
             </div>
             <Switch
-              id="stato"
-              checked={formData.stato === 'done'}
-              onCheckedChange={(checked) => handleChange('stato', checked ? 'done' : 'todo')}
+              id="evaso"
+              checked={formData.evaso}
+              onCheckedChange={(checked) => handleChange('evaso', checked)}
             />
           </div>
 
@@ -313,6 +334,16 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                 className="flex-1 text-gray-900"
                 required
               />
+              <div className="w-32">
+                <Label htmlFor="ora">Ora</Label>
+                <Input
+                  id="ora"
+                  type="time"
+                  value={formData.ora}
+                  onChange={(e) => handleChange('ora', e.target.value)}
+                  className="text-gray-900"
+                />
+              </div>
               {activityAnalysis?.needsCalculator && (
                 <Button
                   type="button"

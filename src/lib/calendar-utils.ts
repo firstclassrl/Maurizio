@@ -30,6 +30,7 @@ export interface Task {
   attivita: string
   categoria?: string // Optional field for form compatibility
   scadenza: string
+  ora?: string | null // Time field
   stato: 'todo' | 'done'
   priorita: number
   note?: string | null
