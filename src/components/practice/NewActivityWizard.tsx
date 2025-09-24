@@ -145,9 +145,58 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
 
     setIsCreatingActivity(true)
     try {
+      // Get current user ID
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('User not authenticated')
+      }
+
+      // Get client names for pratica and controparti
+      const cliente = clients.find(c => c.id === currentPractice!.cliente_id)
+      const controparti = currentPractice!.controparti_ids
+        .map(id => clients.find(c => c.id === id))
+        .filter(Boolean)
+        .map(c => c!.ragione || `${c!.nome} ${c!.cognome}`)
+        .join(', ')
+
+      // Map Activity data to Task format for database
+      const taskData = {
+        user_id: user.id,
+        pratica: currentPractice!.numero,
+        attivita: activityData.attivita,
+        scadenza: activityData.data,
+        ora: activityData.ora || null,
+        categoria: activityData.categoria,
+        autorita_giudiziaria: activityData.autorita_giudiziaria || null,
+        rg: activityData.rg || null,
+        giudice: activityData.giudice || null,
+        note: activityData.note || null,
+        stato: 'todo' as const,
+        priorita: 5,
+        cliente: cliente?.ragione || `${cliente?.nome} ${cliente?.cognome}` || null,
+        controparte: controparti || null
+      }
+
+      console.log('Saving task to database:', taskData)
+
+      // Save to database
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert(taskData)
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Database error:', error)
+        throw error
+      }
+
+      console.log('Task saved successfully:', data)
+
+      // Create Activity object for callback
       const newActivity: Activity = {
-        id: `activity_${Date.now()}`,
-        user_id: 'current_user_id',
+        id: data.id,
+        user_id: data.user_id,
         pratica_id: currentPractice!.id!,
         categoria: activityData.categoria,
         attivita: activityData.attivita,
@@ -159,8 +208,8 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         note: activityData.note,
         stato: 'todo',
         priorita: 5,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        created_at: data.created_at,
+        updated_at: data.updated_at
       }
 
       console.log('Activity created successfully:', newActivity)
@@ -169,7 +218,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
       handleClose()
     } catch (error) {
       console.error('Error creating activity:', error)
-      alert('Errore nella creazione dell\'attività')
+      alert('Errore nella creazione dell\'attività: ' + (error as Error).message)
     } finally {
       setIsCreatingActivity(false)
     }
