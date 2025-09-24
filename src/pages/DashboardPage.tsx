@@ -88,13 +88,19 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   const loadClients = async () => {
     try {
+      console.log('Loading clients for user:', user.id)
       const { data, error } = await supabase
         .from('clients')
         .select('*')
         .eq('user_id', user.id)
         .order('ragione', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.error('Error loading clients:', error)
+        throw error
+      }
+      
+      console.log('Loaded clients:', data)
       setClients(data || [])
     } catch (error) {
       console.error('Errore nel caricamento dei clienti:', error)

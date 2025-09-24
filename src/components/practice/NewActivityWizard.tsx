@@ -164,8 +164,14 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     </div>
   )
 
+  const handleClose = () => {
+    setStep('practice')
+    setCurrentPractice(null)
+    onOpenChange(false)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className={`max-w-6xl max-h-[90vh] overflow-y-auto ${isMobile ? 'mx-2' : ''}`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -183,7 +189,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
           <Button
             type="button"
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={handleClose}
             disabled={isCreatingPractice || isCreatingActivity}
           >
             Annulla

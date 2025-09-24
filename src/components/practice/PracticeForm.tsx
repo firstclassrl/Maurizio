@@ -24,6 +24,13 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
   const isMobile = useMobile()
   const [step, setStep] = useState<'form' | 'activity'>('form')
   const [loadingNumber, setLoadingNumber] = useState(false)
+
+  // Debug: log clients when they change
+  useEffect(() => {
+    console.log('PracticeForm received clients:', clients)
+    console.log('Clients with cliente=true:', clients.filter(client => client.cliente === true))
+    console.log('Clients with controparte=true:', clients.filter(client => client.controparte === true))
+  }, [clients])
   
   const [formData, setFormData] = useState<PracticeFormData>({
     numero: '',
@@ -186,7 +193,7 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
               <SelectValue placeholder="Seleziona cliente" />
             </SelectTrigger>
             <SelectContent>
-              {clients.filter(client => client.cliente).map(client => (
+              {clients.filter(client => client.cliente === true).map(client => (
                 <SelectItem key={client.id} value={client.id!}>
                   {client.ragione || `${client.nome} ${client.cognome}`}
                 </SelectItem>
@@ -223,7 +230,7 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
                   <SelectValue placeholder="Seleziona controparte" />
                 </SelectTrigger>
                 <SelectContent>
-                  {clients.filter(client => client.controparte).map(client => (
+                  {clients.filter(client => client.controparte === true).map(client => (
                     <SelectItem key={client.id} value={client.id!}>
                       {client.ragione || `${client.nome} ${client.cognome}`}
                     </SelectItem>
