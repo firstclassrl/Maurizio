@@ -23,6 +23,7 @@ export function GoogleCalendarSync({ user, onSyncStatusChange }: GoogleCalendarS
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
+  const [isHidden, setIsHidden] = useState(false)
   const { showError, showSuccess } = useMessage()
 
   useEffect(() => {
@@ -31,16 +32,38 @@ export function GoogleCalendarSync({ user, onSyncStatusChange }: GoogleCalendarS
 
   const loadSyncStatus = async () => {
     try {
+      // Prima controlliamo se la funzione esiste
       const { data, error } = await supabase
         .rpc('get_user_sync_status', { user_uuid: user.id })
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.warn('Google Calendar sync not available:', error.message)
+        // Se la funzione non esiste, imposta stato di default
+        const defaultStatus: SyncStatus = {
+          google_connected: false,
+          active_watch_channels: 0,
+          pending_events: 0,
+          last_sync: null
+        }
+        setSyncStatus(defaultStatus)
+        onSyncStatusChange?.(defaultStatus)
+        return
+      }
 
       setSyncStatus(data as SyncStatus)
       onSyncStatusChange?.(data as SyncStatus)
     } catch (error) {
-      console.error('Error loading sync status:', error)
+      console.warn('Google Calendar sync not configured:', error)
+      // In caso di errore, mostra stato disconnesso
+      const defaultStatus: SyncStatus = {
+        google_connected: false,
+        active_watch_channels: 0,
+        pending_events: 0,
+        last_sync: null
+      }
+      setSyncStatus(defaultStatus)
+      onSyncStatusChange?.(defaultStatus)
     }
   }
 
@@ -53,13 +76,17 @@ export function GoogleCalendarSync({ user, onSyncStatusChange }: GoogleCalendarS
         body: { user_id: user.id }
       })
 
-      if (error) throw error
+      if (error) {
+        console.warn('Google OAuth not configured:', error.message)
+        showError('Funzionalità non disponibile', 'La sincronizzazione con Google Calendar non è ancora configurata. Contatta l\'amministratore per abilitarla.')
+        return
+      }
 
       // Redirect to Google OAuth
       window.location.href = data.auth_url
     } catch (error) {
       console.error('Error connecting to Google:', error)
-      showError('Errore', 'Impossibile connettersi a Google Calendar')
+      showError('Errore', 'Impossibile connettersi a Google Calendar. La funzionalità potrebbe non essere configurata.')
     } finally {
       setIsConnecting(false)
     }
@@ -106,13 +133,17 @@ export function GoogleCalendarSync({ user, onSyncStatusChange }: GoogleCalendarS
         }
       })
 
-      if (error) throw error
+      if (error) {
+        console.warn('Manual sync not available:', error.message)
+        showError('Funzionalità non disponibile', 'La sincronizzazione manuale non è ancora configurata.')
+        return
+      }
 
       showSuccess('Successo', 'Sincronizzazione completata')
       loadSyncStatus()
     } catch (error) {
       console.error('Error syncing:', error)
-      showError('Errore', 'Errore durante la sincronizzazione')
+      showError('Errore', 'Errore durante la sincronizzazione. La funzionalità potrebbe non essere configurata.')
     } finally {
       setIsSyncing(false)
     }
@@ -134,13 +165,43 @@ export function GoogleCalendarSync({ user, onSyncStatusChange }: GoogleCalendarS
     return `${diffDays} giorni fa`
   }
 
+  // Se l'utente ha scelto di nascondere il componente
+  if (isHidden) {
+    return (
+      <Card className="border-dashed border-2 border-gray-300">
+        <CardContent className="p-4 text-center">
+          <p className="text-sm text-gray-500 mb-3">
+            Integrazione Google Calendar nascosta
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsHidden(false)}
+          >
+            Mostra integrazione
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
+
   if (!syncStatus) {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center justify-center">
-            <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
-            <span className="ml-2">Caricamento stato sincronizzazione...</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
+              <span className="ml-2">Caricamento stato sincronizzazione...</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsHidden(true)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              Nascondi
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -150,10 +211,20 @@ export function GoogleCalendarSync({ user, onSyncStatusChange }: GoogleCalendarS
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
-          Sincronizzazione Google Calendar
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Sincronizzazione Google Calendar
+          </CardTitle>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsHidden(true)}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            Nascondi
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {syncStatus.google_connected ? (
@@ -241,6 +312,13 @@ export function GoogleCalendarSync({ user, onSyncStatusChange }: GoogleCalendarS
                 Connetti il tuo account Google per sincronizzare automaticamente 
                 gli eventi tra LexAgenda e Google Calendar.
               </p>
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-xs text-blue-700">
+                  <strong>Nota:</strong> La sincronizzazione con Google Calendar è una funzionalità opzionale. 
+                  Puoi continuare a usare LexAgenda normalmente senza questa integrazione.
+                </p>
+              </div>
 
               <Button 
                 onClick={handleConnectGoogle}
