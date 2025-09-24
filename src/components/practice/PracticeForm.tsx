@@ -93,10 +93,6 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
     onSave(practiceData)
   }
 
-  const goToActivityCreation = () => {
-    setStep('activity')
-  }
-
   const goBackToForm = () => {
     setStep('form')
   }

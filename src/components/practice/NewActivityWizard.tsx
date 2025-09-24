@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
-import { Plus, ArrowRight, FileText, Calendar, Users } from 'lucide-react'
-import { Practice, PracticeFormData, Activity, ActivityFormData, ProcedureType } from '../../types/practice'
+import { Plus, ArrowRight, FileText, Calendar } from 'lucide-react'
+import { Practice, Activity } from '../../types/practice'
 import { Client } from '../../types/client'
 import { PracticeForm } from './PracticeForm'
 import { ActivityForm } from './ActivityForm'
@@ -14,10 +14,9 @@ interface NewActivityWizardProps {
   onOpenChange: (open: boolean) => void
   clients: Client[]
   onActivityCreated: (activity: Activity) => void
-  isLoading?: boolean
 }
 
-export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreated, isLoading = false }: NewActivityWizardProps) {
+export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreated }: NewActivityWizardProps) {
   const isMobile = useMobile()
   const [step, setStep] = useState<'practice' | 'activity'>('practice')
   const [currentPractice, setCurrentPractice] = useState<Practice | null>(null)
