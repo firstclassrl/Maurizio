@@ -343,7 +343,6 @@ export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
         open={isTaskDialogOpen}
         onOpenChange={setIsTaskDialogOpen}
         onSave={loadTasks}
-        user={user}
       />
 
       {/* Confirm Delete Dialog */}

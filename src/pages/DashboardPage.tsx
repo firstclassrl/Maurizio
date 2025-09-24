@@ -518,7 +518,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       {/* Dialogs */}
       <TaskDialog
         task={selectedTask}
-        user={user}
         open={isTaskDialogOpen}
         onOpenChange={(open) => {
           setIsTaskDialogOpen(open)

@@ -203,7 +203,6 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
         onOpenChange={setIsTaskDialogOpen}
         task={selectedTask}
         onSave={handleTaskSave}
-        user={user}
       />
     </div>
   )

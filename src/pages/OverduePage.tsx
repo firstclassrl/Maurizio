@@ -248,7 +248,6 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
         task={selectedTask}
         isUrgentMode={true}
         onSave={selectedTask ? handleSaveTask : handleSaveNewTask}
-        user={user}
       />
     </div>
   )

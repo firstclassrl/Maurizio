@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { format } from 'date-fns'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
@@ -8,13 +7,10 @@ import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Switch } from '../ui/switch'
 import { MessageModal } from '../ui/MessageModal'
-import { ScadenzaCalculator } from '../ui/ScadenzaCalculator'
 import { useMessage } from '../../hooks/useMessage'
 import { useMobile } from '../../hooks/useMobile'
 import { Task } from '../../lib/calendar-utils'
-import { AlertTriangle, Calculator } from 'lucide-react'
-import { supabase } from '../../lib/supabase'
-import { Client } from '../../types/client'
+import { AlertTriangle } from 'lucide-react'
 
 interface TaskDialogProps {
   open: boolean
@@ -22,10 +18,9 @@ interface TaskDialogProps {
   task: Task | null
   isUrgentMode?: boolean
   onSave: (task: Partial<Task>) => void
-  user: any
 }
 
-export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onSave, user }: TaskDialogProps) {
+export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onSave }: TaskDialogProps) {
   const { message, showError, hideMessage } = useMessage()
   const isMobile = useMobile()
   const [formData, setFormData] = useState({
@@ -41,16 +36,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     stato: 'todo' as 'todo' | 'done',
     evaso: false
   })
-  const [showCalculator, setShowCalculator] = useState(false)
-  const [clients, setClients] = useState<Client[]>([])
-  const [loadingClients, setLoadingClients] = useState(false)
 
-  // Carica i clienti quando il dialog si apre
-  useEffect(() => {
-    if (open) {
-      loadClients()
-    }
-  }, [open])
 
   useEffect(() => {
     if (task) {
@@ -84,35 +70,8 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     }
   }, [task, open, isUrgentMode])
 
-  const loadClients = async () => {
-    try {
-      setLoadingClients(true)
-      const { data, error } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('ragione', { ascending: true })
-
-      if (error) throw error
-      setClients(data || [])
-    } catch (error) {
-      console.error('Error loading clients:', error)
-      showError('Errore', 'Errore nel caricamento dei clienti')
-    } finally {
-      setLoadingClients(false)
-    }
-  }
 
 
-  const handleScadenzaCalculated = (dataScadenza: Date) => {
-    const formattedDate = format(dataScadenza, 'yyyy-MM-dd')
-    setFormData(prev => ({
-      ...prev,
-      scadenza: formattedDate
-    }))
-    // Chiudi il calcolatore dopo aver applicato la scadenza
-    setShowCalculator(false)
-  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -255,37 +214,26 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
             </Select>
           </div>
 
+          {/* Cliente e Controparte (solo visualizzazione) */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label htmlFor="cliente">Cliente</Label>
-              <Select 
-                value={formData.cliente || undefined} 
-                onValueChange={(value) => handleChange('cliente', value)}
-                disabled={loadingClients}
-              >
-                <SelectTrigger className={isMobile ? "text-base" : ""}>
-                  <SelectValue placeholder={loadingClients ? "Caricamento..." : "Seleziona cliente"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {clients.map((client) => {
-                    const displayName = client.ragione || `${client.nome} ${client.cognome}`.trim()
-                    return (
-                      <SelectItem key={client.id} value={displayName}>
-                        {displayName}
-                      </SelectItem>
-                    )
-                  })}
-                </SelectContent>
-              </Select>
+              <Input
+                id="cliente"
+                value={formData.cliente || ''}
+                disabled
+                className="bg-gray-100 text-gray-600 cursor-not-allowed"
+                placeholder="Nessun cliente assegnato"
+              />
             </div>
             <div className="space-y-1">
               <Label htmlFor="controparte">Controparte</Label>
               <Input
                 id="controparte"
-                placeholder="es. Azienda XYZ"
-                value={formData.controparte}
-                onChange={(e) => handleChange('controparte', e.target.value)}
-                className={isMobile ? "text-base" : ""}
+                value={formData.controparte || ''}
+                disabled
+                className="bg-gray-100 text-gray-600 cursor-not-allowed"
+                placeholder="Nessuna controparte assegnata"
               />
             </div>
           </div>
@@ -334,25 +282,11 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                 <Input
                   id="ora"
                   type="time"
-                  value={formData.ora}
+                  value={formData.ora || ''}
                   onChange={(e) => handleChange('ora', e.target.value)}
                   className="text-gray-900"
                 />
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setShowCalculator(true)
-                }}
-                className="px-3"
-                title="Calcola scadenza automaticamente"
-              >
-                <Calculator className="h-4 w-4" />
-              </Button>
             </div>
           </div>
 
@@ -371,28 +305,6 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
             </div>
           </div>
 
-          {/* Calcolatore Scadenze */}
-          {showCalculator && (
-            <div className="space-y-2 p-2 bg-gray-50 rounded-lg border">
-              <div className="flex items-center justify-between">
-                <Label className="text-sm font-medium">Calcolatore Scadenze Legali</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowCalculator(false)}
-                  className="px-2 py-1 text-xs"
-                >
-                  ✕
-                </Button>
-              </div>
-              <ScadenzaCalculator
-                onScadenzaCalculated={handleScadenzaCalculated}
-                initialDataInizio={formData.scadenza ? new Date(formData.scadenza) : undefined}
-                categoriaAttivita={formData.categoria}
-              />
-            </div>
-          )}
 
 
           <DialogFooter>
