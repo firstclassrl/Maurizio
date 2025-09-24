@@ -104,6 +104,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
     
     // Prepare data for save
     const taskData = {
+      ...(task && { id: task.id }), // Include ID only when updating existing task
       attivita: formData.attivita, // Attività da svolgere
       categoria: formData.categoria, // Categoria dell'attività
       scadenza: formData.scadenza,
