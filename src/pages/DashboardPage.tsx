@@ -299,72 +299,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-slate-900 shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Logo className="h-8 w-auto" />
-              <h1 className="ml-3 text-xl font-semibold text-white">
-                LexAgenda
-              </h1>
-                </div>
-            
-            <div className="flex items-center space-x-2">
-              <Button
-                onClick={onNavigateToWeek}
-                className="bg-blue-600 hover:bg-blue-700 text-white border-0"
-                size="sm"
-              >
-                <CalendarDays className="h-4 w-4 mr-2" />
-                Settimana
-              </Button>
-              
-              <Button
-                onClick={onNavigateToMonth}
-                className="bg-green-600 hover:bg-green-700 text-white border-0"
-                size="sm"
-              >
-                  <Calendar className="h-4 w-4 mr-2" />
-                Mese
-                </Button>
-              
-                      <Button
-                onClick={onNavigateToCalcolatore}
-                className="bg-purple-600 hover:bg-purple-700 text-white border-0"
-                        size="sm"
-                      >
-                <Calculator className="h-4 w-4 mr-2" />
-                CALCOLATORE
-                      </Button>
-              
-            
-                  <Button
-                onClick={() => setIsOptionsModalOpen(true)}
-                variant="outline"
-                size="sm"
-                className="border-gray-300 text-gray-700 hover:bg-gray-50"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Opzioni
-                  </Button>
-              
-                  <Button
-                onClick={handleLogout}
-                variant="outline"
-                size="sm"
-                className="border-white text-red-400 hover:bg-white hover:text-red-600"
-              >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                  </Button>
-                </div>
-              </div>
-              </div>
-              </div>
-
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-6">
 
         {/* Welcome Message and Counters */}
         <div className="flex justify-between items-center mb-6">
@@ -770,6 +706,69 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
+      
+      {/* Header */}
+      <div className="bg-slate-900 shadow-sm border-t">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Logo className="h-8 w-auto" />
+              <h1 className="ml-3 text-xl font-semibold text-white">
+                LexAgenda
+              </h1>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={onNavigateToWeek}
+                className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                size="sm"
+              >
+                <CalendarDays className="h-4 w-4 mr-2" />
+                Settimana
+              </Button>
+              
+              <Button
+                onClick={onNavigateToMonth}
+                className="bg-green-600 hover:bg-green-700 text-white border-0"
+                size="sm"
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Mese
+              </Button>
+              
+              <Button
+                onClick={onNavigateToCalcolatore}
+                className="bg-purple-600 hover:bg-purple-700 text-white border-0"
+                size="sm"
+              >
+                <Calculator className="h-4 w-4 mr-2" />
+                CALCOLATORE
+              </Button>
+              
+              <Button
+                onClick={() => setIsOptionsModalOpen(true)}
+                variant="outline"
+                size="sm"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Opzioni
+              </Button>
+              
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="border-white text-red-400 hover:bg-white hover:text-red-600"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
       
       {/* Footer */}
       <Footer />

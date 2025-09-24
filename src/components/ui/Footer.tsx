@@ -12,18 +12,17 @@ export function Footer({ className = '', absolute = false }: FooterProps) {
     <footer className={footerClasses}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-2">
-          <div className="text-white text-sm">
-            LexAgenda v2.0.0 - Created by Abruzzo.AI
-          </div>
           <div className="flex items-center gap-2">
-            <div className="text-white text-xs opacity-75">
-              Copyright 2025
-            </div>
+            <span className="text-white text-sm">LexAgenda v2.0.0 - Created by</span>
+            <span className="text-white text-sm">Abruzzo.AI</span>
             <img 
               src="/Marchio AbruzzoAI.png" 
               alt="Abruzzo.AI" 
               className="h-6 w-auto"
             />
+          </div>
+          <div className="text-white text-xs opacity-75">
+            Copyright 2025
           </div>
         </div>
       </div>
