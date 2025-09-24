@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
+import { Button } from '../ui/button'
 import { Card } from '../ui/card'
-import { ArrowRight, FileText, Calendar } from 'lucide-react'
+import { Plus, ArrowRight, FileText, Calendar, X } from 'lucide-react'
 import { Practice, Activity } from '../../types/practice'
 import { Client } from '../../types/client'
 import { PracticeForm } from './PracticeForm'
 import { ActivityForm } from './ActivityForm'
-import { SimpleModal } from './SimpleModal'
+import { useMobile } from '../../hooks/useMobile'
 
 interface NewActivityWizardProps {
   open: boolean
@@ -15,6 +16,7 @@ interface NewActivityWizardProps {
 }
 
 export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreated }: NewActivityWizardProps) {
+  const isMobile = useMobile()
   const [step, setStep] = useState<'practice' | 'activity'>('practice')
   const [currentPractice, setCurrentPractice] = useState<Practice | null>(null)
   const [isCreatingPractice, setIsCreatingPractice] = useState(false)
@@ -67,6 +69,9 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     }
   }
 
+  const goBackToPractice = () => {
+    setStep('practice')
+  }
 
   const renderStepIndicator = () => (
     <div className="flex items-center justify-center mb-6">
@@ -160,22 +165,73 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
 
   const handleClose = () => {
     console.log('handleClose called at:', new Date().toISOString())
-    alert('Modal closing!') // Debug alert
     setStep('practice')
     setCurrentPractice(null)
     onOpenChange(false)
   }
 
 
+  const handleCancelClick = () => {
+    console.log('Cancel button clicked at:', new Date().toISOString())
+    handleClose()
+  }
+
+  if (!open) return null
 
   return (
-    <SimpleModal
-      open={open}
-      onClose={handleClose}
-      title="Nuova Attività"
-    >
-      {renderStepIndicator()}
-      {step === 'practice' ? renderPracticeStep() : renderActivityStep()}
-    </SimpleModal>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={handleClose}
+      />
+      
+      {/* Modal Content */}
+      <div className={`relative bg-white rounded-lg shadow-lg max-w-6xl max-h-[90vh] overflow-y-auto w-full mx-4 ${isMobile ? 'mx-2' : ''}`}>
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Plus className="w-5 h-5" />
+            Nuova Attività
+          </h2>
+          <button
+            onClick={handleClose}
+            className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 p-1"
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          {renderStepIndicator()}
+          {step === 'practice' ? renderPracticeStep() : renderActivityStep()}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between p-6 border-t bg-gray-50">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleCancelClick}
+            disabled={isCreatingPractice || isCreatingActivity}
+          >
+            Annulla
+          </Button>
+          
+          {step === 'activity' && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={goBackToPractice}
+              disabled={isCreatingPractice || isCreatingActivity}
+            >
+              Indietro
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
