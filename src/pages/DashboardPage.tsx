@@ -13,6 +13,7 @@ import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useMessage } from '../hooks/useMessage'
 import { useToast, ToastContainer } from '../components/ui/Toast'
+import { STRAGIUDIZIALE_CATEGORIES, GIUDIZIALE_CATEGORIES } from '../types/practice'
 import { useMobile } from '../hooks/useMobile'
 import { UrgentCounter } from '../components/notifications/UrgentCounter'
 import { OverdueCounter } from '../components/notifications/OverdueCounter'
@@ -34,6 +35,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const { message, showError, hideMessage } = useMessage()
   const { toasts, removeToast, showSuccess: showToastSuccess } = useToast()
   const isMobile = useMobile()
+
+  // Function to get category color
+  const getCategoryColor = (categoria: string) => {
+    const allCategories = [...STRAGIUDIZIALE_CATEGORIES, ...GIUDIZIALE_CATEGORIES]
+    const category = allCategories.find(cat => cat.value === categoria)
+    return category?.color || 'bg-gray-100 text-gray-800 border-gray-200'
+  }
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
@@ -342,27 +350,26 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         {/* New Activity System */}
         <Card className="mb-6 border-2 border-black">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Gestione Attività</h3>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => setIsNewActivityWizardOpen(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                    size="sm"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nuova Pratica
-                  </Button>
-                  
-                </div>
-            </div>
-            
-            <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">
-                Crea una nuova pratica e aggiungi attività utilizzando il nuovo sistema basato su pratiche.
-              </p>
-              <div className="text-sm text-gray-500">
-                Il sistema ora organizza le attività per pratica con clienti e controparti specifici.
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setIsNewActivityWizardOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nuova Pratica
+                </Button>
+                
+                <Button
+                  onClick={() => {/* TODO: Implement add activity to existing practice */}}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Aggiungi Attività
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -408,13 +415,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            task.categoria === 'SCADENZA ATTO PROCESSUALE' ? 'bg-red-100 text-red-800' :
-                            task.categoria === 'UDIENZA' ? 'bg-green-100 text-green-800' :
-                            task.categoria === 'ATTIVITA\' PROCESSUALE' ? 'bg-yellow-100 text-yellow-800' :
-                            task.categoria === 'APPUNTAMENTO IN STUDIO' ? 'bg-cyan-100 text-cyan-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getCategoryColor(task.categoria)}`}>
                             {task.categoria}
                             </span>
                           {task.stato === 'done' && (
@@ -545,13 +546,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          task.categoria === 'SCADENZA ATTO PROCESSUALE' ? 'bg-red-100 text-red-800' :
-                          task.categoria === 'UDIENZA' ? 'bg-green-100 text-green-800' :
-                          task.categoria === 'ATTIVITA\' PROCESSUALE' ? 'bg-yellow-100 text-yellow-800' :
-                          task.categoria === 'APPUNTAMENTO IN STUDIO' ? 'bg-cyan-100 text-cyan-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getCategoryColor(task.categoria)}`}>
                           {task.categoria}
                         </span>
                         {task.priorita === 10 && (
