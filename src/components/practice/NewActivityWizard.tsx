@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { Plus, ArrowRight, FileText, Calendar } from 'lucide-react'
@@ -166,6 +165,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
 
   const handleDialogClose = (open: boolean) => {
     console.log('Dialog onOpenChange called with:', open)
+    alert(`Dialog close called with: ${open}`)
     if (!open) {
       setStep('practice')
       setCurrentPractice(null)
@@ -173,15 +173,34 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     onOpenChange(open)
   }
 
+  if (!open) return null
+
   return (
-    <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className={`max-w-6xl max-h-[90vh] overflow-y-auto ${isMobile ? 'mx-2' : ''}`}>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={() => handleDialogClose(false)}
+      />
+      
+      {/* Modal Content */}
+      <div className={`relative bg-white rounded-lg shadow-lg max-w-6xl max-h-[90vh] overflow-y-auto w-full mx-4 ${isMobile ? 'mx-2' : ''}`}>
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
             <Plus className="w-5 h-5" />
             Nuova Attività
-          </DialogTitle>
-        </DialogHeader>
+          </h2>
+          <button
+            onClick={() => {
+              alert('X button clicked!')
+              handleDialogClose(false)
+            }}
+            className="rounded-sm opacity-70 hover:opacity-100 p-1"
+          >
+            ✕
+          </button>
+        </div>
 
         {renderStepIndicator()}
 
@@ -192,7 +211,10 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
           <Button
             type="button"
             variant="outline"
-            onClick={() => handleDialogClose(false)}
+            onClick={() => {
+              alert('Annulla button clicked!')
+              handleDialogClose(false)
+            }}
             disabled={isCreatingPractice || isCreatingActivity}
           >
             Annulla
@@ -209,7 +231,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
             </Button>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   )
 }
