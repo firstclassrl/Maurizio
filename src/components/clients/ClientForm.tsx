@@ -40,6 +40,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
     contatti: [],
     cliente: false,
     controparte: false,
+    altri: false,
     codiceDestinatario: '',
     codiceDestinatarioPA: '',
     note: '',
@@ -85,6 +86,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
         contatti: contatti,
         cliente: client.cliente || false,
         controparte: client.controparte || false,
+        altri: client.altri || false,
         codiceDestinatario: client.codiceDestinatario || '',
         codiceDestinatarioPA: client.codiceDestinatarioPA || '',
         note: client.note || '',
@@ -111,6 +113,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
         contatti: [],
         cliente: false,
         controparte: false,
+        altri: false,
         codiceDestinatario: '',
         codiceDestinatarioPA: '',
         note: '',
@@ -441,7 +444,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               checked={formData.cliente}
               onCheckedChange={(checked) => handleInputChange('cliente', checked)}
             />
-            <Label htmlFor="cliente">✅ Cliente</Label>
+            <Label htmlFor="cliente">Cliente</Label>
           </div>
           
           <div className="flex items-center space-x-2">
@@ -450,7 +453,16 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               checked={formData.controparte}
               onCheckedChange={(checked) => handleInputChange('controparte', checked)}
             />
-            <Label htmlFor="controparte">✅ Controparte</Label>
+            <Label htmlFor="controparte">Controparte</Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="altri"
+              checked={formData.altri}
+              onCheckedChange={(checked) => handleInputChange('altri', checked)}
+            />
+            <Label htmlFor="altri">Altri</Label>
           </div>
         </div>
       </Card>
@@ -665,7 +677,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               checked={formData.cliente}
               onCheckedChange={(checked) => handleInputChange('cliente', checked)}
             />
-            <Label htmlFor="cliente">✅ Cliente</Label>
+            <Label htmlFor="cliente">Cliente</Label>
           </div>
           
           <div className="flex items-center space-x-2">
@@ -674,7 +686,16 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               checked={formData.controparte}
               onCheckedChange={(checked) => handleInputChange('controparte', checked)}
             />
-            <Label htmlFor="controparte">✅ Controparte</Label>
+            <Label htmlFor="controparte">Controparte</Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="altri"
+              checked={formData.altri}
+              onCheckedChange={(checked) => handleInputChange('altri', checked)}
+            />
+            <Label htmlFor="altri">Altri</Label>
           </div>
         </div>
       </Card>
@@ -911,7 +932,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               checked={formData.cliente}
               onCheckedChange={(checked) => handleInputChange('cliente', checked)}
             />
-            <Label htmlFor="cliente">✅ Cliente</Label>
+            <Label htmlFor="cliente">Cliente</Label>
           </div>
           
           <div className="flex items-center space-x-2">
@@ -920,7 +941,16 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               checked={formData.controparte}
               onCheckedChange={(checked) => handleInputChange('controparte', checked)}
             />
-            <Label htmlFor="controparte">✅ Controparte</Label>
+            <Label htmlFor="controparte">Controparte</Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="altri"
+              checked={formData.altri}
+              onCheckedChange={(checked) => handleInputChange('altri', checked)}
+            />
+            <Label htmlFor="altri">Altri</Label>
           </div>
         </div>
       </Card>
@@ -1135,7 +1165,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               checked={formData.cliente}
               onCheckedChange={(checked) => handleInputChange('cliente', checked)}
             />
-            <Label htmlFor="cliente">✅ Cliente</Label>
+            <Label htmlFor="cliente">Cliente</Label>
           </div>
           
           <div className="flex items-center space-x-2">
@@ -1144,7 +1174,16 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
               checked={formData.controparte}
               onCheckedChange={(checked) => handleInputChange('controparte', checked)}
             />
-            <Label htmlFor="controparte">✅ Controparte</Label>
+            <Label htmlFor="controparte">Controparte</Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="altri"
+              checked={formData.altri}
+              onCheckedChange={(checked) => handleInputChange('altri', checked)}
+            />
+            <Label htmlFor="altri">Altri</Label>
           </div>
         </div>
       </Card>

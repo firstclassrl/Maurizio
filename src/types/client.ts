@@ -47,6 +47,7 @@ export interface Client {
   // Ruoli
   cliente: boolean
   controparte: boolean
+  altri: boolean
   
   // Destinatario (per PA)
   codiceDestinatario?: string
@@ -83,6 +84,7 @@ export interface ClientFormData {
   // Ruoli
   cliente: boolean
   controparte: boolean
+  altri: boolean
   
   codiceDestinatario: string
   codiceDestinatarioPA: string
