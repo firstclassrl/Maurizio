@@ -496,6 +496,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
                     <input 
                       type="time"
                       step="60"
+                      data-format="24"
                       value={activityData.ora} 
                       onChange={(e) => setActivityData(prev => ({ ...prev, ora: e.target.value }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

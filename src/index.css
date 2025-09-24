@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Forza formato 24h per input time */
+input[type="time"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input[type="time"]::-webkit-datetime-edit-ampm-field {
+  display: none;
+}
+
+input[type="time"]::-moz-datetime-edit-ampm-field {
+  display: none;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
