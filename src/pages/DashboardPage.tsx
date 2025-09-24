@@ -20,6 +20,7 @@ import { OverdueCounter } from '../components/notifications/OverdueCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
+import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { OptionsModal } from '../components/ui/OptionsModal'
 import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle } from 'lucide-react'
 
@@ -54,6 +55,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [isAppuntamentoDialogOpen, setIsAppuntamentoDialogOpen] = useState(false)
   const [clients, setClients] = useState<Client[]>([])
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
+  const [isAddActivityModalOpen, setIsAddActivityModalOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
@@ -142,8 +144,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   }
 
   const handleAddActivityClick = () => {
-    // For now, show an alert. Later we can implement a proper modal
-    alert('Funzionalità "Aggiungi Attività" in sviluppo. Per ora usa "Nuova Pratica" per creare attività.')
+    setIsAddActivityModalOpen(true)
   }
 
   const handleTaskClick = (task: Task) => {
@@ -597,6 +598,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         </DialogContent>
       </Dialog>
 
+      {/* Add Activity to Existing Practice Modal */}
+      <AddActivityToExistingPractice
+        open={isAddActivityModalOpen}
+        onOpenChange={setIsAddActivityModalOpen}
+        clients={clients}
+        onActivityCreated={(activity) => {
+          console.log('Activity created from existing practice:', activity)
+          loadTasks() // Reload tasks to show the new activity
+        }}
+      />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
     </div>
