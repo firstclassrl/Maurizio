@@ -286,11 +286,11 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
       />
 
       {/* Modal Content */}
-      <div className={`relative bg-white rounded-lg shadow-lg max-w-6xl max-h-[90vh] overflow-y-auto w-full mx-4 ${isMobile ? 'mx-2' : ''}`}>
+      <div className={`relative bg-white rounded-lg shadow-lg max-w-2xl max-h-[80vh] overflow-y-auto w-full mx-4 ${isMobile ? 'mx-2' : ''}`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Plus className="w-5 h-5" />
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-base font-semibold flex items-center gap-2">
+            <Plus className="w-4 h-4" />
             Nuova Attività
           </h2>
           <button
@@ -302,37 +302,37 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4">
           {/* Step Indicator */}
-          <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center justify-center mb-4">
             <div className="flex items-center space-x-4">
               <div className={`flex items-center space-x-2 ${step === 'practice' ? 'text-blue-600' : 'text-green-600'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                   step === 'practice' ? 'bg-blue-100' : 'bg-green-100'
                 }`}>
-                  <FileText className="w-4 h-4" />
+                  <FileText className="w-3 h-3" />
                 </div>
-                <span className="text-sm font-medium">1. Pratica</span>
+                <span className="text-xs font-medium">1. Pratica</span>
               </div>
 
-              <ArrowRight className="w-4 h-4 text-gray-400" />
+              <ArrowRight className="w-3 h-3 text-gray-400" />
 
               <div className={`flex items-center space-x-2 ${step === 'activity' ? 'text-blue-600' : 'text-gray-400'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                   step === 'activity' ? 'bg-blue-100' : 'bg-gray-100'
                 }`}>
-                  <Calendar className="w-4 h-4" />
+                  <Calendar className="w-3 h-3" />
                 </div>
-                <span className="text-sm font-medium">2. Attività</span>
+                <span className="text-xs font-medium">2. Attività</span>
               </div>
             </div>
           </div>
 
           {/* Step Content */}
           {step === 'practice' ? (
-            <div className="space-y-6">
-              <Card className="p-4">
-                <h3 className="text-lg font-semibold mb-4">Informazioni Pratica</h3>
+            <div className="space-y-4">
+              <Card className="p-3">
+                <h3 className="text-base font-semibold mb-3">Informazioni Pratica</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Tipo Procedura *</label>
@@ -348,8 +348,8 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
                 </div>
               </Card>
 
-              <Card className="p-4">
-                <h3 className="text-lg font-semibold mb-4">Cliente</h3>
+              <Card className="p-3">
+                <h3 className="text-base font-semibold mb-3">Cliente</h3>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
                   <select 
@@ -367,11 +367,11 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
                 </div>
               </Card>
 
-              <Card className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">Controparti</h3>
-                  <Button type="button" onClick={addControparte} size="sm" className="flex items-center gap-2">
-                    <Plus className="w-4 h-4" />
+              <Card className="p-3">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-semibold">Controparti</h3>
+                  <Button type="button" onClick={addControparte} size="sm" className="flex items-center gap-1 text-xs">
+                    <Plus className="w-3 h-3" />
                     Aggiungi Controparte
                   </Button>
                 </div>
@@ -411,10 +411,10 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
               </Card>
             </div>
           ) : (
-            <div className="space-y-6">
-              <Card className="p-4">
-                <h3 className="text-lg font-semibold mb-4">Dettagli Attività</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="space-y-4">
+              <Card className="p-3">
+                <h3 className="text-base font-semibold mb-3">Dettagli Attività</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Categoria Attività *</label>
                     <div className="relative">
@@ -519,7 +519,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between p-6 border-t bg-gray-50">
+        <div className="flex justify-between p-4 border-t bg-gray-50">
           <Button
             type="button"
             variant="outline"
