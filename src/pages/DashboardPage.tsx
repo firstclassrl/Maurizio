@@ -20,6 +20,7 @@ import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { OptionsModal } from '../components/ui/OptionsModal'
+import { TestModal } from '../components/TestModal'
 import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -46,6 +47,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [clients, setClients] = useState<Client[]>([])
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
+  const [isTestModalOpen, setIsTestModalOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
 
@@ -343,14 +345,30 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           <CardContent className={isMobile ? "p-4" : "p-6"}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Gestione Attività</h3>
-                <Button
-                onClick={() => setIsNewActivityWizardOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                  size="sm"
-                >
-                <Plus className="h-4 w-4 mr-2" />
-                Nuova Pratica
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      alert('Opening modal!')
+                      setIsNewActivityWizardOpen(true)
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    size="sm"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Nuova Pratica
+                  </Button>
+                  
+                  <Button
+                    onClick={() => {
+                      alert('Opening test modal!')
+                      setIsTestModalOpen(true)
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                    size="sm"
+                  >
+                    Test Modal
+                  </Button>
+                </div>
             </div>
             
             <div className="text-center py-8">
@@ -587,6 +605,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           </div>
         </DialogContent>
       </Dialog>
+
+      <TestModal
+        open={isTestModalOpen}
+        onClose={() => setIsTestModalOpen(false)}
+      />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
     </div>

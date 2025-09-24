@@ -173,6 +173,9 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     onOpenChange(open)
   }
 
+  // Debug: log when component renders
+  console.log('NewActivityWizard render - open:', open)
+
   if (!open) return null
 
   return (
