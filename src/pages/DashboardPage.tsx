@@ -37,7 +37,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const isMobile = useMobile()
 
   // Function to get category color
-  const getCategoryColor = (categoria: string) => {
+  const getCategoryColor = (categoria?: string) => {
+    if (!categoria) return 'bg-gray-100 text-gray-800 border-gray-200'
     const allCategories = [...STRAGIUDIZIALE_CATEGORIES, ...GIUDIZIALE_CATEGORIES]
     const category = allCategories.find(cat => cat.value === categoria)
     return category?.color || 'bg-gray-100 text-gray-800 border-gray-200'
