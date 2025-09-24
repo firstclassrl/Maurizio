@@ -55,6 +55,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [clients, setClients] = useState<Client[]>([])
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
+  const [isAddActivityModalOpen, setIsAddActivityModalOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
 
@@ -139,6 +140,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const handleUrgentCounterClick = () => {
     loadUrgentTasks()
     setShowUrgentTasks(true)
+  }
+
+  const handleAddActivityClick = () => {
+    // For now, show an alert. Later we can implement a proper modal
+    alert('Funzionalità "Aggiungi Attività" in sviluppo. Per ora usa "Nuova Pratica" per creare attività.')
   }
 
   const handleTaskClick = (task: Task) => {
@@ -364,7 +370,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 </Button>
                 
                 <Button
-                  onClick={() => {/* TODO: Implement add activity to existing practice */}}
+                  onClick={handleAddActivityClick}
                   className="bg-green-600 hover:bg-green-700 text-white"
                   size="sm"
                 >
