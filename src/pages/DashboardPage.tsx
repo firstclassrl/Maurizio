@@ -495,7 +495,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               size="sm"
             >
               <Users className="h-4 w-4 mr-2" />
-              Gestioni
+              Clienti
             </Button>
               </div>
           </CardContent>
