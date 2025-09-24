@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { Task } from '../lib/calendar-utils'
+import { Client } from '../types/client'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
@@ -59,10 +60,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [newControparte, setNewControparte] = useState('')
   const [modalitaInserimento, setModalitaInserimento] = useState<'scelta' | 'manuale'>('scelta')
   const [isAppuntamentoDialogOpen, setIsAppuntamentoDialogOpen] = useState(false)
+  const [clients, setClients] = useState<Client[]>([])
+  const [loadingClients, setLoadingClients] = useState(false)
 
   useEffect(() => {
     loadTasks()
     loadUserProfile()
+    loadClients()
     // Force initial counter refresh
     setRefreshCounters(prev => prev + 1)
   }, [])
@@ -108,6 +112,54 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     } catch (error) {
       console.error('Error loading user profile:', error)
       setUserProfile(null)
+    }
+  }
+
+  const loadClients = async () => {
+    try {
+      setLoadingClients(true)
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('ragione', { ascending: true })
+
+      if (error) throw error
+      
+      // Parsa i campi JSON che potrebbero essere stringhe
+      const parsedClients = (data || []).map(client => {
+        let indirizzi = []
+        let contatti = []
+        
+        try {
+          indirizzi = Array.isArray(client.indirizzi) ? client.indirizzi : 
+                     (typeof client.indirizzi === 'string' ? JSON.parse(client.indirizzi) : [])
+        } catch (e) {
+          console.warn('Errore parsing indirizzi per cliente', client.id, ':', e)
+          indirizzi = []
+        }
+        
+        try {
+          contatti = Array.isArray(client.contatti) ? client.contatti : 
+                    (typeof client.contatti === 'string' ? JSON.parse(client.contatti) : [])
+        } catch (e) {
+          console.warn('Errore parsing contatti per cliente', client.id, ':', e)
+          contatti = []
+        }
+        
+        return {
+          ...client,
+          indirizzi,
+          contatti
+        }
+      })
+      
+      setClients(parsedClients)
+    } catch (error) {
+      console.error('Error loading clients:', error)
+      showError('Errore', 'Errore nel caricamento dei clienti')
+    } finally {
+      setLoadingClients(false)
     }
   }
 
@@ -683,13 +735,22 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="cliente">Cliente</Label>
-                    <Input
-                      id="cliente"
-                      value={newCliente}
-                      onChange={(e) => setNewCliente(e.target.value)}
-                      placeholder="es. Mario Rossi"
-                      className="text-base"
-                    />
+                    <Select 
+                      value={newCliente} 
+                      onValueChange={(value) => setNewCliente(value)}
+                      disabled={loadingClients}
+                    >
+                      <SelectTrigger className="text-base">
+                        <SelectValue placeholder={loadingClients ? "Caricamento..." : "Seleziona cliente"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {clients.map((client) => (
+                          <SelectItem key={client.id} value={client.ragione}>
+                            {client.ragione}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label htmlFor="controparte">Controparte</Label>
@@ -822,12 +883,22 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <div className="flex items-end gap-4">
                   <div className="w-48">
                     <Label htmlFor="cliente">Cliente</Label>
-                    <Input
-                      id="cliente"
-                      value={newCliente}
-                      onChange={(e) => setNewCliente(e.target.value)}
-                      placeholder="es. Mario Rossi"
-                    />
+                    <Select 
+                      value={newCliente} 
+                      onValueChange={(value) => setNewCliente(value)}
+                      disabled={loadingClients}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={loadingClients ? "Caricamento..." : "Seleziona cliente"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {clients.map((client) => (
+                          <SelectItem key={client.id} value={client.ragione}>
+                            {client.ragione}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="w-48">
                     <Label htmlFor="controparte">Controparte</Label>
