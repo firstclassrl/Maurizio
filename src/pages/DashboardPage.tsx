@@ -69,12 +69,26 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   const loadTasks = async () => {
     try {
-      const { data, error } = await supabase
+      // First try with evaso filter, fallback without it if column doesn't exist
+      let { data, error } = await supabase
         .from('tasks')
         .select('*')
         .eq('user_id', user.id)
         .eq('evaso', false) // Only load non-evased tasks
         .order('scadenza', { ascending: true })
+
+      // If error due to missing evaso column, try without the filter
+      if (error && error.message.includes('evaso')) {
+        console.log('evaso column not found, loading all tasks')
+        const fallbackResult = await supabase
+          .from('tasks')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('scadenza', { ascending: true })
+        
+        data = fallbackResult.data
+        error = fallbackResult.error
+      }
 
       if (error) throw error
       setTasks(data || [])
@@ -156,6 +170,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         .from('tasks')
         .update({ evaso: newEvasedStatus })
         .eq('id', task.id)
+
+      // If error due to missing evaso column, show info message
+      if (error && error.message.includes('evaso')) {
+        addToast({ 
+          type: 'info', 
+          title: 'Funzionalità in Sviluppo', 
+          message: 'La colonna evaso non è ancora disponibile nel database. Contatta l\'amministratore.' 
+        })
+        return
+      }
 
       if (error) throw error
 

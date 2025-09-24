@@ -55,12 +55,20 @@ export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
   const loadTasks = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      // First try with evaso filter, fallback without it if column doesn't exist
+      let { data, error } = await supabase
         .from('tasks')
         .select('*')
         .eq('user_id', user.id)
         .eq('evaso', true) // Only load evased tasks
         .order('scadenza', { ascending: false })
+
+      // If error due to missing evaso column, return empty array (no evased tasks yet)
+      if (error && error.message.includes('evaso')) {
+        console.log('evaso column not found, no evased tasks available')
+        data = []
+        error = null
+      }
 
       if (error) throw error
       setTasks(data || [])
