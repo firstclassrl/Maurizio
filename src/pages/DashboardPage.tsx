@@ -350,22 +350,23 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             </div>
           </div>
 
-        {/* Today's Activities Section */}
+
+        {/* Today's Activities - Yellow Card */}
         {getTodayTasks().length > 0 && (
-          <Card className="mb-6 border-2 border-yellow-400 bg-yellow-50">
+          <Card className="mb-6 border-2 border-yellow-300 bg-yellow-50">
             <CardContent className={isMobile ? "p-4" : "p-6"}>
-              <div className="flex items-center gap-2 mb-4">
-                <Calendar className="h-5 w-5 text-yellow-700" />
+              <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-yellow-800">Attività di Oggi</h3>
-                <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-                  {getTodayTasks().length}
+                <span className="text-sm text-yellow-700 bg-yellow-200 px-2 py-1 rounded-full">
+                  {getTodayTasks().length} attività
                 </span>
               </div>
-              <div className="space-y-3">
+              
+              <div className="space-y-2">
                 {getTodayTasks().map((task) => (
                   <div
                     key={task.id}
-                    className={`p-2 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${
+                    className={`p-2 rounded-lg border hover:shadow-sm transition-shadow cursor-pointer ${
                       task.stato === 'done' 
                         ? 'bg-green-50 text-green-800 border-green-200' 
                         : getCategoryColor(task.categoria)
@@ -388,12 +389,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                           {task.urgent && (
                             <span className="text-red-600 font-semibold text-[10px] leading-tight">URGENTE</span>
                           )}
-            </div>
-          </div>
+                        </div>
+                      </div>
                       
                       {/* Seconda riga: Cliente/Controparte e semaforo */}
                       <div className="flex justify-between items-end">
-                    <div className="flex-1">
+                        <div className="flex-1">
                           <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.cliente || 'N/A'}</span>
                           {task.controparte && (
                             <>
@@ -412,8 +413,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   </div>
                 ))}
               </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
         )}
 
         {/* New Activity System */}
