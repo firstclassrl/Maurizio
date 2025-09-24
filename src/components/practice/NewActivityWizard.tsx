@@ -163,27 +163,24 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     </div>
   )
 
-  const handleDialogClose = (open: boolean) => {
-    console.log('Dialog onOpenChange called with:', open)
-    alert(`Dialog close called with: ${open}`)
-    if (!open) {
-      setStep('practice')
-      setCurrentPractice(null)
-    }
-    onOpenChange(open)
-  }
 
   // Debug: log when component renders
   console.log('NewActivityWizard render - open:', open)
 
   if (!open) return null
 
+  const handleClose = () => {
+    setStep('practice')
+    setCurrentPractice(null)
+    onOpenChange(false)
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={() => handleDialogClose(false)}
+        onClick={handleClose}
       />
       
       {/* Modal Content */}
@@ -195,10 +192,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
             Nuova Attività
           </h2>
           <button
-            onClick={() => {
-              alert('X button clicked!')
-              handleDialogClose(false)
-            }}
+            onClick={handleClose}
             className="rounded-sm opacity-70 hover:opacity-100 p-1"
           >
             ✕
@@ -214,10 +208,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
           <Button
             type="button"
             variant="outline"
-            onClick={() => {
-              alert('Annulla button clicked!')
-              handleDialogClose(false)
-            }}
+            onClick={handleClose}
             disabled={isCreatingPractice || isCreatingActivity}
           >
             Annulla

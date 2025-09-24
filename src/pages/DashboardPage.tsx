@@ -20,7 +20,6 @@ import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { OptionsModal } from '../components/ui/OptionsModal'
-import { TestModal } from '../components/TestModal'
 import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -47,7 +46,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [clients, setClients] = useState<Client[]>([])
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
-  const [isTestModalOpen, setIsTestModalOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
 
@@ -347,10 +345,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               <h3 className="text-lg font-semibold">Gestione Attività</h3>
                 <div className="flex gap-2">
                   <Button
-                    onClick={() => {
-                      alert('Opening modal!')
-                      setIsNewActivityWizardOpen(true)
-                    }}
+                    onClick={() => setIsNewActivityWizardOpen(true)}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
                     size="sm"
                   >
@@ -358,16 +353,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     Nuova Pratica
                   </Button>
                   
-                  <Button
-                    onClick={() => {
-                      alert('Opening test modal!')
-                      setIsTestModalOpen(true)
-                    }}
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                    size="sm"
-                  >
-                    Test Modal
-                  </Button>
                 </div>
             </div>
             
@@ -606,10 +591,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         </DialogContent>
       </Dialog>
 
-      <TestModal
-        open={isTestModalOpen}
-        onClose={() => setIsTestModalOpen(false)}
-      />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
     </div>
