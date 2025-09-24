@@ -353,7 +353,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="border-white text-white hover:bg-white hover:text-slate-900"
+                className="border-white text-red-400 hover:bg-white hover:text-red-600"
               >
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
