@@ -15,14 +15,14 @@ export function Footer({ className = '', absolute = false }: FooterProps) {
           <div className="text-white text-sm">
             LexAgenda v2.0.0 - Created by Abruzzo.AI
           </div>
-          <div className="text-white text-xs opacity-75">
-            Copyright 2025
-          </div>
-          <div className="mt-2">
+          <div className="flex items-center gap-2">
+            <div className="text-white text-xs opacity-75">
+              Copyright 2025
+            </div>
             <img 
               src="/Marchio AbruzzoAI.png" 
               alt="Abruzzo.AI" 
-              className="h-8 w-auto"
+              className="h-6 w-auto"
             />
           </div>
         </div>
