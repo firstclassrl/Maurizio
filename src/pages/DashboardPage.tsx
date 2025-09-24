@@ -415,13 +415,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 {getFilteredTasks().map((task) => (
                   <div
                     key={task.id}
-                    className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+                    className={`p-4 rounded-lg border-2 hover:shadow-md transition-shadow cursor-pointer ${getCategoryColor(task.categoria)}`}
                     onClick={() => handleTaskClick(task)}
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getCategoryColor(task.categoria)}`}>
+                        <span className="text-sm font-medium">
                             {task.categoria}
                             </span>
                           {task.stato === 'done' && (
@@ -540,19 +540,19 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               </p>
             ) : (
               urgentTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => {
-                    setSelectedTask(task)
-                    setIsTaskDialogOpen(true)
-                    setShowUrgentTasks(false)
-                  }}
-                >
+                  <div
+                    key={task.id}
+                    className={`p-4 rounded-lg border-2 hover:shadow-md transition-shadow cursor-pointer ${getCategoryColor(task.categoria)}`}
+                    onClick={() => {
+                      setSelectedTask(task)
+                      setIsTaskDialogOpen(true)
+                      setShowUrgentTasks(false)
+                    }}
+                  >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getCategoryColor(task.categoria)}`}>
+                        <span className="text-sm font-medium">
                           {task.categoria}
                         </span>
                         {task.priorita === 10 && (

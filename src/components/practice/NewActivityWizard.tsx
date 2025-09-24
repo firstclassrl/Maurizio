@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { Plus, ArrowRight, FileText, Calendar, ArrowLeft } from 'lucide-react'
-import { Practice, Activity } from '../../types/practice'
+import { Practice, Activity, STRAGIUDIZIALE_CATEGORIES, GIUDIZIALE_CATEGORIES } from '../../types/practice'
 import { Client } from '../../types/client'
 import { useMobile } from '../../hooks/useMobile'
 import { supabase } from '../../lib/supabase'
@@ -263,6 +263,24 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
       : ['Udienza', 'Scadenza Processuale', 'Attività Processuale', 'Appuntamento', 'Scadenza', 'Attività da Svolgere']
   }
 
+  const getCategoryColor = (categoria: string) => {
+    const allCategories = [...STRAGIUDIZIALE_CATEGORIES, ...GIUDIZIALE_CATEGORIES]
+    const category = allCategories.find(cat => cat.value === categoria)
+    return category?.color || 'bg-gray-100 text-gray-800 border-gray-200'
+  }
+
+  const getCategoryDotColor = (categoria: string) => {
+    const colorMap: { [key: string]: string } = {
+      'Appuntamento': 'bg-gray-500',
+      'Scadenza': 'bg-orange-500',
+      'Attività da Svolgere': 'bg-blue-500',
+      'Udienza': 'bg-green-500',
+      'Scadenza Processuale': 'bg-red-500',
+      'Attività Processuale': 'bg-yellow-500'
+    }
+    return colorMap[categoria] || 'bg-gray-500'
+  }
+
   if (!open) return null
 
   return (
@@ -405,17 +423,22 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Categoria Attività *</label>
-                    <select 
-                      value={activityData.categoria} 
-                      onChange={(e) => setActivityData(prev => ({ ...prev, categoria: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      {getCategories().map(cat => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select 
+                        value={activityData.categoria} 
+                        onChange={(e) => setActivityData(prev => ({ ...prev, categoria: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                      >
+                        {getCategories().map(cat => (
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <div className={`w-3 h-3 rounded-full ${getCategoryDotColor(activityData.categoria)}`}></div>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Attività da Svolgere *</label>
