@@ -82,7 +82,6 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
         controparti_ids: practice.controparti_ids,
         tipo_procedura: practice.tipo_procedura
       })
-      setStep('form')
     } else {
       // Reset form for new practice
       setFormData({
@@ -91,7 +90,6 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
         controparti_ids: [],
         tipo_procedura: 'STRAGIUDIZIALE'
       })
-      setStep('form')
     }
   }, [practice, open])
 
