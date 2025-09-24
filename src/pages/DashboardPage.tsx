@@ -489,7 +489,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       <NewActivityWizard
         open={isNewActivityWizardOpen}
-        onOpenChange={setIsNewActivityWizardOpen}
+        onOpenChange={(open) => {
+          console.log('DashboardPage: onOpenChange called with:', open)
+          setIsNewActivityWizardOpen(open)
+        }}
         clients={clients}
         onActivityCreated={(activity) => {
           console.log('New activity created:', activity)
