@@ -10,9 +10,7 @@ import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { AppuntamentoDialog } from '../components/dashboard/AppuntamentoDialog'
 import { Logo } from '../components/ui/Logo'
 import { Footer } from '../components/ui/Footer'
-import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
-import { useMessage } from '../hooks/useMessage'
 import { useToast, ToastContainer } from '../components/ui/Toast'
 import { STRAGIUDIZIALE_CATEGORIES, GIUDIZIALE_CATEGORIES } from '../types/practice'
 import { useMobile } from '../hooks/useMobile'
@@ -24,7 +22,7 @@ import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { OptionsModal } from '../components/ui/OptionsModal'
-import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
 interface DashboardPageProps {
@@ -37,8 +35,7 @@ interface DashboardPageProps {
 }
 
 export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage }: DashboardPageProps) {
-  const { message, showError, hideMessage } = useMessage()
-  const { toasts, removeToast, showSuccess: showToastSuccess, addToast } = useToast()
+  const { toasts, removeToast, showSuccess: showToastSuccess } = useToast()
   const isMobile = useMobile()
 
   // Function to get category color
@@ -96,7 +93,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       setTasks(data || [])
     } catch (error) {
       console.error('Errore nel caricamento delle attività:', error)
-      showError('Errore nel caricamento delle attività', 'Errore')
+      console.error('Errore nel caricamento delle attività:', error)
     }
   }
 
@@ -119,7 +116,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       setClients(data || [])
     } catch (error) {
       console.error('Errore nel caricamento dei clienti:', error)
-      showError('Errore nel caricamento dei clienti', 'Errore')
+      console.error('Errore nel caricamento dei clienti:', error)
     }
   }
 
@@ -138,7 +135,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       setUrgentTasks(data || [])
     } catch (error) {
       console.error('Errore nel caricamento delle scadenze urgenti:', error)
-      showError('Errore nel caricamento delle scadenze urgenti', 'Errore')
+      console.error('Errore nel caricamento delle scadenze urgenti:', error)
     }
   }
 
@@ -157,39 +154,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     setIsAddActivityModalOpen(true)
   }
 
-  const handleToggleEvased = async (task: Task) => {
-    try {
-      const newEvasedStatus = !task.evaso
-        const { error } = await supabase
-          .from('tasks')
-        .update({ evaso: newEvasedStatus })
-        .eq('id', task.id)
-
-      // If error due to missing evaso column, show info message
-      if (error && error.message.includes('evaso')) {
-        addToast({ 
-          type: 'info', 
-          title: 'Funzionalità in Sviluppo', 
-          message: 'La colonna evaso non è ancora disponibile nel database. Contatta l\'amministratore.' 
-        })
-        return
-      }
-
-        if (error) throw error
-
-      // Remove task from current list (it will go to storage)
-      setTasks(tasks.filter(t => t.id !== task.id))
-      
-      const message = newEvasedStatus 
-        ? 'Attività marcata come evasa e spostata nello storage'
-        : 'Attività ripristinata nella lista principale'
-      
-      addToast({ type: 'success', title: 'Stato Aggiornato', message })
-    } catch (error) {
-      console.error('Error toggling evased status:', error)
-      addToast({ type: 'error', title: 'Errore', message: 'Errore nell\'aggiornamento dello stato' })
-    }
-  }
 
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task)
@@ -198,12 +162,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   const handleTaskUpdate = async (updatedTask: Task) => {
     try {
-      const { error } = await supabase
-        .from('tasks')
+        const { error } = await supabase
+          .from('tasks')
         .update(updatedTask)
         .eq('id', updatedTask.id)
 
-      if (error) throw error
+        if (error) throw error
 
       setTasks(prev => prev.map(task => 
         task.id === updatedTask.id ? updatedTask : task
@@ -213,7 +177,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       showToastSuccess('Successo', 'Attività aggiornata con successo')
     } catch (error) {
       console.error('Errore nell\'aggiornamento dell\'attività:', error)
-      showError('Errore nell\'aggiornamento dell\'attività', 'Errore')
+      console.error('Errore nell\'aggiornamento dell\'attività:', error)
     }
   }
 
@@ -239,7 +203,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       showToastSuccess('Successo', 'Attività eliminata con successo')
     } catch (error) {
       console.error('Errore nell\'eliminazione dell\'attività:', error)
-      showError('Errore nell\'eliminazione dell\'attività', 'Errore')
+      console.error('Errore nell\'eliminazione dell\'attività:', error)
     }
   }
 
@@ -284,7 +248,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       showToastSuccess('Successo', 'Appuntamento aggiunto con successo')
     } catch (error) {
       console.error('Errore nell\'aggiunta dell\'appuntamento:', error)
-      showError('Errore nell\'aggiunta dell\'appuntamento', 'Errore')
+      console.error('Errore nell\'aggiunta dell\'appuntamento:', error)
     }
   }
 
@@ -308,7 +272,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               <h1 className="ml-3 text-xl font-semibold text-white">
                 LexAgenda
               </h1>
-            </div>
+                </div>
             
             <div className="flex items-center space-x-2">
               <Button
@@ -325,9 +289,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 className="bg-green-600 hover:bg-green-700 text-white border-0"
                 size="sm"
               >
-                <Calendar className="h-4 w-4 mr-2" />
+                  <Calendar className="h-4 w-4 mr-2" />
                 Mese
-              </Button>
+                </Button>
               
               <Button
                 onClick={onNavigateToCalcolatore}
@@ -336,7 +300,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               >
                 <Calculator className="h-4 w-4 mr-2" />
                 CALCOLATORE
-              </Button>
+                </Button>
               
               <Button
                 onClick={() => setIsOptionsModalOpen(true)}
@@ -346,7 +310,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               >
                 <Settings className="h-4 w-4 mr-2" />
                 Opzioni
-              </Button>
+                </Button>
               
               <Button
                 onClick={handleLogout}
@@ -354,11 +318,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 size="sm"
                 className="border-white text-red-400 hover:bg-white hover:text-red-600"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
             </div>
-          </div>
         </div>
       </div>
 
@@ -408,51 +372,41 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     }`}
                     onClick={() => handleTaskClick(task)}
                   >
-                    <div className="flex items-center gap-2">
-                      <div className="flex-shrink-0">
-                        <div className={`w-2 h-2 rounded-full ${
-                          task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
-                        }`}></div>
-                      </div>
-                      <div className="flex-1 min-w-0 text-[10px] overflow-hidden">
-                        <div className="flex items-center gap-0.5 whitespace-nowrap">
+                    <div className="flex flex-col h-full">
+                      {/* Prima riga: Orario e Attività */}
+                      <div className="flex justify-between items-start mb-1">
+                        <div className="flex items-center gap-2 flex-1">
+                          <div className={`w-2 h-2 rounded-full ${
+                            task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
+                          }`}></div>
                           {task.ora && (
                             <span className="font-medium text-gray-600 text-[10px] leading-tight">
                               {formatTimeWithoutSeconds(task.ora)}
-                        </span>
-                      )}
-                          <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.cliente || 'N/A'}</span>
-                          {task.controparte && (
-                            <>
-                              <span className="text-gray-500 text-[10px] leading-tight">/</span>
-                              <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.controparte}</span>
-                            </>
+                            </span>
                           )}
-                          <span className="text-gray-600 text-[10px] leading-tight">- {task.attivita}</span>
+                          <span className="text-gray-600 text-[10px] leading-tight">{task.attivita}</span>
                           {task.urgent && (
                             <span className="text-red-600 font-semibold text-[10px] leading-tight">URGENTE</span>
                           )}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleToggleEvased(task)
-                          }}
-                          className={`p-1 rounded-full transition-colors ${
-                            task.evaso 
-                              ? 'bg-green-500 hover:bg-green-600' 
-                              : 'bg-red-500 hover:bg-red-600'
-                          }`}
-                          title={task.evaso ? 'Evasa - Click per ripristinare' : 'Non evasa - Click per marcare come evasa'}
-                        >
-                          {task.evaso ? (
-                            <CheckCircle2 className="h-4 w-4 text-white" />
-                          ) : (
-                            <XCircle className="h-4 w-4 text-white" />
+            </div>
+          </div>
+                      
+                      {/* Seconda riga: Cliente/Controparte e semaforo */}
+                      <div className="flex justify-between items-end">
+                    <div className="flex-1">
+                          <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.cliente || 'N/A'}</span>
+                          {task.controparte && (
+                            <>
+                              <span className="text-gray-500 text-[10px] leading-tight"> / </span>
+                              <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.controparte}</span>
+                            </>
                           )}
-                        </button>
+                        </div>
+                        
+                        {/* Semaforo in basso a destra */}
+                        <div className={`w-3 h-3 rounded-full ml-2 ${
+                          task.evaso ? 'bg-green-500' : 'bg-red-500'
+                        }`}></div>
                       </div>
                     </div>
                   </div>
@@ -539,57 +493,58 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     className={`p-4 rounded-lg border-2 hover:shadow-md transition-shadow cursor-pointer ${getCategoryColor(task.categoria)}`}
                     onClick={() => handleTaskClick(task)}
                   >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-medium">
-                            {task.categoria}
+                    <div className="flex flex-col h-full">
+                      {/* Prima riga: Categoria e Pratica */}
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">
+                              {task.categoria}
                             </span>
                             {task.stato === 'done' && (
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              Completata
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Completata
                               </span>
-                          )}
-                          {/* Semaphore - Visual indicator only */}
-                          <div className="flex items-center gap-1 ml-auto">
-                            <div className={`p-1 rounded-full ${
-                              task.evaso ? 'bg-green-500' : 'bg-red-500'
-                            }`}>
-                              {task.evaso ? (
-                                <CheckCircle2 className="h-4 w-4 text-white" />
-                              ) : (
-                                <XCircle className="h-4 w-4 text-white" />
                             )}
                           </div>
+                          <h4 className="font-medium text-gray-900 mt-1">{task.pratica}</h4>
                             </div>
                           </div>
-                        <h4 className="font-medium text-gray-900 mb-1">{task.pratica}</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          <strong>Cliente:</strong> {task.cliente}
-                          {task.controparte && (
-                            <span> | <strong>Controparte:</strong> {task.controparte}</span>
-                          )}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          <strong>Data:</strong> {new Date(task.scadenza).toLocaleDateString('it-IT')}
-                        </p>
-                          {task.note && (
-                          <p className="text-sm text-gray-500 mt-1">
-                            <strong>Note:</strong> {task.note}
+                      
+                      {/* Seconda riga: Dettagli e semaforo */}
+                      <div className="flex justify-between items-end flex-1">
+                        <div className="flex-1">
+                          <p className="text-sm text-gray-600">
+                            <strong>Cliente:</strong> {task.cliente}
+                            {task.controparte && (
+                              <span> | <strong>Controparte:</strong> {task.controparte}</span>
+                            )}
                           </p>
-                          )}
+                          <p className="text-sm text-gray-500">
+                            <strong>Data:</strong> {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                          </p>
                         </div>
+                        
+                        {/* Semaforo in basso a destra */}
+                        <div className="flex items-center gap-2 ml-4">
                           <Button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleTaskDelete(task)
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleTaskDelete(task)
                             }}
                             variant="outline"
                             size="sm"
-                        className="text-red-600 border-red-600 hover:bg-red-50"
+                            className="text-red-600 border-red-600 hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
+                          
+                          {/* Semaphore - Solo indicatore visivo */}
+                          <div className={`w-3 h-3 rounded-full ${
+                            task.evaso ? 'bg-green-500' : 'bg-red-500'
+                          }`}></div>
+                          </div>
+                          </div>
                         </div>
                   </div>
                 ))}
@@ -647,13 +602,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         user={user}
       />
       
-      <MessageModal
-        open={!!message}
-        type={message?.type || 'info'}
-        title={message?.title || ''}
-        message={message?.message || ''}
-        onClose={hideMessage}
-      />
 
       {/* Urgent Tasks Modal */}
       <Dialog open={showUrgentTasks} onOpenChange={setShowUrgentTasks}>
@@ -692,28 +640,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                             URGENTE
                           </span>
                         )}
-                        {/* Semaphore */}
-                        <div className="flex items-center gap-1 ml-auto">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleToggleEvased(task)
-                            }}
-                            className={`p-1 rounded-full transition-colors ${
-                              task.evaso 
-                                ? 'bg-green-500 hover:bg-green-600' 
-                                : 'bg-red-500 hover:bg-red-600'
-                            }`}
-                            title={task.evaso ? 'Evasa - Click per ripristinare' : 'Non evasa - Click per marcare come evasa'}
-                          >
-                            {task.evaso ? (
-                              <CheckCircle2 className="h-4 w-4 text-white" />
-                            ) : (
-                              <XCircle className="h-4 w-4 text-white" />
-                            )}
-                          </button>
+                        {/* Semaphore - Solo indicatore visivo */}
+                        <div className={`w-3 h-3 rounded-full ml-auto ${
+                          task.evaso ? 'bg-green-500' : 'bg-red-500'
+                        }`}></div>
             </div>
-              </div>
                       <h4 className="font-medium text-gray-900 mb-1">{task.pratica}</h4>
                       <p className="text-sm text-gray-600 mb-2">
                         <strong>Cliente:</strong> {task.cliente}
@@ -742,11 +673,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-            </div>
               </div>
+            </div>
               ))
             )}
-          </div>
+              </div>
         </DialogContent>
       </Dialog>
 
