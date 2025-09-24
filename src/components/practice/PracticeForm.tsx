@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
-import { Plus, Minus, ArrowLeft } from 'lucide-react'
+import { Plus, Minus } from 'lucide-react'
 import { Practice, PracticeFormData, ProcedureType } from '../../types/practice'
 import { Client } from '../../types/client'
-import { useMobile } from '../../hooks/useMobile'
 import { supabase } from '../../lib/supabase'
 
 interface PracticeFormProps {
@@ -21,8 +19,6 @@ interface PracticeFormProps {
 }
 
 export function PracticeForm({ open, onOpenChange, practice, onSave, clients, isLoading = false }: PracticeFormProps) {
-  const isMobile = useMobile()
-  const [step, setStep] = useState<'form' | 'activity'>('form')
   const [loadingNumber, setLoadingNumber] = useState(false)
 
   // Debug: log clients when they change
@@ -88,21 +84,14 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
       })
       setStep('form')
     } else {
-      // Reset form for new practice and generate number
-      const initializeNewPractice = async () => {
-        const newNumber = await generatePracticeNumber()
-        setFormData({
-          numero: newNumber,
-          cliente_id: '',
-          controparti_ids: [],
-          tipo_procedura: 'STRAGIUDIZIALE'
-        })
-        setStep('form')
-      }
-      
-      if (open) {
-        initializeNewPractice()
-      }
+      // Reset form for new practice
+      setFormData({
+        numero: '',
+        cliente_id: '',
+        controparti_ids: [],
+        tipo_procedura: 'STRAGIUDIZIALE'
+      })
+      setStep('form')
     }
   }, [practice, open])
 
@@ -148,9 +137,6 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
     onSave(practiceData)
   }
 
-  const goBackToForm = () => {
-    setStep('form')
-  }
 
   const renderForm = () => (
     <div className="space-y-6">
@@ -160,16 +146,29 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="numero">Numero Pratica *</Label>
-            <Input
-              id="numero"
-              value={formData.numero}
-              readOnly
-              placeholder={loadingNumber ? "Generazione numero..." : "es. 2024/001"}
-              className="bg-gray-50"
-              required
-            />
+            <div className="flex gap-2">
+              <Input
+                id="numero"
+                value={formData.numero}
+                onChange={(e) => handleInputChange('numero', e.target.value)}
+                placeholder="es. 2024/001"
+                required
+              />
+              <Button
+                type="button"
+                onClick={async () => {
+                  const newNumber = await generatePracticeNumber()
+                  handleInputChange('numero', newNumber)
+                }}
+                disabled={loadingNumber}
+                size="sm"
+                variant="outline"
+              >
+                {loadingNumber ? '...' : 'Auto'}
+              </Button>
+            </div>
             {loadingNumber && (
-              <p className="text-sm text-gray-500 mt-1">Generazione automatica in corso...</p>
+              <p className="text-sm text-gray-500 mt-1">Generazione numero in corso...</p>
             )}
           </div>
           
@@ -283,31 +282,8 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
   )
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`max-w-4xl max-h-[90vh] overflow-y-auto ${isMobile ? 'mx-2' : ''}`}>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {step === 'activity' && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={goBackToForm}
-                className="p-1"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </Button>
-            )}
-            {step === 'form' ? 
-             (practice ? 'Modifica Pratica' : 'Nuova Pratica') : 
-             'Aggiungi Attività'}
-          </DialogTitle>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {renderForm()}
-        </form>
-      </DialogContent>
-    </Dialog>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {renderForm()}
+    </form>
   )
 }
