@@ -75,6 +75,23 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
     return tasks.filter(task => task.scadenza === dateStr)
   }
 
+  // Calculate dynamic height based on number of tasks
+  const getDynamicHeight = (taskCount: number, isMobile: boolean) => {
+    if (isMobile) {
+      // Mobile: base height + additional height for each task
+      const baseHeight = 120
+      const taskHeight = 60
+      const maxHeight = 400
+      return Math.min(baseHeight + (taskCount * taskHeight), maxHeight)
+    } else {
+      // Desktop: base height + additional height for each task
+      const baseHeight = 200
+      const taskHeight = 80
+      const maxHeight = 600
+      return Math.min(baseHeight + (taskCount * taskHeight), maxHeight)
+    }
+  }
+
   // Navigate to previous month
   const goToPreviousMonth = () => {
     const newMonth = new Date(currentMonth)
@@ -196,9 +213,10 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                         <div 
                           ref={provided.innerRef}
                           {...provided.droppableProps}
-                          className={`border border-gray-200 rounded-lg p-2 min-h-[120px] ${
+                          className={`border border-gray-200 rounded-lg p-2 ${
                             !isCurrentMonthDay ? 'bg-gray-50 text-gray-400' : 'bg-white'
                           } ${snapshot.isDraggingOver ? 'bg-blue-50 border-blue-300' : ''}`}
+                          style={{ minHeight: `${getDynamicHeight(dayTasks.length, true)}px` }}
                         >
                           <div className="text-center mb-2">
                             <div className={`text-sm font-medium ${
@@ -211,7 +229,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                           </div>
                           
                           <div className="space-y-1">
-                            {dayTasks.slice(0, 2).map((task, taskIndex) => (
+                            {dayTasks.map((task, taskIndex) => (
                               <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
                                 {(provided, snapshot) => (
                                   <div
@@ -247,11 +265,6 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                               </Draggable>
                             ))}
                             {provided.placeholder}
-                            {dayTasks.length > 2 && (
-                              <div className="text-xs text-gray-500 text-center">
-                                +{dayTasks.length - 2}
-                              </div>
-                            )}
                           </div>
                         </div>
                       )}
@@ -287,9 +300,10 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                         <div 
                           ref={provided.innerRef}
                           {...provided.droppableProps}
-                          className={`border border-gray-200 rounded-lg p-4 min-h-[200px] ${
+                          className={`border border-gray-200 rounded-lg p-4 ${
                             !isCurrentMonthDay ? 'bg-gray-50 text-gray-400' : 'bg-white'
                           } ${snapshot.isDraggingOver ? 'bg-blue-50 border-blue-300' : ''}`}
+                          style={{ minHeight: `${getDynamicHeight(dayTasks.length, false)}px` }}
                         >
                           <div className="text-center mb-4">
                             <div className={`text-xl font-bold ${
@@ -302,7 +316,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                           </div>
                           
                           <div className="space-y-3">
-                            {dayTasks.slice(0, 4).map((task, taskIndex) => (
+                            {dayTasks.map((task, taskIndex) => (
                               <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
                                 {(provided, snapshot) => (
                                   <div
@@ -338,11 +352,6 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                               </Draggable>
                             ))}
                             {provided.placeholder}
-                            {dayTasks.length > 4 && (
-                              <div className="text-xs text-gray-500 text-center">
-                                +{dayTasks.length - 4}
-                              </div>
-                            )}
                           </div>
                         </div>
                       )}
