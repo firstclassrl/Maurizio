@@ -2,15 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Button } from '../ui/button'
 import { Switch } from '../ui/switch'
-import { Textarea } from '../ui/textarea'
 import { Card } from '../ui/card'
 import { Plus, Minus, ArrowLeft } from 'lucide-react'
-import { DateInput } from '../ui/DateInput'
 import { Client, Address, Contact, ClientFormData } from '../../types/client'
-import { CLIENT_TYPES, TITLES, GENDER_OPTIONS, CONTACT_TYPES } from '../../data/clientTypes'
+import { CLIENT_TYPES } from '../../data/clientTypes'
 import { useMobile } from '../../hooks/useMobile'
 
 interface ClientFormProps {
@@ -185,12 +182,6 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
     }))
   }
 
-  const removeContact = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      contatti: prev.contatti.filter((_, i) => i !== index)
-    }))
-  }
 
   const updateContact = (index: number, field: keyof Contact, value: string) => {
     setFormData(prev => ({
