@@ -164,7 +164,8 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
   )
 
   const handleClose = () => {
-    console.log('handleClose called')
+    console.log('handleClose called at:', new Date().toISOString())
+    alert('Modal closing!') // Debug alert
     setStep('practice')
     setCurrentPractice(null)
     onOpenChange(false)
@@ -172,7 +173,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
 
 
   const handleCancelClick = () => {
-    console.log('Cancel button clicked')
+    console.log('Cancel button clicked at:', new Date().toISOString())
     handleClose()
   }
 
