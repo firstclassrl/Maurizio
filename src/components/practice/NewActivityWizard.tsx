@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { Plus, ArrowRight, FileText, Calendar, ArrowLeft } from 'lucide-react'
-import { Practice, Activity, STRAGIUDIZIALE_CATEGORIES, GIUDIZIALE_CATEGORIES } from '../../types/practice'
+import { Practice, Activity } from '../../types/practice'
 import { Client } from '../../types/client'
 import { useMobile } from '../../hooks/useMobile'
 import { supabase } from '../../lib/supabase'
@@ -261,12 +261,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     return practiceData.tipo_procedura === 'STRAGIUDIZIALE' 
       ? ['Appuntamento', 'Scadenza', 'Attività da Svolgere']
       : ['Udienza', 'Scadenza Processuale', 'Attività Processuale', 'Appuntamento', 'Scadenza', 'Attività da Svolgere']
-  }
-
-  const getCategoryColor = (categoria: string) => {
-    const allCategories = [...STRAGIUDIZIALE_CATEGORIES, ...GIUDIZIALE_CATEGORIES]
-    const category = allCategories.find(cat => cat.value === categoria)
-    return category?.color || 'bg-gray-100 text-gray-800 border-gray-200'
   }
 
   const getCategoryDotColor = (categoria: string) => {
