@@ -12,10 +12,7 @@ export const STRAGIUDIZIALE_CATEGORIES = [
 export const GIUDIZIALE_CATEGORIES = [
   { value: 'Udienza', label: 'Udienza', color: 'bg-green-100 text-green-800 border-green-200' },
   { value: 'Scadenza Processuale', label: 'Scadenza Processuale', color: 'bg-red-100 text-red-800 border-red-200' },
-  { value: 'Attività Processuale', label: 'Attività Processuale', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  { value: 'Appuntamento', label: 'Appuntamento', color: 'bg-gray-100 text-gray-800 border-gray-200' },
-  { value: 'Scadenza', label: 'Scadenza', color: 'bg-orange-100 text-orange-800 border-orange-200' },
-  { value: 'Attività da Svolgere', label: 'Attività da Svolgere', color: 'bg-blue-100 text-blue-800 border-blue-200' }
+  { value: 'Attività Processuale', label: 'Attività Processuale', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' }
 ] as const
 
 export type StragiudizialeCategory = typeof STRAGIUDIZIALE_CATEGORIES[number]['value']

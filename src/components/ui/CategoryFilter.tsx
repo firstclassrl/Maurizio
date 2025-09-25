@@ -1,5 +1,6 @@
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
+import { STRAGIUDIZIALE_CATEGORIES, GIUDIZIALE_CATEGORIES } from '../../types/practice';
 
 interface CategoryFilterProps {
   selectedCategory: string;
@@ -7,12 +8,11 @@ interface CategoryFilterProps {
   className?: string;
 }
 
-const CATEGORIES = [
+// Combina tutte le categorie disponibili
+const ALL_CATEGORIES = [
   { value: 'all', label: 'Tutte le categorie' },
-  { value: 'UDIENZA', label: 'Udienza' },
-  { value: 'ATTIVITA\' PROCESSUALE', label: 'Attività Processuale' },
-  { value: 'SCADENZA ATTO PROCESSUALE', label: 'Scadenza Atto Processuale' },
-  { value: 'APPUNTAMENTO IN STUDIO', label: 'Appuntamento in Studio' }
+  ...STRAGIUDIZIALE_CATEGORIES,
+  ...GIUDIZIALE_CATEGORIES
 ];
 
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({
@@ -30,7 +30,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
           <SelectValue placeholder="Seleziona categoria" />
         </SelectTrigger>
         <SelectContent>
-          {CATEGORIES.map((category) => (
+          {ALL_CATEGORIES.map((category) => (
             <SelectItem key={category.value} value={category.value}>
               {category.label}
             </SelectItem>
