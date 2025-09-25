@@ -21,7 +21,6 @@ import { PartyFilter } from '../components/ui/PartyFilter'
 import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
-import { PracticeArchive } from '../components/practice/PracticeArchive'
 import { OptionsModal } from '../components/ui/OptionsModal'
 import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
@@ -33,9 +32,10 @@ interface DashboardPageProps {
   onNavigateToCalcolatore: () => void
   onNavigateToClients: () => void
   onNavigateToStorage: () => void
+  onNavigateToPracticeArchive: () => void
 }
 
-export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage }: DashboardPageProps) {
+export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage, onNavigateToPracticeArchive }: DashboardPageProps) {
   const { toasts, removeToast, showSuccess: showToastSuccess } = useToast()
   const isMobile = useMobile()
 
@@ -58,7 +58,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [clients, setClients] = useState<Client[]>([])
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isAddActivityModalOpen, setIsAddActivityModalOpen] = useState(false)
-  const [isPracticeArchiveOpen, setIsPracticeArchiveOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
@@ -453,7 +452,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             </Button>
 
             <Button
-              onClick={() => setIsPracticeArchiveOpen(true)}
+              onClick={onNavigateToPracticeArchive}
               className="bg-white hover:bg-gray-50 text-blue-600 border border-blue-600"
               size="sm"
             >
@@ -467,7 +466,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         {/* All Tasks Section */}
         <Card className="bg-purple-50 border-2 border-purple-500">
           <CardContent className={isMobile ? "p-4" : "p-6"}>
-            <h3 className="text-lg font-semibold text-purple-900 text-center mb-4">Tutte le Attività</h3>
+            <h3 className="text-lg font-semibold text-purple-900 text-center mb-2">Tutte le Attività</h3>
             <div className="bg-purple-800 h-1 w-full mb-4 rounded"></div>
             <div className={`flex items-center gap-4 mb-4 ${isMobile ? 'flex-col' : 'flex-row'}`}>
               <PracticeFilter 
@@ -709,10 +708,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onNavigateToStorage={onNavigateToStorage}
       />
 
-      <PracticeArchive
-        open={isPracticeArchiveOpen}
-        onOpenChange={setIsPracticeArchiveOpen}
-      />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
       

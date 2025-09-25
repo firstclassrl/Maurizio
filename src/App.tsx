@@ -9,9 +9,10 @@ import { OverduePage } from './pages/OverduePage'
 import { CalcolatoreTerminiPage } from './pages/CalcolatoreTerminiPage'
 import { ClientsPage } from './pages/ClientsPage'
 import { StoragePage } from './pages/StoragePage'
+import { PracticeArchivePage } from './pages/PracticeArchivePage'
 import { Loader2 } from 'lucide-react'
 
-type AppView = 'dashboard' | 'month' | 'week' | 'overdue' | 'calcolatore-termini' | 'clients' | 'storage'
+type AppView = 'dashboard' | 'month' | 'week' | 'overdue' | 'calcolatore-termini' | 'clients' | 'storage' | 'practice-archive'
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
@@ -63,6 +64,7 @@ function App() {
             onNavigateToCalcolatore={() => setCurrentView('calcolatore-termini')}
             onNavigateToClients={() => setCurrentView('clients')}
             onNavigateToStorage={() => setCurrentView('storage')}
+            onNavigateToPracticeArchive={() => setCurrentView('practice-archive')}
           />
         )
         case 'month':
@@ -109,6 +111,13 @@ function App() {
             onNavigateBack={() => setCurrentView('dashboard')}
           />
         )
+      case 'practice-archive':
+        return (
+          <PracticeArchivePage 
+            onNavigateBack={() => setCurrentView('dashboard')}
+            onNavigateToNewPractice={() => setCurrentView('dashboard')}
+          />
+        )
       default:
         return (
           <DashboardPage 
@@ -118,6 +127,7 @@ function App() {
             onNavigateToCalcolatore={() => setCurrentView('calcolatore-termini')}
             onNavigateToClients={() => setCurrentView('clients')}
             onNavigateToStorage={() => setCurrentView('storage')}
+            onNavigateToPracticeArchive={() => setCurrentView('practice-archive')}
           />
         )
     }
