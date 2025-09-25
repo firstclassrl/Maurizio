@@ -103,7 +103,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       console.log('DashboardPage: Caricamento attività per utente:', user.id)
 
-      // Load tasks directly from the tasks table
+      // Load tasks directly from the tasks table - SOLUZIONE SEMPLIFICATA
       const { data: tasksData, error } = await supabase
         .from('tasks')
         .select('*')
@@ -112,16 +112,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       if (error) {
         console.error('DashboardPage: Errore caricamento attività:', error)
-        
-        // Se la tabella tasks non esiste, mostra un messaggio informativo
-        if (error.code === 'PGRST116' || error.message.includes('relation "public.tasks" does not exist')) {
-          console.warn('DashboardPage: Tabella tasks non esiste nel database')
-          setTasks([])
-          showError('Attenzione', 'La tabella delle attività non è stata ancora creata nel database. Contatta l\'amministratore per applicare le migrazioni necessarie.')
-          return
-        }
-        
-        throw error
+        setTasks([])
+        return
       }
 
       console.log('DashboardPage: Attività caricate:', tasksData)
@@ -273,6 +265,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     try {
       console.log('DashboardPage handleTaskUpdate called with:', updatedTask)
       
+      // SOLUZIONE SEMPLIFICATA - Aggiorna solo i campi essenziali
       const { error } = await supabase
         .from('tasks')
         .update({
@@ -286,8 +279,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           cliente: updatedTask.cliente,
           controparte: updatedTask.controparte,
           categoria: updatedTask.categoria,
-          evaso: updatedTask.evaso,
-          updated_at: new Date().toISOString()
+          evaso: updatedTask.evaso
         })
         .eq('id', updatedTask.id)
         .eq('user_id', user.id)

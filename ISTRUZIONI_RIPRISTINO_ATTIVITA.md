@@ -25,12 +25,18 @@ Eseguire lo script SQL per creare la tabella `tasks` nel database Supabase.
 - Dovresti vedere il messaggio "Tabella tasks creata con successo"
 - Se ci sono errori, controlla i log
 
-### 5. Testa l'applicazione
+### 5. Popola la tabella con dati di esempio (OPZIONALE)
+- Se vuoi testare l'applicazione con dati di esempio
+- Copia tutto il contenuto del file `POPOLATE_TASKS_TABLE.sql`
+- Incollalo nell'editor SQL e clicca "Run"
+
+### 6. Testa l'applicazione
 - Ricarica la pagina dell'applicazione
 - Le attività dovrebbero ora essere visibili nella Dashboard
 
 ## File da utilizzare:
 - `CREATE_TASKS_TABLE.sql` - Script SQL per creare la tabella
+- `POPOLATE_TASKS_TABLE.sql` - Script SQL per inserire dati di esempio (opzionale)
 
 ## Note:
 - Questo script crea la tabella `tasks` con tutti i campi necessari
