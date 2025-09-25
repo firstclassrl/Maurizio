@@ -48,10 +48,23 @@ export function DateInput({
       const parts = cleanDate.split('/');
       if (parts.length === 3) {
         const [day, month, year] = parts;
-        // Valida che siano numeri
+        // Valida che siano numeri e abbiano lunghezze corrette
         if (day && month && year && 
-            day.length <= 2 && month.length <= 2 && year.length === 4) {
-          return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            day.length >= 1 && day.length <= 2 && 
+            month.length >= 1 && month.length <= 2 && 
+            year.length === 4) {
+          
+          // Converte in numeri per validazione
+          const dayNum = parseInt(day, 10);
+          const monthNum = parseInt(month, 10);
+          const yearNum = parseInt(year, 10);
+          
+          // Valida range
+          if (dayNum >= 1 && dayNum <= 31 && 
+              monthNum >= 1 && monthNum <= 12 && 
+              yearNum >= 1900 && yearNum <= 2100) {
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+          }
         }
       }
     }
@@ -83,7 +96,7 @@ export function DateInput({
     if (isoValue) {
       // Valida che la data sia effettivamente valida
       const testDate = new Date(isoValue);
-      const isValidDate = testDate.toISOString().startsWith(isoValue);
+      const isValidDate = !isNaN(testDate.getTime()) && testDate.toISOString().startsWith(isoValue);
       setIsValid(isValidDate);
       
       if (isValidDate) {
@@ -92,6 +105,9 @@ export function DateInput({
     } else if (formattedValue.length === 0) {
       // Permette di cancellare tutto
       onChange('');
+      setIsValid(true);
+    } else if (formattedValue.length < 10) {
+      // Data incompleta ma non ancora invalida
       setIsValid(true);
     } else {
       // Data non valida
@@ -145,7 +161,14 @@ export function DateInput({
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const isoDate = `${year}-${month}-${day}`;
+    
+    // Aggiorna anche il valore dell'input
+    if (inputRef.current) {
+      inputRef.current.value = formatToItalian(isoDate);
+    }
+    
     onChange(isoDate);
+    setIsValid(true);
     setShowCalendar(false);
   };
 
