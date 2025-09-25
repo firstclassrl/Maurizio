@@ -434,6 +434,24 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       console.log('  - controparte presente:', cleanData.controparte !== undefined)
       console.log('  - altri presente:', cleanData.altri !== undefined)
       console.log('  - ragione non vuota:', !!cleanData.ragione)
+      
+      // FORZA l'aggiunta dei campi mancanti se non sono presenti
+      if (!cleanData.codice_fiscale && clientData.codiceFiscale) {
+        cleanData.codice_fiscale = clientData.codiceFiscale
+        console.log('🔍 DEBUG: FORZATO aggiunta codice_fiscale:', cleanData.codice_fiscale)
+      }
+      if (cleanData.cliente === undefined && clientData.cliente !== undefined) {
+        cleanData.cliente = clientData.cliente
+        console.log('🔍 DEBUG: FORZATO aggiunta cliente:', cleanData.cliente)
+      }
+      if (cleanData.controparte === undefined && clientData.controparte !== undefined) {
+        cleanData.controparte = clientData.controparte
+        console.log('🔍 DEBUG: FORZATO aggiunta controparte:', cleanData.controparte)
+      }
+      if (cleanData.altri === undefined && clientData.altri !== undefined) {
+        cleanData.altri = clientData.altri
+        console.log('🔍 DEBUG: FORZATO aggiunta altri:', cleanData.altri)
+      }
 
       if (clientData.id) {
         // Update existing client
