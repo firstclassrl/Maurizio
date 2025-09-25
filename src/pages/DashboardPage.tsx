@@ -59,7 +59,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [clients, setClients] = useState<Client[]>([])
   const [isClientFormOpen, setIsClientFormOpen] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
-  const [isClientLoading, setIsClientLoading] = useState(false)
+  // const [isClientLoading, setIsClientLoading] = useState(false) // Rimosso - non più necessario
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isAddActivityModalOpen, setIsAddActivityModalOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
@@ -374,137 +374,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     }
   }
 
-  const handleSaveClient = async (clientData: Client) => {
-    console.log('🔍 DEBUG: handleSaveClient called!')
-    try {
-      setIsClientLoading(true)
-      
-      console.log('🔍 DEBUG: Saving client data:', clientData)
-      console.log('🔍 DEBUG: Codice Fiscale:', clientData.codiceFiscale)
-      console.log('🔍 DEBUG: Partita IVA:', clientData.partitaIva)
-      console.log('🔍 DEBUG: Cliente:', clientData.cliente)
-      console.log('🔍 DEBUG: Controparte:', clientData.controparte)
-      console.log('🔍 DEBUG: Altri:', clientData.altri)
-      
-      // Pulisce i dati prima di inviarli al database
-      // Gestisce le 4 tipologie di parti con campi specifici
-      console.log('🔍 DEBUG: Creando cleanData con tutti i campi...')
-      
-      const cleanData = {
-        tipologia: clientData.tipologia || 'Persona fisica',
-        alternativa: clientData.alternativa || false,
-        ragione: clientData.ragione || (clientData.nome && clientData.cognome ? `${clientData.nome} ${clientData.cognome}` : (clientData.denominazione || 'Cliente')),
-        titolo: clientData.titolo || null,
-        cognome: clientData.cognome || null,
-        nome: clientData.nome || null,
-        sesso: clientData.sesso || null,
-        data_nascita: clientData.dataNascita || null,
-        luogo_nascita: clientData.luogoNascita || null,
-        partita_iva: clientData.partitaIva || null,
-        codice_fiscale: clientData.codiceFiscale || null,
-        denominazione: clientData.denominazione || null,
-        indirizzi: JSON.stringify(clientData.indirizzi || []),
-        contatti: JSON.stringify(clientData.contatti || []),
-        cliente: clientData.cliente || false,
-        controparte: clientData.controparte || false,
-        altri: clientData.altri || false,
-        codice_destinatario: clientData.codiceDestinatario || null,
-        codice_destinatario_pa: clientData.codiceDestinatarioPA || null,
-        note: clientData.note || null,
-        sigla: clientData.sigla || null
-      }
-      
-      console.log('🔍 DEBUG: cleanData creato con successo!')
-      
-      console.log('🔍 DEBUG: Clean data to save:', cleanData)
-      console.log('🚨 CACHE BUSTER v3.0.2 - Se vedi questo, il nuovo codice è attivo!')
-      console.log('🔍 DEBUG: Clean data - codice_fiscale:', cleanData.codice_fiscale)
-      console.log('🔍 DEBUG: Clean data - partita_iva:', cleanData.partita_iva)
-      console.log('🔍 DEBUG: Clean data - cliente:', cleanData.cliente)
-      console.log('🔍 DEBUG: Clean data - controparte:', cleanData.controparte)
-      console.log('🔍 DEBUG: Clean data - altri:', cleanData.altri)
-      console.log('🔍 DEBUG: Clean data - denominazione:', cleanData.denominazione)
-      console.log('🔍 DEBUG: Clean data - ragione:', cleanData.ragione)
-      console.log('🔍 DEBUG: Clean data - id:', clientData.id)
-      console.log('🔍 DEBUG: Clean data - user_id:', user.id)
-      
-      // Verifica che tutti i campi siano presenti
-      console.log('🔍 DEBUG: Verifica campi obbligatori:')
-      console.log('  - codice_fiscale presente:', !!cleanData.codice_fiscale)
-      console.log('  - cliente presente:', cleanData.cliente !== undefined)
-      console.log('  - controparte presente:', cleanData.controparte !== undefined)
-      console.log('  - altri presente:', cleanData.altri !== undefined)
-      console.log('  - ragione non vuota:', !!cleanData.ragione)
-      
-      // FORZA l'aggiunta dei campi mancanti se non sono presenti
-      if (!cleanData.codice_fiscale && clientData.codiceFiscale) {
-        cleanData.codice_fiscale = clientData.codiceFiscale
-        console.log('🔍 DEBUG: FORZATO aggiunta codice_fiscale:', cleanData.codice_fiscale)
-      }
-      if (cleanData.cliente === undefined && clientData.cliente !== undefined) {
-        cleanData.cliente = clientData.cliente
-        console.log('🔍 DEBUG: FORZATO aggiunta cliente:', cleanData.cliente)
-      }
-      if (cleanData.controparte === undefined && clientData.controparte !== undefined) {
-        cleanData.controparte = clientData.controparte
-        console.log('🔍 DEBUG: FORZATO aggiunta controparte:', cleanData.controparte)
-      }
-      if (cleanData.altri === undefined && clientData.altri !== undefined) {
-        cleanData.altri = clientData.altri
-        console.log('🔍 DEBUG: FORZATO aggiunta altri:', cleanData.altri)
-      }
-
-      if (clientData.id) {
-        // Update existing client
-        console.log('🔍 DEBUG: Updating existing client with ID:', clientData.id)
-        // FORZA l'aggiunta dei campi mancanti direttamente nella query
-        const updateData = {
-          ...cleanData,
-          codice_fiscale: clientData.codiceFiscale || cleanData.codice_fiscale,
-          cliente: clientData.cliente !== undefined ? clientData.cliente : cleanData.cliente,
-          controparte: clientData.controparte !== undefined ? clientData.controparte : cleanData.controparte,
-          altri: clientData.altri !== undefined ? clientData.altri : cleanData.altri,
-          updated_at: new Date().toISOString()
-        }
-        
-        console.log('🔍 DEBUG: Update data finale:', updateData)
-        
-        const { error } = await supabase
-          .from('clients')
-          .update(updateData)
-          .eq('id', clientData.id)
-          .eq('user_id', user.id)
-
-        if (error) {
-          console.error('🔍 DEBUG: Errore nell\'aggiornamento:', error)
-          throw error
-        }
-        console.log('🔍 DEBUG: Cliente aggiornato con successo!')
-        showSuccess('Successo', 'Cliente aggiornato con successo')
-      } else {
-        // Create new client
-        const { error } = await supabase
-          .from('clients')
-          .insert({
-            ...cleanData,
-            user_id: user.id
-          })
-
-        if (error) throw error
-        console.log('🔍 DEBUG: Cliente creato, mostrando notifica...')
-        showSuccess('Successo', 'Cliente creato con successo')
-      }
-
-      setIsClientFormOpen(false)
-      setSelectedClient(null)
-      await loadClients()
-      await loadTasks()
-    } catch (error) {
-      console.error('Error saving client:', error)
-      showError('Errore', 'Errore nel salvataggio del cliente')
-    } finally {
-      setIsClientLoading(false)
-    }
+  const handleClientFormSuccess = async () => {
+    console.log('🆕 NEW FORM: handleClientFormSuccess called')
+    setIsClientFormOpen(false)
+    setSelectedClient(null)
+    await loadClients()
+    await loadTasks()
   }
 
   const openNewClientForm = () => {

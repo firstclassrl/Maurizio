@@ -6,7 +6,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Switch } from '../ui/switch';
 import { supabase } from '../../lib/supabase';
-import { useToast } from '../../hooks/useMessage';
+import { useMessage } from '../../hooks/useMessage';
 
 interface Client {
   id?: string;
@@ -72,7 +72,7 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const { showSuccess, showError } = useToast();
+  const { showSuccess, showError } = useMessage();
 
   useEffect(() => {
     if (client) {
