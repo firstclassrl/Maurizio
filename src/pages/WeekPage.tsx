@@ -32,15 +32,7 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
       console.log('WeekPage: Loading activities for user:', user.id)
       const { data, error } = await supabase
         .from('activities')
-        .select(`
-          *,
-          practices (
-            numero,
-            cliente,
-            controparte,
-            controparti_ids
-          )
-        `)
+        .select('*')
         .eq('user_id', user.id)
         .order('data', { ascending: true })
 
@@ -56,7 +48,7 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
       const convertedTasks = (data || []).map(activity => ({
         id: activity.id,
         user_id: activity.user_id,
-        pratica: activity.practices?.numero || 'N/A', // Use practice number instead of ID
+        pratica: activity.pratica_id || 'N/A', // Use pratica_id for now
         attivita: activity.attivita,
         scadenza: activity.data,
         ora: activity.ora,
