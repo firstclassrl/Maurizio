@@ -418,8 +418,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       console.log('🔍 DEBUG: Clean data - cliente:', cleanData.cliente)
       console.log('🔍 DEBUG: Clean data - controparte:', cleanData.controparte)
       console.log('🔍 DEBUG: Clean data - altri:', cleanData.altri)
-      console.log('🔍 DEBUG: Clean data - id:', cleanData.id)
-      console.log('🔍 DEBUG: Clean data - user_id:', cleanData.user_id)
+      console.log('🔍 DEBUG: Clean data - id:', clientData.id)
+      console.log('🔍 DEBUG: Clean data - user_id:', user.id)
 
       if (clientData.id) {
         // Update existing client
