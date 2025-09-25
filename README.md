@@ -284,4 +284,4 @@ Per problemi o domande:
 
 ---
 
-Sviluppato con ❤️ per professionisti legali
+Sviluppato con ❤️ per professionisti legali# Trigger deploy
