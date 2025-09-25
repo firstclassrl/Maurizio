@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
+import { DateInput } from '../ui/DateInput'
 import { Plus, ArrowLeft, Calendar } from 'lucide-react'
 import { Activity } from '../../types/practice'
 import { Client } from '../../types/client'
@@ -459,12 +460,12 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Data *</label>
-                    <input 
-                      type="date"
-                      value={activityData.data} 
-                      onChange={(e) => setActivityData(prev => ({ ...prev, data: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    <DateInput
+                      id="data"
+                      label="Data"
+                      value={activityData.data}
+                      onChange={(value) => setActivityData(prev => ({ ...prev, data: value }))}
+                      required
                     />
                   </div>
                   <div>

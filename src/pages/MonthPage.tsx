@@ -119,9 +119,9 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-blue-50 shadow-sm border-b border-blue-200">
         <div className="px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 mr-8">
             <Button onClick={onBackToDashboard} variant="outline" size="sm">
@@ -152,13 +152,15 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         </div>
       </div>
 
-      
-      <MonthlyCalendar 
-        tasks={getFilteredTasks()} 
-        onTaskClick={handleTaskClick}
-        userId={user.id}
-        onTaskUpdate={loadTasks}
-      />
+      {/* Main Content */}
+      <div className="flex-1">
+        <MonthlyCalendar 
+          tasks={getFilteredTasks()} 
+          onTaskClick={handleTaskClick}
+          userId={user.id}
+          onTaskUpdate={loadTasks}
+        />
+      </div>
 
       <TaskDialog
         open={isTaskDialogOpen}

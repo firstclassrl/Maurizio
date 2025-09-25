@@ -137,9 +137,9 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-green-50 shadow-sm border-b border-green-200">
         <div className="px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 mr-8">
             <Button onClick={onBackToDashboard} variant="outline" size="sm">
@@ -170,12 +170,14 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
         </div>
       </div>
 
-      
-      <WeeklyCalendar 
-        tasks={getFilteredTasks()} 
-        onTaskClick={handleTaskClick}
-        onTaskMove={handleTaskMove}
-      />
+      {/* Main Content */}
+      <div className="flex-1">
+        <WeeklyCalendar 
+          tasks={getFilteredTasks()} 
+          onTaskClick={handleTaskClick}
+          onTaskMove={handleTaskMove}
+        />
+      </div>
 
       <TaskDialog
         open={isTaskDialogOpen}

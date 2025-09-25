@@ -163,10 +163,10 @@ export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
   // const availableCategories = Array.from(new Set(tasks.map(task => task.categoria).filter(Boolean)))
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-orange-50 shadow-sm border-b border-orange-200">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
               <Button
@@ -188,7 +188,7 @@ export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
         {/* Filters and Search */}
         <div className="mb-6 space-y-4">
           <Card className="p-4">
