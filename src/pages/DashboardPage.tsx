@@ -101,91 +101,26 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         throw new Error('User not authenticated')
       }
 
-      // Load activities from the new activities table
-      const { data: activities, error } = await supabase
-        .from('activities')
-        .select(`
-          *,
-          practices!inner(
-            numero,
-            cliente_id,
-            controparti_ids,
-            tipo_procedura
-          )
-        `)
+      // Load tasks directly from the tasks table
+      const { data: tasksData, error } = await supabase
+        .from('tasks')
+        .select('*')
         .eq('user_id', user.id)
-        .eq('stato', 'todo')
-        .order('data', { ascending: true })
+        .order('scadenza', { ascending: true })
 
       if (error) {
-        console.error('Error loading activities:', error)
-        
-        // Fallback: try to load from tasks table if activities table doesn't exist
-        const { data: tasksData, error: tasksError } = await supabase
-          .from('tasks')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('scadenza', { ascending: true })
-
-        if (tasksError) {
-          console.error('Error loading tasks:', tasksError)
-          throw tasksError
-        }
-
-        console.log('Loaded tasks from tasks table:', tasksData)
-        setTasks(tasksData || [])
-        return
+        console.error('Error loading tasks:', error)
+        throw error
       }
 
-      // Get client names for each practice
-      const convertedTasks: Task[] = (activities || []).map(activity => {
-        // Find the client for this practice
-        const cliente = clients.find(c => c.id === activity.practices.cliente_id)
-        const clienteName = cliente ? (cliente.ragione || `${cliente.nome} ${cliente.cognome}`) : null
-        
-        // Find counterparties for this practice
-        let controparti = null
-        if (activity.practices.controparti_ids && activity.practices.controparti_ids.length > 0) {
-          controparti = activity.practices.controparti_ids
-            .map((id: string) => clients.find((c: Client) => c.id === id))
-            .filter(Boolean)
-            .map((c: Client) => c!.ragione || `${c!.nome} ${c!.cognome}`)
-            .join(', ')
-        }
-        
-        return {
-          id: activity.id,
-          user_id: activity.user_id,
-          pratica: activity.practices.numero,
-          attivita: activity.attivita,
-          scadenza: activity.data,
-          ora: activity.ora,
-          categoria: activity.categoria,
-          autorita_giudiziaria: activity.autorita_giudiziaria,
-          rg: activity.rg,
-          giudice: activity.giudice,
-          note: activity.note,
-          stato: activity.stato,
-          urgent: activity.urgent,
-          cliente: clienteName,
-          controparte: controparti,
-          created_at: activity.created_at,
-          updated_at: activity.updated_at
-        }
-      })
-
-      console.log('Tasks loaded with client data:', convertedTasks.map(t => ({
-        pratica: t.pratica,
-        attivita: t.attivita,
-        cliente: t.cliente,
-        controparte: t.controparte
-      })))
-      setTasks(convertedTasks)
+      console.log('Loaded tasks from tasks table:', tasksData)
+      setTasks(tasksData || [])
     } catch (error) {
       console.error('Errore nel caricamento delle attività:', error)
       setTasks([])
     }
   }
+
 
 
   const loadClients = async () => {
@@ -325,30 +260,36 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   const handleTaskUpdate = async (updatedTask: Task) => {
     try {
-        const { error } = await supabase
-          .from('activities')
-          .update({
-            attivita: updatedTask.attivita,
-            data: updatedTask.scadenza,
-            ora: updatedTask.ora,
-            categoria: updatedTask.categoria,
-            note: updatedTask.note,
-            stato: updatedTask.stato,
-            urgent: updatedTask.urgent
-          })
-          .eq('id', updatedTask.id)
+      console.log('DashboardPage handleTaskUpdate called with:', updatedTask)
+      
+      const { error } = await supabase
+        .from('tasks')
+        .update({
+          pratica: updatedTask.pratica,
+          attivita: updatedTask.attivita,
+          scadenza: updatedTask.scadenza,
+          ora: updatedTask.ora,
+          stato: updatedTask.stato,
+          urgent: updatedTask.urgent,
+          note: updatedTask.note,
+          cliente: updatedTask.cliente,
+          controparte: updatedTask.controparte,
+          categoria: updatedTask.categoria,
+          evaso: updatedTask.evaso,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', updatedTask.id)
+        .eq('user_id', user.id)
 
-        if (error) throw error
+      if (error) throw error
 
-      setTasks(prev => prev.map(task => 
-        task.id === updatedTask.id ? updatedTask : task
-      ))
+      await loadTasks() // Reload tasks from database
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
       showSuccess('Successo', 'Attività aggiornata con successo')
     } catch (error) {
       console.error('Errore nell\'aggiornamento dell\'attività:', error)
-      setTasks([])
+      showError('Errore', 'Errore nell\'aggiornamento dell\'attività')
     }
   }
 
