@@ -58,6 +58,8 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         return
       }
 
+      console.log('Loading practices for user:', user.id)
+
       // Prima carica le pratiche con il cliente
       const { data: practicesData, error: practicesError } = await supabase
         .from('practices')
@@ -67,6 +69,8 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         `)
         .eq('user_id', user.id)
         .order('numero', { ascending: false })
+
+      console.log('Practices query result:', { practicesData, practicesError })
 
       if (practicesError) throw practicesError
 
@@ -91,6 +95,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         })
       )
 
+      console.log('Final practices with counterparties:', practicesWithCounterparties)
       setPractices(practicesWithCounterparties)
       setFilteredPractices(practicesWithCounterparties)
     } catch (error) {
