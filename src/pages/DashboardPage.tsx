@@ -103,12 +103,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       console.log('DashboardPage: Caricamento attività per utente:', user.id)
 
-      // Load tasks directly from the tasks table - SOLUZIONE SEMPLIFICATA
-      const { data: tasksData, error } = await supabase
-        .from('tasks')
-        .select('*')
+      // Load activities from the activities table with practice info
+      const { data: activitiesData, error } = await supabase
+        .from('activities')
+        .select(`
+          *,
+          practices (
+            numero,
+            cliente,
+            controparte,
+            controparti_ids
+          )
+        `)
         .eq('user_id', user.id)
-        .order('scadenza', { ascending: true })
+        .order('data', { ascending: true })
 
       if (error) {
         console.error('DashboardPage: Errore caricamento attività:', error)
@@ -116,8 +124,44 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         return
       }
 
-      console.log('DashboardPage: Attività caricate:', tasksData)
-      setTasks(tasksData || [])
+      console.log('DashboardPage: Attività caricate:', activitiesData)
+
+      // Convert activities to tasks format for compatibility
+      const convertedTasks = (activitiesData || []).map(activity => {
+        // Find client info
+        const cliente = clients.find(c => c.id === activity.practices?.cliente)
+        
+        // Handle counterparties
+        let controparti = null
+        if (activity.practices?.controparti_ids && activity.practices.controparti_ids.length > 0) {
+          controparti = activity.practices.controparti_ids
+            .map((id: string) => clients.find(c => c.id === id))
+            .filter(Boolean)
+            .map((c: any) => c?.nome && c?.cognome ? `${c.nome} ${c.cognome}` : c?.denominazione || c?.ragione || 'Cliente')
+            .join(', ')
+        }
+
+        return {
+          id: activity.id,
+          user_id: activity.user_id,
+          pratica: activity.practices?.numero || 'N/A',
+          attivita: activity.attivita,
+          scadenza: activity.data,
+          ora: activity.ora,
+          stato: activity.stato,
+          urgent: activity.priorita === 'alta',
+          note: activity.note,
+          cliente: cliente ? (cliente.nome && cliente.cognome ? `${cliente.nome} ${cliente.cognome}` : cliente.denominazione || cliente.ragione || 'Cliente') : null,
+          controparte: controparti,
+          categoria: activity.categoria,
+          evaso: activity.stato === 'done',
+          created_at: activity.created_at,
+          updated_at: activity.updated_at
+        }
+      })
+
+      console.log('DashboardPage: Attività convertite:', convertedTasks)
+      setTasks(convertedTasks)
     } catch (error) {
       console.error('DashboardPage: Errore nel caricamento delle attività:', error)
       setTasks([])
@@ -272,21 +316,17 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     try {
       console.log('DashboardPage handleTaskUpdate called with:', updatedTask)
       
-      // SOLUZIONE SEMPLIFICATA - Aggiorna solo i campi essenziali
+      // Update activities table
       const { error } = await supabase
-        .from('tasks')
+        .from('activities')
         .update({
-          pratica: updatedTask.pratica,
           attivita: updatedTask.attivita,
-          scadenza: updatedTask.scadenza,
+          data: updatedTask.scadenza,
           ora: updatedTask.ora,
           stato: updatedTask.stato,
-          urgent: updatedTask.urgent,
+          priorita: updatedTask.urgent ? 'alta' : 'normale',
           note: updatedTask.note,
-          cliente: updatedTask.cliente,
-          controparte: updatedTask.controparte,
-          categoria: updatedTask.categoria,
-          evaso: updatedTask.evaso
+          categoria: updatedTask.categoria
         })
         .eq('id', updatedTask.id)
         .eq('user_id', user.id)

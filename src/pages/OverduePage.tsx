@@ -25,18 +25,45 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
       const today = new Date().toISOString().split('T')[0]
 
       const { data, error } = await supabase
-        .from('tasks')
-        .select('*')
+        .from('activities')
+        .select(`
+          *,
+          practices (
+            numero,
+            cliente,
+            controparte,
+            controparti_ids
+          )
+        `)
         .eq('user_id', user.id)
-        .lt('scadenza', today)
+        .lt('data', today)
         .eq('stato', 'todo')
-        .order('scadenza', { ascending: true })
+        .order('data', { ascending: true })
 
       if (error) throw error
 
-      setTasks(data || [])
+      // Convert activities to tasks format for compatibility
+      const convertedTasks = (data || []).map(activity => ({
+        id: activity.id,
+        user_id: activity.user_id,
+        pratica: activity.practices?.numero || 'N/A',
+        attivita: activity.attivita,
+        scadenza: activity.data,
+        ora: activity.ora,
+        stato: activity.stato,
+        urgent: activity.priorita === 'alta',
+        note: activity.note,
+        cliente: null, // Will be populated by client lookup if needed
+        controparte: null, // Will be populated by client lookup if needed
+        categoria: activity.categoria,
+        evaso: activity.stato === 'done',
+        created_at: activity.created_at,
+        updated_at: activity.updated_at
+      }))
+
+      setTasks(convertedTasks)
     } catch (error) {
-      console.error('Error loading overdue tasks:', error)
+      console.error('Error loading overdue activities:', error)
     } finally {
       setLoading(false)
     }
@@ -57,12 +84,21 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
     if (!selectedTask) return
 
     try {
+      // Map to activities table format
+      const mappedData = {
+        attivita: taskData.attivita,
+        data: taskData.scadenza,
+        ora: taskData.ora,
+        stato: taskData.stato,
+        priorita: taskData.urgent ? 'alta' : 'normale',
+        note: taskData.note,
+        categoria: taskData.categoria,
+        updated_at: new Date().toISOString()
+      }
+
       const { error } = await supabase
-        .from('tasks')
-        .update({
-          ...taskData,
-          updated_at: new Date().toISOString()
-        })
+        .from('activities')
+        .update(mappedData)
         .eq('id', selectedTask.id)
 
       if (error) throw error
@@ -71,7 +107,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
     } catch (error) {
-      console.error('Error updating task:', error)
+      console.error('Error updating activity:', error)
     }
   }
 
@@ -82,14 +118,23 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
 
   const handleSaveNewTask = async (taskData: Partial<Task>) => {
     try {
+      // Map to activities table format
+      const mappedData = {
+        attivita: taskData.attivita,
+        data: taskData.scadenza,
+        ora: taskData.ora,
+        stato: taskData.stato,
+        priorita: taskData.urgent ? 'alta' : 'normale',
+        note: taskData.note,
+        categoria: taskData.categoria,
+        user_id: user.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+
       const { error } = await supabase
-        .from('tasks')
-        .insert({
-          ...taskData,
-          user_id: user.id,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
+        .from('activities')
+        .insert(mappedData)
 
       if (error) throw error
 
@@ -97,7 +142,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
     } catch (error) {
-      console.error('Error creating task:', error)
+      console.error('Error creating activity:', error)
     }
   }
 

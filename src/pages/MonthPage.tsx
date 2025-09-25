@@ -29,28 +29,52 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
 
   const loadTasks = async () => {
     try {
-      console.log('MonthPage: Loading tasks for user:', user.id)
+      console.log('MonthPage: Loading activities for user:', user.id)
       const { data, error } = await supabase
-        .from('tasks')
-        .select('*')
+        .from('activities')
+        .select(`
+          *,
+          practices (
+            numero,
+            cliente,
+            controparte,
+            controparti_ids
+          )
+        `)
         .eq('user_id', user.id)
-        .order('scadenza', { ascending: true })
+        .order('data', { ascending: true })
 
       if (error) {
-        console.error('MonthPage: Error loading tasks:', error)
-        // Se la tabella tasks non esiste, mostra un array vuoto
-        if (error.code === 'PGRST116' || error.message.includes('relation "public.tasks" does not exist')) {
-          console.warn('MonthPage: Tasks table does not exist, showing empty list')
-          setTasks([])
-          return
-        }
-        throw error
+        console.error('MonthPage: Error loading activities:', error)
+        setTasks([])
+        return
       }
 
-      console.log('MonthPage: Loaded tasks:', data)
-      setTasks(data || [])
+      console.log('MonthPage: Loaded activities:', data)
+
+      // Convert activities to tasks format for compatibility
+      const convertedTasks = (data || []).map(activity => ({
+        id: activity.id,
+        user_id: activity.user_id,
+        pratica: activity.practices?.numero || 'N/A',
+        attivita: activity.attivita,
+        scadenza: activity.data,
+        ora: activity.ora,
+        stato: activity.stato,
+        urgent: activity.priorita === 'alta',
+        note: activity.note,
+        cliente: null, // Will be populated by client lookup if needed
+        controparte: null, // Will be populated by client lookup if needed
+        categoria: activity.categoria,
+        evaso: activity.stato === 'done',
+        created_at: activity.created_at,
+        updated_at: activity.updated_at
+      }))
+
+      console.log('MonthPage: Converted tasks:', convertedTasks)
+      setTasks(convertedTasks)
     } catch (error) {
-      console.error('MonthPage: Error loading tasks:', error)
+      console.error('MonthPage: Error loading activities:', error)
       setTasks([])
     }
   }
@@ -59,25 +83,24 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
     try {
       console.log('MonthPage handleTaskSave called with:', taskData)
       
-      // Map categoria to attivita for database compatibility
+      // Map to activities table format
       const mappedData = {
-        pratica: taskData.pratica,
-        attivita: taskData.categoria || taskData.attivita,
-        scadenza: taskData.scadenza,
+        attivita: taskData.attivita,
+        data: taskData.scadenza,
+        ora: taskData.ora,
         stato: taskData.stato,
-        urgent: taskData.urgent,
+        priorita: taskData.urgent ? 'alta' : 'normale',
         note: taskData.note || null,
-        cliente: taskData.cliente || null,
-        controparte: taskData.controparte || null,
+        categoria: taskData.categoria,
         user_id: user.id
       }
       
       console.log('MonthPage mappedData:', mappedData)
 
       if (selectedTask) {
-        // Update existing task
+        // Update existing activity
         const { error } = await supabase
-          .from('tasks')
+          .from('activities')
           .update({
             ...mappedData,
             updated_at: new Date().toISOString()
@@ -86,9 +109,9 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
 
         if (error) throw error
       } else {
-        // Create new task
+        // Create new activity
         const { error } = await supabase
-          .from('tasks')
+          .from('activities')
           .insert(mappedData)
 
         if (error) throw error
