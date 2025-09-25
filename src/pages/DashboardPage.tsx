@@ -74,6 +74,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     loadData()
   }, [])
 
+  // Reload tasks when clients change
+  useEffect(() => {
+    if (clients.length > 0) {
+      loadTasks()
+    }
+  }, [clients])
+
   const loadTasks = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -106,11 +113,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         const clienteName = cliente ? (cliente.ragione || `${cliente.nome} ${cliente.cognome}`) : null
         
         // Find counterparties for this practice
-        const controparti = activity.practices.controparti_ids
-          .map((id: string) => clients.find((c: Client) => c.id === id))
-          .filter(Boolean)
-          .map((c: Client) => c!.ragione || `${c!.nome} ${c!.cognome}`)
-          .join(', ')
+        let controparti = null
+        if (activity.practices.controparti_ids && activity.practices.controparti_ids.length > 0) {
+          controparti = activity.practices.controparti_ids
+            .map((id: string) => clients.find((c: Client) => c.id === id))
+            .filter(Boolean)
+            .map((c: Client) => c!.ragione || `${c!.nome} ${c!.cognome}`)
+            .join(', ')
+        }
         
         return {
           id: activity.id,
@@ -127,12 +137,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           stato: activity.stato,
           urgent: activity.urgent,
           cliente: clienteName,
-          controparte: controparti || null,
+          controparte: controparti,
           created_at: activity.created_at,
           updated_at: activity.updated_at
         }
       })
 
+      console.log('Tasks loaded with client data:', convertedTasks.map(t => ({
+        pratica: t.pratica,
+        attivita: t.attivita,
+        cliente: t.cliente,
+        controparte: t.controparte
+      })))
       setTasks(convertedTasks)
     } catch (error) {
       console.error('Errore nel caricamento delle attività:', error)
@@ -191,11 +207,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         const clienteName = cliente ? (cliente.ragione || `${cliente.nome} ${cliente.cognome}`) : null
         
         // Find counterparties for this practice
-        const controparti = activity.practices.controparti_ids
-          .map((id: string) => clients.find((c: Client) => c.id === id))
-          .filter(Boolean)
-          .map((c: Client) => c!.ragione || `${c!.nome} ${c!.cognome}`)
-          .join(', ')
+        let controparti = null
+        if (activity.practices.controparti_ids && activity.practices.controparti_ids.length > 0) {
+          controparti = activity.practices.controparti_ids
+            .map((id: string) => clients.find((c: Client) => c.id === id))
+            .filter(Boolean)
+            .map((c: Client) => c!.ragione || `${c!.nome} ${c!.cognome}`)
+            .join(', ')
+        }
         
         return {
           id: activity.id,
@@ -212,7 +231,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           stato: activity.stato,
           urgent: activity.urgent,
           cliente: clienteName,
-          controparte: controparti || null,
+          controparte: controparti,
           created_at: activity.created_at,
           updated_at: activity.updated_at
         }
