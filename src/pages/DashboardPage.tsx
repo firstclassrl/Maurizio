@@ -242,7 +242,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         `)
         .eq('user_id', user.id)
         .eq('stato', 'todo')
-        .or(`urgent.eq.true,data.lt.${today}`)
+        .or(`priorita.eq.alta,data.lt.${today}`)
         .order('data', { ascending: true })
 
       if (error) throw error
@@ -294,7 +294,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   // Funzione per filtrare le attività di oggi
   const getTodayTasks = () => {
     const today = new Date().toISOString().split('T')[0]
-    return tasks.filter(task => task.scadenza === today && !task.evaso)
+    const todayTasks = tasks.filter(task => task.scadenza === today && !task.evaso)
+    console.log('DashboardPage: Attività di oggi:', todayTasks)
+    console.log('DashboardPage: Data di oggi:', today)
+    console.log('DashboardPage: Totale attività caricate:', tasks.length)
+    return todayTasks
   }
 
   const handleUrgentCounterClick = () => {
