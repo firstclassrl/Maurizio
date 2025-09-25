@@ -369,6 +369,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     try {
       setIsClientLoading(true)
       
+      console.log('Saving client data:', clientData)
+      
       // Pulisce i dati prima di inviarli al database
       const cleanData = {
         tipologia: clientData.tipologia || 'Persona fisica',
@@ -381,13 +383,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         data_nascita: clientData.dataNascita || null,
         luogo_nascita: clientData.luogoNascita || null,
         partita_iva: clientData.partitaIva || null,
+        codice_fiscale: clientData.codiceFiscale || null,
+        denominazione: clientData.denominazione || null,
         indirizzi: JSON.stringify(clientData.indirizzi || []),
         contatti: JSON.stringify(clientData.contatti || []),
+        cliente: clientData.cliente || false,
+        controparte: clientData.controparte || false,
+        altri: clientData.altri || false,
         codice_destinatario: clientData.codiceDestinatario || null,
         codice_destinatario_pa: clientData.codiceDestinatarioPA || null,
         note: clientData.note || null,
         sigla: clientData.sigla || null
       }
+      
+      console.log('Clean data to save:', cleanData)
 
       if (clientData.id) {
         // Update existing client
@@ -421,7 +430,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       await loadTasks()
     } catch (error) {
       console.error('Error saving client:', error)
-      showSuccess('Errore', 'Errore nel salvataggio del cliente')
+      showError('Errore', 'Errore nel salvataggio del cliente')
     } finally {
       setIsClientLoading(false)
     }
