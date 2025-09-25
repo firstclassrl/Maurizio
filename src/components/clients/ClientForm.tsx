@@ -1221,8 +1221,8 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
                 <ArrowLeft className="w-4 h-4" />
               </Button>
             )}
-            {step === 'type' ? 'Seleziona Tipo di Cliente' : 
-             client ? 'Modifica Cliente' : 'Nuovo Cliente'}
+            {step === 'type' ? 'Seleziona Tipo di Parte' : 
+             client ? 'Modifica Parte' : 'Nuova Parte'}
           </DialogTitle>
         </DialogHeader>
 

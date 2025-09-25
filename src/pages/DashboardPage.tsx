@@ -616,7 +616,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   size="sm"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Nuovo Cliente
+                  Nuova Parte
                 </Button>
                 
                 <Button
@@ -654,7 +654,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   size="sm"
                 >
                   <Users className="h-4 w-4 mr-2" />
-                  Clienti
+                  Parti
                 </Button>
               </div>
             </div>

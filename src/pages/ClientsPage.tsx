@@ -267,7 +267,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
                 <ArrowLeft className="w-4 h-4" />
                 Dashboard
               </Button>
-              <h1 className="text-xl font-semibold text-gray-900">Gestione Clienti</h1>
+              <h1 className="text-xl font-semibold text-gray-900">Gestione Parti</h1>
             </div>
             
             <Button
@@ -276,7 +276,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
               disabled={isLoading}
             >
               <Plus className="w-4 h-4" />
-              Nuovo Cliente
+              Nuova Parte
             </Button>
           </div>
         </div>
