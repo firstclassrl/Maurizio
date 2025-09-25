@@ -387,10 +387,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       console.log('🔍 DEBUG: Altri:', clientData.altri)
       
       // Pulisce i dati prima di inviarli al database
+      // Gestisce le 4 tipologie di parti con campi specifici
       const cleanData = {
         tipologia: clientData.tipologia || 'Persona fisica',
         alternativa: clientData.alternativa || false,
-        ragione: clientData.ragione || '',
+        ragione: clientData.ragione || (clientData.nome && clientData.cognome ? `${clientData.nome} ${clientData.cognome}` : 'Cliente'),
         titolo: clientData.titolo || null,
         cognome: clientData.cognome || null,
         nome: clientData.nome || null,
