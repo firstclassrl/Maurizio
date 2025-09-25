@@ -373,42 +373,36 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     }`}
                     onClick={() => handleTaskClick(task)}
                   >
-                    <div className="flex flex-col h-full">
-                      {/* Prima riga: Orario e Attività */}
-                      <div className="flex justify-between items-start mb-1">
-                        <div className="flex items-center gap-2 flex-1">
-                          <div className={`w-2 h-2 rounded-full ${
-                            task.stato === 'done' ? 'bg-green-500' : 'bg-red-500'
-                          }`}></div>
-                          {task.ora && (
-                            <span className="font-medium text-gray-600 text-[10px] leading-tight">
-                              {formatTimeWithoutSeconds(task.ora)}
-                            </span>
-                          )}
-                          <span className="text-gray-600 text-[10px] leading-tight">{task.attivita}</span>
-                          {task.urgent && (
-                            <span className="text-red-600 font-semibold text-[10px] leading-tight">URGENTE</span>
-                          )}
-                        </div>
-                      </div>
+                    <div className="flex items-center gap-2 w-full">
+                      {/* Semaforo unico all'inizio */}
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                        task.evaso ? 'bg-green-500' : 'bg-red-500'
+                      }`}></div>
                       
-                      {/* Seconda riga: Cliente/Controparte e semaforo */}
-                      <div className="flex justify-between items-end">
-                        <div className="flex-1">
-                          <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.cliente || 'N/A'}</span>
-                          {task.controparte && (
-                            <>
-                              <span className="text-gray-500 text-[10px] leading-tight"> / </span>
-                              <span className="font-semibold text-gray-900 text-[10px] leading-tight">{task.controparte}</span>
-                            </>
-                          )}
-                        </div>
-                        
-                        {/* Semaforo in basso a destra */}
-                        <div className={`w-3 h-3 rounded-full ml-2 ${
-                          task.evaso ? 'bg-green-500' : 'bg-red-500'
-                        }`}></div>
-                      </div>
+                      {/* Ora */}
+                      {task.ora && (
+                        <span className="font-medium text-gray-600 text-[10px] leading-tight flex-shrink-0">
+                          {formatTimeWithoutSeconds(task.ora)}
+                        </span>
+                      )}
+                      
+                      {/* Cliente/Controparte */}
+                      <span className="font-semibold text-gray-900 text-[10px] leading-tight flex-shrink-0">
+                        {task.cliente || 'N/A'}
+                        {task.controparte && ` / ${task.controparte}`}
+                      </span>
+                      
+                      {/* Attività da svolgere */}
+                      <span className="text-gray-600 text-[10px] leading-tight flex-1 min-w-0">
+                        - {task.attivita}
+                      </span>
+                      
+                      {/* Flag URGENTE */}
+                      {task.urgent && (
+                        <span className="text-red-600 font-semibold text-[10px] leading-tight flex-shrink-0">
+                          URGENTE
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
