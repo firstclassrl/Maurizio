@@ -52,23 +52,23 @@ export function TimeInput({
       }
     }
     
-    // Se ha solo numeri, prova a formattare
+    // Se ha solo numeri, prova a formattare automaticamente
     if (/^\d{1,4}$/.test(cleanTime)) {
       if (cleanTime.length <= 2) {
-        // Solo ore
+        // Solo ore (es. "9" -> "09:00")
         const h = parseInt(cleanTime);
         if (h >= 0 && h <= 23) {
           return `${h.toString().padStart(2, '0')}:00`;
         }
       } else if (cleanTime.length === 3) {
-        // HMM
+        // HMM (es. "945" -> "09:45")
         const h = parseInt(cleanTime.substring(0, 1));
         const m = parseInt(cleanTime.substring(1, 3));
         if (h >= 0 && h <= 9 && m >= 0 && m <= 59) {
           return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         }
       } else if (cleanTime.length === 4) {
-        // HHMM
+        // HHMM (es. "0945" -> "09:45")
         const h = parseInt(cleanTime.substring(0, 2));
         const m = parseInt(cleanTime.substring(2, 4));
         if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
@@ -77,13 +77,24 @@ export function TimeInput({
       }
     }
     
+    // Se non è un formato valido, restituisce il valore pulito
     return cleanTime;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     const formattedTime = formatInputTime(inputValue);
-    onChange(formattedTime);
+    
+    // Aggiorna il valore visualizzato nel campo
+    e.target.value = formattedTime;
+    
+    // Chiama onChange solo se il formato è valido
+    if (formattedTime && formattedTime.includes(':') && formattedTime.length === 5) {
+      onChange(formattedTime);
+    } else if (formattedTime === '') {
+      // Permette di cancellare tutto
+      onChange('');
+    }
   };
 
   const handleFocus = () => {

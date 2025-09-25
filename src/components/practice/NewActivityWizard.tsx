@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { DateInput } from '../ui/DateInput'
+import { TimeInput } from '../ui/TimeInput'
 import { Plus, ArrowRight, FileText, Calendar, ArrowLeft } from 'lucide-react'
 import { Practice, Activity } from '../../types/practice'
 import { Client } from '../../types/client'
@@ -493,13 +494,11 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Ora</label>
-                    <input 
-                      type="text"
-                      placeholder="--:--"
-                      value={activityData.ora} 
-                      onChange={(e) => setActivityData(prev => ({ ...prev, ora: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    <TimeInput
+                      id="ora"
+                      label="Ora"
+                      value={activityData.ora}
+                      onChange={(value) => setActivityData(prev => ({ ...prev, ora: value }))}
                     />
                   </div>
                 </div>

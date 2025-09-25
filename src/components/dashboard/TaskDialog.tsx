@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { DateInput } from '../ui/DateInput'
+import { TimeInput } from '../ui/TimeInput'
 import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Switch } from '../ui/switch'
@@ -279,15 +280,12 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
                 required
               />
               <div className="w-32">
-                <Label htmlFor="ora">Ora</Label>
-                  <Input
-                    id="ora"
-                    type="text"
-                    placeholder="--:--"
-                    value={formData.ora || ''}
-                    onChange={(e) => handleChange('ora', e.target.value)}
-                    className="text-gray-900"
-                  />
+                <TimeInput
+                  id="ora"
+                  label="Ora"
+                  value={formData.ora || ''}
+                  onChange={(value) => handleChange('ora', value)}
+                />
               </div>
             </div>
           </div>
