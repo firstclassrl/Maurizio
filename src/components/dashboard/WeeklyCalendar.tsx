@@ -7,6 +7,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautif
 import { format } from 'date-fns'
 import { PracticeFilter } from '../ui/PracticeFilter'
 import { formatTimeWithoutSeconds } from '../../lib/time-utils'
+import { useWeekendSettings } from '../../hooks/useWeekendSettings'
 
 interface WeeklyCalendarProps {
   tasks: Task[]
@@ -18,6 +19,7 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const isMobile = useMobile()
+  const { showWeekend } = useWeekendSettings()
 
   // Generate colors based on category
   const getTaskColor = (task: Task) => {
@@ -51,10 +53,11 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
     return new Date(date.setDate(diff))
   }
 
-  // Get all days of the current week (only weekdays for business calendar)
+  // Get all days of the current week (weekdays or full week based on settings)
   const getWeekDays = (startDate: Date) => {
     const days = []
-    for (let i = 0; i < 5; i++) { // Only Monday to Friday
+    const dayCount = showWeekend ? 7 : 5 // Monday to Friday or Monday to Sunday
+    for (let i = 0; i < dayCount; i++) {
       const day = new Date(startDate)
       day.setDate(startDate.getDate() + i)
       days.push(day)
@@ -280,7 +283,7 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
           </div>
         ) : (
           // Desktop Layout - Full width grid
-          <div className="grid grid-cols-5 gap-1 h-full">
+          <div className={`grid gap-1 h-full ${showWeekend ? 'grid-cols-7' : 'grid-cols-5'}`}>
             {weekDays.map((day, index) => {
               const dayTasks = getTasksForDate(day)
               const isToday = day.toDateString() === new Date().toDateString()

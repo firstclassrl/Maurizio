@@ -7,6 +7,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautif
 import { supabase } from '../../lib/supabase'
 import { PracticeFilter } from '../ui/PracticeFilter'
 import { formatTimeWithoutSeconds } from '../../lib/time-utils'
+import { useWeekendSettings } from '../../hooks/useWeekendSettings'
 
 interface MonthlyCalendarProps {
   tasks: Task[]
@@ -19,6 +20,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const isMobile = useMobile()
+  const { showWeekend } = useWeekendSettings()
 
   // Generate colors based on category
   const getTaskColor = (task: Task) => {
@@ -50,7 +52,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
     return new Date(date.getFullYear(), date.getMonth(), 1)
   }
 
-  // Get all days to display in the calendar grid (only weekdays for business calendar)
+  // Get all days to display in the calendar grid (weekdays or full week based on settings)
   const getCalendarDays = (date: Date) => {
     const firstDay = getFirstDayOfMonth(date)
     
@@ -62,13 +64,20 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
     
     const days = []
     const currentDate = new Date(startDate)
+    const totalDays = showWeekend ? 42 : 35 // 6 weeks or 5 weeks
     
-    // Generate 35 days (5 weeks) to fill the calendar, but only include weekdays
-    for (let i = 0; i < 35; i++) {
+    // Generate days to fill the calendar
+    for (let i = 0; i < totalDays; i++) {
       const day = new Date(currentDate)
-      // Only include Monday to Friday (1-5)
-      if (day.getDay() >= 1 && day.getDay() <= 5) {
+      // Include days based on weekend setting
+      if (showWeekend) {
+        // Include all days (Monday to Sunday)
         days.push(day)
+      } else {
+        // Only include Monday to Friday (1-5)
+        if (day.getDay() >= 1 && day.getDay() <= 5) {
+          days.push(day)
+        }
       }
       currentDate.setDate(currentDate.getDate() + 1)
     }
@@ -136,7 +145,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
   }
 
   const calendarDays = getCalendarDays(currentMonth)
-  const dayNames = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven']
+  const dayNames = showWeekend ? ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'] : ['Lun', 'Mar', 'Mer', 'Gio', 'Ven']
 
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return
@@ -240,7 +249,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
           // Mobile Layout - Vertical
           <div className="space-y-4">
             {/* Day names header */}
-            <div className="grid grid-cols-5 gap-2 mb-4">
+            <div className={`grid gap-2 mb-4 ${showWeekend ? 'grid-cols-7' : 'grid-cols-5'}`}>
               {dayNames.map((dayName) => (
                 <div key={dayName} className="text-center text-sm font-medium text-gray-600 py-2 bg-gray-50 rounded">
                   {dayName}
@@ -250,7 +259,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
 
             {/* Calendar grid */}
             <DragDropContext onDragEnd={handleDragEnd}>
-              <div className="grid grid-cols-5 gap-2">
+              <div className={`grid gap-2 ${showWeekend ? 'grid-cols-7' : 'grid-cols-5'}`}>
                 {calendarDays.map((day, index) => {
                   const dayTasks = getTasksForDate(day)
                   const isCurrentMonthDay = isCurrentMonth(day)
@@ -333,7 +342,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
           // Desktop Layout - Grid like in screenshots
           <div>
             {/* Day names header */}
-            <div className="grid grid-cols-5 gap-1 mb-4">
+            <div className={`grid gap-1 mb-4 ${showWeekend ? 'grid-cols-7' : 'grid-cols-5'}`}>
               {dayNames.map((dayName) => (
                 <div key={dayName} className="text-center text-sm font-medium text-gray-600 py-3 bg-gray-50 rounded-lg">
                   {dayName}
@@ -343,7 +352,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
 
             {/* Calendar grid */}
             <DragDropContext onDragEnd={handleDragEnd}>
-              <div className="grid grid-cols-5 gap-1 h-full">
+              <div className={`grid gap-1 h-full ${showWeekend ? 'grid-cols-7' : 'grid-cols-5'}`}>
                 {calendarDays.map((day, index) => {
                   const dayTasks = getTasksForDate(day)
                   const isCurrentMonthDay = isCurrentMonth(day)
