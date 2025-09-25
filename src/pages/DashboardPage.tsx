@@ -164,7 +164,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         return {
           ...client,
           indirizzi,
-          contatti
+          contatti,
+          // Mappa i campi del database ai nomi camelCase del form
+          dataNascita: client.data_nascita,
+          luogoNascita: client.luogo_nascita,
+          partitaIva: client.partita_iva,
+          codiceFiscale: client.codice_fiscale,
+          codiceDestinatario: client.codice_destinatario,
+          codiceDestinatarioPA: client.codice_destinatario_pa
         }
       })
       

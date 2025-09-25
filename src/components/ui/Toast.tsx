@@ -25,7 +25,7 @@ function ToastComponent({ toast, onClose }: ToastProps) {
     // Auto close after duration
     const timer = setTimeout(() => {
       handleClose()
-    }, toast.duration || 5000)
+    }, toast.duration || 3000)
 
     return () => clearTimeout(timer)
   }, [toast.duration])
