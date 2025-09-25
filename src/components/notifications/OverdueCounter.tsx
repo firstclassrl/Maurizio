@@ -18,10 +18,10 @@ export function OverdueCounter({ userId, onClick }: OverdueCounterProps) {
       const today = new Date().toISOString().split('T')[0]
 
       const { data, error } = await supabase
-        .from('tasks')
+        .from('activities')
         .select('id')
         .eq('user_id', userId)
-        .lt('scadenza', today)
+        .lt('data', today)
         .eq('stato', 'todo')
 
       if (error) throw error
@@ -46,7 +46,7 @@ export function OverdueCounter({ userId, onClick }: OverdueCounterProps) {
           {
             event: '*',
             schema: 'public',
-            table: 'tasks',
+            table: 'activities',
             filter: `user_id=eq.${userId}`
           },
           () => {

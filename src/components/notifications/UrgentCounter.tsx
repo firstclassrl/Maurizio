@@ -19,12 +19,11 @@ export function UrgentCounter({ userId, onClick }: UrgentCounterProps) {
 
       // Get urgent tasks OR overdue tasks, excluding evaded tasks
       const { data: urgentTasks, error: urgentError } = await supabase
-        .from('tasks')
+        .from('activities')
         .select('id')
         .eq('user_id', userId)
         .eq('stato', 'todo')
-        .eq('evaso', false) // Exclude evaded tasks
-        .or(`urgent.eq.true,scadenza.lt.${today}`)
+        .or(`urgent.eq.true,data.lt.${today}`)
 
       if (urgentError) throw urgentError
 
@@ -48,7 +47,7 @@ export function UrgentCounter({ userId, onClick }: UrgentCounterProps) {
           {
             event: '*',
             schema: 'public',
-            table: 'tasks',
+            table: 'activities',
             filter: `user_id=eq.${userId}`
           },
           () => {
