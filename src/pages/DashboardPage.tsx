@@ -37,7 +37,7 @@ interface DashboardPageProps {
 }
 
 export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage, onNavigateToPracticeArchive }: DashboardPageProps) {
-  const { toasts, removeToast, showSuccess: showToastSuccess } = useToast()
+  const { toasts, removeToast, showSuccess, showError } = useToast()
   const isMobile = useMobile()
 
   // Function to get category color
@@ -265,7 +265,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       ))
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
-      showToastSuccess('Successo', 'Attività aggiornata con successo')
+      showSuccess('Successo', 'Attività aggiornata con successo')
     } catch (error) {
       console.error('Errore nell\'aggiornamento dell\'attività:', error)
       setTasks([])
@@ -291,7 +291,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       setTasks(prev => prev.filter(task => task.id !== taskToDelete.id))
       setIsConfirmDialogOpen(false)
       setTaskToDelete(null)
-      showToastSuccess('Successo', 'Attività eliminata con successo')
+      showError('Attività Eliminata', `Attività "${taskToDelete.attivita}" eliminata con successo`)
     } catch (error) {
       console.error('Errore nell\'eliminazione dell\'attività:', error)
       setTasks([])
@@ -336,7 +336,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       if (error) throw error
 
       await loadTasks()
-      showToastSuccess('Successo', 'Appuntamento aggiunto con successo')
+      showSuccess('Successo', 'Appuntamento aggiunto con successo')
     } catch (error) {
       console.error('Errore nell\'aggiunta dell\'appuntamento:', error)
       console.error('Errore nell\'aggiunta dell\'appuntamento:', error)
@@ -379,7 +379,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           .eq('user_id', user.id)
 
         if (error) throw error
-        showToastSuccess('Successo', 'Cliente aggiornato con successo')
+        showSuccess('Successo', 'Cliente aggiornato con successo')
       } else {
         // Create new client
         const { error } = await supabase
@@ -390,7 +390,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           })
 
         if (error) throw error
-        showToastSuccess('Successo', 'Cliente creato con successo')
+        showSuccess('Successo', 'Cliente creato con successo')
       }
 
       setIsClientFormOpen(false)
@@ -398,7 +398,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       await loadClients()
     } catch (error) {
       console.error('Error saving client:', error)
-      showToastSuccess('Errore', 'Errore nel salvataggio del cliente')
+      showSuccess('Errore', 'Errore nel salvataggio del cliente')
     } finally {
       setIsClientLoading(false)
     }
@@ -772,7 +772,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         }}
         onConfirm={confirmDelete}
         title="Conferma Eliminazione"
-        message={`Sei sicuro di voler eliminare l'attività "${taskToDelete?.pratica}"?`}
+        message={`Sei sicuro di voler eliminare l'attività "${taskToDelete?.attivita}" dalla pratica "${taskToDelete?.pratica}"?`}
       />
 
       <NewActivityWizard
@@ -786,6 +786,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onActivityCreated={(activity) => {
           console.log('New activity created:', activity)
           loadTasks()
+          showSuccess('Attività Creata', `Attività "${activity.attivita}" creata con successo`)
         }}
       />
 
@@ -909,6 +910,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onActivityCreated={(activity) => {
           console.log('Activity created from existing practice:', activity)
           loadTasks() // Reload tasks to show the new activity
+          showSuccess('Attività Aggiunta', `Attività "${activity.attivita}" aggiunta con successo`)
         }}
       />
 

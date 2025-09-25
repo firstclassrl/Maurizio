@@ -25,7 +25,7 @@ interface StoragePageProps {
 export function StoragePage({ onNavigateBack }: StoragePageProps) {
   // const isMobile = useMobile()
   const { message, showMessage, hideMessage } = useMessage()
-  const { toasts, addToast, removeToast } = useToast()
+  const { toasts, addToast, removeToast, showSuccess, showError } = useToast()
 
   // Function to get category color
   const getCategoryColor = (categoria?: string) => {
@@ -159,7 +159,7 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
       if (error) throw error
 
       setTasks(tasks.filter(task => task.id !== taskToDelete.id))
-      addToast({ type: 'success', title: 'Eliminazione', message: 'Attività eliminata con successo' })
+      showError('Attività Eliminata', `Attività "${taskToDelete.attivita}" eliminata definitivamente`)
     } catch (error) {
       console.error('Error deleting task:', error)
       addToast({ type: 'error', title: 'Errore', message: 'Errore nell\'eliminazione dell\'attività' })
@@ -179,7 +179,7 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
       if (error) throw error
 
       setTasks(tasks.filter(t => t.id !== task.id))
-      addToast({ type: 'success', title: 'Ripristino', message: 'Attività ripristinata nella lista principale' })
+      showSuccess('Attività Ripristinata', `Attività "${task.attivita}" ripristinata nella lista principale`)
     } catch (error) {
       console.error('Error restoring activity:', error)
       addToast({ type: 'error', title: 'Errore', message: 'Errore nel ripristino dell\'attività' })
@@ -393,7 +393,7 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
         open={isConfirmDialogOpen}
         onClose={() => setIsConfirmDialogOpen(false)}
         title="Conferma Eliminazione"
-        message={`Sei sicuro di voler eliminare definitivamente l'attività "${taskToDelete?.attivita}"?`}
+        message={`Sei sicuro di voler eliminare definitivamente l'attività "${taskToDelete?.attivita}" dalla pratica "${taskToDelete?.pratica}"?`}
         onConfirm={confirmDelete}
         confirmText="Elimina"
         cancelText="Annulla"

@@ -46,7 +46,7 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
       <div
         draggable
         onDragStart={(e) => handleDragStart(e, task)}
-        className={`p-1.5 rounded text-xs cursor-move transition-all hover:shadow-md ${
+        className={`p-1 rounded text-xs cursor-move transition-all hover:shadow-md ${
           task.stato === 'done'
             ? 'bg-green-100 text-green-800 border border-green-200'
             : isOverdue
@@ -56,8 +56,8 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
         title={`${task.pratica} - ${task.attivita}`}
       >
         {/* RIGA 1: Numero pratica - Attività - Cliente/Controparte centrali - categoria attivita' - semaforo rosso */}
-        <div className="flex items-center justify-between mb-0.5">
-          <div className="flex items-center gap-1 text-xs">
+        <div className="flex items-center justify-between mb-0">
+          <div className="flex items-center gap-0.5 text-xs">
             <span className="text-gray-600">
               Pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
             </span>
@@ -65,7 +65,7 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
               Attività: <span className="font-bold text-gray-900">{task.attivita}</span>
             </span>
           </div>
-          <div className="flex items-center gap-1 text-xs">
+          <div className="flex items-center gap-0.5 text-xs">
             {task.cliente && (
               <span className="text-gray-600">
                 Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
@@ -77,7 +77,7 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             <span className="text-xs px-1 py-0.5 rounded-full bg-gray-200 text-gray-800 border border-gray-300">
               {task.categoria}
             </span>
@@ -90,7 +90,7 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
         
         {/* RIGA 2: ora - data - note - eventuale urgente */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 text-xs">
+          <div className="flex items-center gap-0.5 text-xs">
             {task.ora && (
               <span className="text-gray-600">
                 ora: <span className="font-medium text-gray-900">{formatTimeWithoutSeconds(task.ora)}</span>
@@ -100,7 +100,7 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
               data: <span className="font-medium text-gray-900">{new Date(task.scadenza).toLocaleDateString('it-IT')}</span>
             </span>
           </div>
-          <div className="flex items-center gap-1 text-xs">
+          <div className="flex items-center gap-0.5 text-xs">
             {task.note && (
               <span className="text-gray-600">
                 note: <span className="font-medium text-gray-900 italic">{task.note}</span>
