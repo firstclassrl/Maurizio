@@ -34,56 +34,40 @@ interface Client {
   sigla?: string;
 }
 
-interface NewClientFormProps {
+interface SimpleClientFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   client?: Client | null;
 }
 
-export const NewClientForm: React.FC<NewClientFormProps> = ({
+export const SimpleClientForm: React.FC<SimpleClientFormProps> = ({
   isOpen,
   onClose,
   onSuccess,
   client
 }) => {
-  const [formData, setFormData] = useState<Client>({
+  const [formData, setFormData] = useState({
     tipologia: 'Persona fisica',
-    alternativa: false,
     ragione: '',
-    titolo: '',
-    cognome: '',
     nome: '',
-    sesso: '',
-    data_nascita: '',
-    luogo_nascita: '',
-    partita_iva: '',
-    codice_fiscale: '',
+    cognome: '',
     denominazione: '',
-    indirizzi: [],
-    contatti: [],
+    codice_fiscale: '',
+    partita_iva: '',
+    sesso: '',
+    indirizzo_strada: '',
+    indirizzo_civico: '',
+    indirizzo_cap: '',
+    indirizzo_citta: '',
+    indirizzo_provincia: '',
+    telefono: '',
+    mail: '',
+    pec: '',
     cliente: false,
     controparte: false,
     altri: false,
-    codice_destinatario: '',
-    codice_destinatario_pa: '',
-    note: '',
-    sigla: ''
-  });
-
-  // Stati per indirizzo e contatti
-  const [indirizzo, setIndirizzo] = useState({
-    strada: '',
-    civico: '',
-    cap: '',
-    citta: '',
-    provincia: ''
-  });
-
-  const [contatti, setContatti] = useState({
-    telefono: '',
-    mail: '',
-    pec: ''
+    note: ''
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -91,41 +75,57 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
 
   useEffect(() => {
     if (client) {
+      // Carica i dati del cliente esistente
       setFormData({
-        ...client,
-        data_nascita: client.data_nascita || '',
-        indirizzi: client.indirizzi || [],
-        contatti: client.contatti || []
+        tipologia: client.tipologia || 'Persona fisica',
+        ragione: client.ragione || '',
+        nome: client.nome || '',
+        cognome: client.cognome || '',
+        denominazione: client.denominazione || '',
+        codice_fiscale: client.codice_fiscale || '',
+        partita_iva: client.partita_iva || '',
+        sesso: client.sesso || '',
+        indirizzo_strada: '',
+        indirizzo_civico: '',
+        indirizzo_cap: '',
+        indirizzo_citta: '',
+        indirizzo_provincia: '',
+        telefono: '',
+        mail: '',
+        pec: '',
+        cliente: client.cliente || false,
+        controparte: client.controparte || false,
+        altri: client.altri || false,
+        note: client.note || ''
       });
     } else {
+      // Reset form per nuovo cliente
       setFormData({
         tipologia: 'Persona fisica',
-        alternativa: false,
         ragione: '',
-        titolo: '',
-        cognome: '',
         nome: '',
-        sesso: '',
-        data_nascita: '',
-        luogo_nascita: '',
-        partita_iva: '',
-        codice_fiscale: '',
+        cognome: '',
         denominazione: '',
-        indirizzi: [],
-        contatti: [],
+        codice_fiscale: '',
+        partita_iva: '',
+        sesso: '',
+        indirizzo_strada: '',
+        indirizzo_civico: '',
+        indirizzo_cap: '',
+        indirizzo_citta: '',
+        indirizzo_provincia: '',
+        telefono: '',
+        mail: '',
+        pec: '',
         cliente: false,
         controparte: false,
         altri: false,
-        codice_destinatario: '',
-        codice_destinatario_pa: '',
-        note: '',
-        sigla: ''
+        note: ''
       });
     }
   }, [client]);
 
-  const handleInputChange = (field: keyof Client, value: any) => {
-    console.log('🆕 NEW FORM: handleInputChange', { field, value });
+  const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -137,45 +137,60 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
     setIsLoading(true);
 
     try {
-      console.log('🆕 NEW FORM: handleSubmit called');
-      console.log('🆕 NEW FORM: formData:', formData);
+      console.log('🆕 SIMPLE FORM: handleSubmit called');
+      console.log('🆕 SIMPLE FORM: formData:', formData);
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('Utente non autenticato');
       }
 
-      // Prepara i dati per il database - STRUTTURA ESATTA
+      // Prepara indirizzo e contatti
+      const indirizzi = [{
+        strada: formData.indirizzo_strada,
+        civico: formData.indirizzo_civico,
+        cap: formData.indirizzo_cap,
+        citta: formData.indirizzo_citta,
+        provincia: formData.indirizzo_provincia
+      }].filter(addr => addr.strada || addr.citta); // Solo se almeno un campo è compilato
+
+      const contatti = [
+        { type: 'Telefono', value: formData.telefono },
+        { type: 'Email', value: formData.mail },
+        { type: 'PEC', value: formData.pec }
+      ].filter(contact => contact.value); // Solo se il valore è presente
+
+      // Prepara i dati per il database
       const dbData = {
         user_id: user.id,
         tipologia: formData.tipologia,
-        alternativa: formData.alternativa,
-        ragione: formData.ragione || (formData.nome && formData.cognome ? `${formData.nome} ${formData.cognome}` : 'Cliente'),
-        titolo: formData.titolo || null,
+        alternativa: false,
+        ragione: formData.ragione || (formData.nome && formData.cognome ? `${formData.nome} ${formData.cognome}` : formData.denominazione || 'Cliente'),
+        titolo: null,
         cognome: formData.cognome || null,
         nome: formData.nome || null,
         sesso: formData.sesso || null,
-        data_nascita: formData.data_nascita || null,
-        luogo_nascita: formData.luogo_nascita || null,
+        data_nascita: null,
+        luogo_nascita: null,
         partita_iva: formData.partita_iva || null,
         codice_fiscale: formData.codice_fiscale || null,
         denominazione: formData.denominazione || null,
-        indirizzi: JSON.stringify(formData.indirizzi),
-        contatti: JSON.stringify(formData.contatti),
+        indirizzi: JSON.stringify(indirizzi),
+        contatti: JSON.stringify(contatti),
         cliente: formData.cliente,
         controparte: formData.controparte,
         altri: formData.altri,
-        codice_destinatario: formData.codice_destinatario || null,
-        codice_destinatario_pa: formData.codice_destinatario_pa || null,
+        codice_destinatario: null,
+        codice_destinatario_pa: null,
         note: formData.note || null,
-        sigla: formData.sigla || null
+        sigla: null
       };
 
-      console.log('🆕 NEW FORM: dbData to save:', dbData);
+      console.log('🆕 SIMPLE FORM: dbData to save:', dbData);
 
       if (client?.id) {
         // Update existing client
-        console.log('🆕 NEW FORM: Updating client with ID:', client.id);
+        console.log('🆕 SIMPLE FORM: Updating client with ID:', client.id);
         const { error } = await supabase
           .from('clients')
           .update({
@@ -186,30 +201,30 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
           .eq('user_id', user.id);
 
         if (error) {
-          console.error('🆕 NEW FORM: Update error:', error);
+          console.error('🆕 SIMPLE FORM: Update error:', error);
           throw error;
         }
-        console.log('🆕 NEW FORM: Client updated successfully!');
+        console.log('🆕 SIMPLE FORM: Client updated successfully!');
         showSuccess('Successo', 'Parte aggiornata con successo');
       } else {
         // Create new client
-        console.log('🆕 NEW FORM: Creating new client');
+        console.log('🆕 SIMPLE FORM: Creating new client');
         const { error } = await supabase
           .from('clients')
           .insert([dbData]);
 
         if (error) {
-          console.error('🆕 NEW FORM: Insert error:', error);
+          console.error('🆕 SIMPLE FORM: Insert error:', error);
           throw error;
         }
-        console.log('🆕 NEW FORM: Client created successfully!');
+        console.log('🆕 SIMPLE FORM: Client created successfully!');
         showSuccess('Successo', 'Parte creata con successo');
       }
 
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('🆕 NEW FORM: Error:', error);
+      console.error('🆕 SIMPLE FORM: Error:', error);
       showError('Errore', 'Errore nel salvataggio della parte');
     } finally {
       setIsLoading(false);
@@ -227,21 +242,19 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Tipologia */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="tipologia">Tipologia *</Label>
-              <Select value={formData.tipologia} onValueChange={(value) => handleInputChange('tipologia', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleziona tipologia" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Persona fisica">Persona fisica</SelectItem>
-                  <SelectItem value="Ditta Individuale">Ditta Individuale</SelectItem>
-                  <SelectItem value="Persona Giuridica">Persona Giuridica</SelectItem>
-                  <SelectItem value="Altro ente">Altro ente</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label htmlFor="tipologia">Tipologia *</Label>
+            <Select value={formData.tipologia} onValueChange={(value) => handleInputChange('tipologia', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleziona tipologia" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Persona fisica">Persona fisica</SelectItem>
+                <SelectItem value="Ditta Individuale">Ditta Individuale</SelectItem>
+                <SelectItem value="Persona Giuridica">Persona Giuridica</SelectItem>
+                <SelectItem value="Altro ente">Altro ente</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* PERSONA FISICA */}
@@ -440,8 +453,8 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                 <Label htmlFor="indirizzo_strada">Via/Strada</Label>
                 <Input
                   id="indirizzo_strada"
-                  value={indirizzo.strada}
-                  onChange={(e) => setIndirizzo(prev => ({ ...prev, strada: e.target.value }))}
+                  value={formData.indirizzo_strada}
+                  onChange={(e) => handleInputChange('indirizzo_strada', e.target.value)}
                   placeholder="Via, Strada, Piazza..."
                 />
               </div>
@@ -449,8 +462,8 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                 <Label htmlFor="indirizzo_civico">Numero Civico</Label>
                 <Input
                   id="indirizzo_civico"
-                  value={indirizzo.civico}
-                  onChange={(e) => setIndirizzo(prev => ({ ...prev, civico: e.target.value }))}
+                  value={formData.indirizzo_civico}
+                  onChange={(e) => handleInputChange('indirizzo_civico', e.target.value)}
                   placeholder="123"
                 />
               </div>
@@ -458,8 +471,8 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                 <Label htmlFor="indirizzo_cap">CAP</Label>
                 <Input
                   id="indirizzo_cap"
-                  value={indirizzo.cap}
-                  onChange={(e) => setIndirizzo(prev => ({ ...prev, cap: e.target.value }))}
+                  value={formData.indirizzo_cap}
+                  onChange={(e) => handleInputChange('indirizzo_cap', e.target.value)}
                   placeholder="00100"
                 />
               </div>
@@ -467,8 +480,8 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                 <Label htmlFor="indirizzo_citta">Città</Label>
                 <Input
                   id="indirizzo_citta"
-                  value={indirizzo.citta}
-                  onChange={(e) => setIndirizzo(prev => ({ ...prev, citta: e.target.value }))}
+                  value={formData.indirizzo_citta}
+                  onChange={(e) => handleInputChange('indirizzo_citta', e.target.value)}
                   placeholder="Roma"
                 />
               </div>
@@ -476,8 +489,8 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                 <Label htmlFor="indirizzo_provincia">Provincia</Label>
                 <Input
                   id="indirizzo_provincia"
-                  value={indirizzo.provincia}
-                  onChange={(e) => setIndirizzo(prev => ({ ...prev, provincia: e.target.value }))}
+                  value={formData.indirizzo_provincia}
+                  onChange={(e) => handleInputChange('indirizzo_provincia', e.target.value)}
                   placeholder="RM"
                 />
               </div>
@@ -492,8 +505,8 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                 <Label htmlFor="telefono">Telefono</Label>
                 <Input
                   id="telefono"
-                  value={contatti.telefono}
-                  onChange={(e) => setContatti(prev => ({ ...prev, telefono: e.target.value }))}
+                  value={formData.telefono}
+                  onChange={(e) => handleInputChange('telefono', e.target.value)}
                   placeholder="+39 123 456 7890"
                 />
               </div>
@@ -502,8 +515,8 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                 <Input
                   id="mail"
                   type="email"
-                  value={contatti.mail}
-                  onChange={(e) => setContatti(prev => ({ ...prev, mail: e.target.value }))}
+                  value={formData.mail}
+                  onChange={(e) => handleInputChange('mail', e.target.value)}
                   placeholder="email@example.com"
                 />
               </div>
@@ -512,8 +525,8 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                 <Input
                   id="pec"
                   type="email"
-                  value={contatti.pec}
-                  onChange={(e) => setContatti(prev => ({ ...prev, pec: e.target.value }))}
+                  value={formData.pec}
+                  onChange={(e) => handleInputChange('pec', e.target.value)}
                   placeholder="pec@example.com"
                 />
               </div>

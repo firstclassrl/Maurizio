@@ -4,7 +4,7 @@ import { Input } from '../components/ui/input'
 import { Card } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
-import { NewClientForm } from '../components/clients/NewClientForm'
+import { SimpleClientForm } from '../components/clients/SimpleClientForm'
 import { Footer } from '../components/ui/Footer'
 import { Client } from '../types/client'
 import { supabase } from '../lib/supabase'
@@ -372,7 +372,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
       </div>
 
       {/* Forms and Dialogs */}
-      <NewClientForm
+      <SimpleClientForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         onSuccess={handleFormSuccess}

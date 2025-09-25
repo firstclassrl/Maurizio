@@ -22,7 +22,7 @@ import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { OptionsModal } from '../components/ui/OptionsModal'
-import { NewClientForm } from '../components/clients/NewClientForm'
+import { SimpleClientForm } from '../components/clients/SimpleClientForm'
 import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText, FolderOpen } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
@@ -901,7 +901,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onNavigateToStorage={onNavigateToStorage}
       />
 
-      <NewClientForm
+      <SimpleClientForm
         isOpen={isClientFormOpen}
         onClose={() => setIsClientFormOpen(false)}
         onSuccess={handleClientFormSuccess}
