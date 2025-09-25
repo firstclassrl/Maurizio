@@ -50,18 +50,49 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
   const loadPractices = async () => {
     setLoading(true)
     try {
-      const { data, error } = await supabase
+      // Get current user ID
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        console.error('User not authenticated')
+        setLoading(false)
+        return
+      }
+
+      // Prima carica le pratiche con il cliente
+      const { data: practicesData, error: practicesError } = await supabase
         .from('practices')
         .select(`
           *,
-          clients!practices_cliente_id_fkey(*),
-          counterparties(*)
+          clients!practices_cliente_id_fkey(*)
         `)
+        .eq('user_id', user.id)
         .order('numero', { ascending: false })
 
-      if (error) throw error
-      setPractices(data || [])
-      setFilteredPractices(data || [])
+      if (practicesError) throw practicesError
+
+      // Poi per ogni pratica, carica le controparti se ci sono
+      const practicesWithCounterparties = await Promise.all(
+        (practicesData || []).map(async (practice) => {
+          if (practice.controparti_ids && practice.controparti_ids.length > 0) {
+            const { data: counterpartiesData } = await supabase
+              .from('clients')
+              .select('*')
+              .in('id', practice.controparti_ids)
+            
+            return {
+              ...practice,
+              counterparties: counterpartiesData || []
+            }
+          }
+          return {
+            ...practice,
+            counterparties: []
+          }
+        })
+      )
+
+      setPractices(practicesWithCounterparties)
+      setFilteredPractices(practicesWithCounterparties)
     } catch (error) {
       console.error('Errore nel caricamento delle pratiche:', error)
     } finally {
