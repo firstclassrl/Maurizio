@@ -103,10 +103,22 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       console.log('DashboardPage: Caricamento attività per utente:', user.id)
 
-      // Load activities from the activities table (test without join first)
+      // Load activities with practice and client information
       const { data: activitiesData, error } = await supabase
         .from('activities')
-        .select('*')
+        .select(`
+          *,
+          practices!inner(
+            numero,
+            cliente_id,
+            controparti_ids,
+            clients!practices_cliente_id_fkey(
+              ragione,
+              nome,
+              cognome
+            )
+          )
+        `)
         .eq('user_id', user.id)
         .order('data', { ascending: true })
 
@@ -120,18 +132,29 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       // Convert activities to tasks format for compatibility
       const convertedTasks = (activitiesData || []).map(activity => {
+        // Get practice number
+        const practiceNumber = activity.practices?.numero || 'N/A'
+        
+        // Get client name
+        const client = activity.practices?.clients
+        const clientName = client ? (client.ragione || `${client.nome || ''} ${client.cognome || ''}`.trim()) : null
+        
+        // Get counterparties (for now, just show the first one if any)
+        const counterparties = activity.practices?.controparti_ids || []
+        const counterpartyName = counterparties.length > 0 ? 'Controparte' : null // TODO: Load actual counterparty names
+        
         return {
           id: activity.id,
           user_id: activity.user_id,
-          pratica: activity.pratica_id || 'N/A', // Use pratica_id for now
+          pratica: practiceNumber,
           attivita: activity.attivita,
           scadenza: activity.data,
           ora: activity.ora,
           stato: activity.stato,
-          urgent: activity.priorita === 'alta',
+          urgent: activity.priorita >= 8, // High priority if 8 or above
           note: activity.note,
-          cliente: null, // Will be populated later
-          controparte: null, // Will be populated later
+          cliente: clientName,
+          controparte: counterpartyName,
           categoria: activity.categoria,
           evaso: activity.stato === 'done',
           created_at: activity.created_at,
@@ -210,29 +233,52 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       const today = new Date().toISOString().split('T')[0]
       const { data: activities, error } = await supabase
         .from('activities')
-        .select('*')
+        .select(`
+          *,
+          practices!inner(
+            numero,
+            cliente_id,
+            controparti_ids,
+            clients!practices_cliente_id_fkey(
+              ragione,
+              nome,
+              cognome
+            )
+          )
+        `)
         .eq('user_id', user.id)
         .eq('stato', 'todo')
-        .or(`priorita.eq.alta,data.lt.${today}`)
+        .or(`priorita.gte.8,data.lt.${today}`)
         .order('data', { ascending: true })
 
       if (error) throw error
 
       // Convert activities to tasks format for compatibility
       const convertedTasks: Task[] = (activities || []).map(activity => {
+        // Get practice number
+        const practiceNumber = activity.practices?.numero || 'N/A'
+        
+        // Get client name
+        const client = activity.practices?.clients
+        const clientName = client ? (client.ragione || `${client.nome || ''} ${client.cognome || ''}`.trim()) : null
+        
+        // Get counterparties (for now, just show the first one if any)
+        const counterparties = activity.practices?.controparti_ids || []
+        const counterpartyName = counterparties.length > 0 ? 'Controparte' : null // TODO: Load actual counterparty names
+        
         return {
           id: activity.id,
           user_id: activity.user_id,
-          pratica: activity.pratica_id || 'N/A', // Use pratica_id for now
+          pratica: practiceNumber,
           attivita: activity.attivita,
           scadenza: activity.data,
           ora: activity.ora,
           categoria: activity.categoria,
           note: activity.note,
           stato: activity.stato,
-          urgent: activity.priorita === 'alta',
-          cliente: null, // Will be populated later
-          controparte: null, // Will be populated later
+          urgent: activity.priorita >= 8, // High priority if 8 or above
+          cliente: clientName,
+          controparte: counterpartyName,
           evaso: activity.stato === 'done',
           created_at: activity.created_at,
           updated_at: activity.updated_at

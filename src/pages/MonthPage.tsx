@@ -33,7 +33,19 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
       console.log('MonthPage: Loading activities for user:', user.id)
       const { data, error } = await supabase
         .from('activities')
-        .select('*')
+        .select(`
+          *,
+          practices!inner(
+            numero,
+            cliente_id,
+            controparti_ids,
+            clients!practices_cliente_id_fkey(
+              ragione,
+              nome,
+              cognome
+            )
+          )
+        `)
         .eq('user_id', user.id)
         .order('data', { ascending: true })
 
@@ -46,23 +58,36 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
       console.log('MonthPage: Loaded activities:', data)
 
       // Convert activities to tasks format for compatibility
-      const convertedTasks = (data || []).map(activity => ({
-        id: activity.id,
-        user_id: activity.user_id,
-        pratica: activity.pratica_id || 'N/A', // Use pratica_id for now
-        attivita: activity.attivita,
-        scadenza: activity.data,
-        ora: activity.ora,
-        stato: activity.stato,
-        urgent: activity.priorita === 'alta',
-        note: activity.note,
-        cliente: null, // Will be populated by client lookup if needed
-        controparte: null, // Will be populated by client lookup if needed
-        categoria: activity.categoria,
-        evaso: activity.stato === 'done',
-        created_at: activity.created_at,
-        updated_at: activity.updated_at
-      }))
+      const convertedTasks = (data || []).map(activity => {
+        // Get practice number
+        const practiceNumber = activity.practices?.numero || 'N/A'
+        
+        // Get client name
+        const client = activity.practices?.clients
+        const clientName = client ? (client.ragione || `${client.nome || ''} ${client.cognome || ''}`.trim()) : null
+        
+        // Get counterparties (for now, just show the first one if any)
+        const counterparties = activity.practices?.controparti_ids || []
+        const counterpartyName = counterparties.length > 0 ? 'Controparte' : null // TODO: Load actual counterparty names
+        
+        return {
+          id: activity.id,
+          user_id: activity.user_id,
+          pratica: practiceNumber,
+          attivita: activity.attivita,
+          scadenza: activity.data,
+          ora: activity.ora,
+          stato: activity.stato,
+          urgent: activity.priorita >= 8, // High priority if 8 or above
+          note: activity.note,
+          cliente: clientName,
+          controparte: counterpartyName,
+          categoria: activity.categoria,
+          evaso: activity.stato === 'done',
+          created_at: activity.created_at,
+          updated_at: activity.updated_at
+        }
+      })
 
       console.log('MonthPage: Converted tasks:', convertedTasks)
       setTasks(convertedTasks)
