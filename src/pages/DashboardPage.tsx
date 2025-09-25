@@ -67,8 +67,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
 
   useEffect(() => {
-    loadTasks()
-    loadClients()
+    const loadData = async () => {
+      await loadClients()
+      await loadTasks()
+    }
+    loadData()
+    
+    // Test notifiche
+    setTimeout(() => {
+      showSuccess('Test', 'Notifiche funzionano!')
+    }, 2000)
   }, [])
 
   const loadTasks = async () => {
@@ -396,6 +404,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       setIsClientFormOpen(false)
       setSelectedClient(null)
       await loadClients()
+      await loadTasks()
     } catch (error) {
       console.error('Error saving client:', error)
       showSuccess('Errore', 'Errore nel salvataggio del cliente')
@@ -783,9 +792,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           setIsNewActivityWizardOpen(open)
         }}
         clients={clients}
-        onActivityCreated={(activity) => {
+        onActivityCreated={async (activity) => {
           console.log('New activity created:', activity)
-          loadTasks()
+          await loadClients()
+          await loadTasks()
           showSuccess('Attività Creata', `Attività "${activity.attivita}" creata con successo`)
         }}
       />
@@ -907,9 +917,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         open={isAddActivityModalOpen}
         onOpenChange={setIsAddActivityModalOpen}
         clients={clients}
-        onActivityCreated={(activity) => {
+        onActivityCreated={async (activity) => {
           console.log('Activity created from existing practice:', activity)
-          loadTasks() // Reload tasks to show the new activity
+          await loadClients()
+          await loadTasks() // Reload tasks to show the new activity
           showSuccess('Attività Aggiunta', `Attività "${activity.attivita}" aggiunta con successo`)
         }}
       />
