@@ -254,6 +254,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const loadUrgentTasks = async () => {
     try {
       const today = new Date().toISOString().split('T')[0]
+      console.log('🔍 DashboardPage: Loading urgent tasks for user:', user.id)
+      console.log('🔍 DashboardPage: Today date:', today)
+      
       const { data: activities, error } = await supabase
         .from('activities')
         .select(`
@@ -274,7 +277,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         .or(`urgent.eq.true,data.lt.${today}`)
         .order('data', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ DashboardPage: Error loading urgent tasks:', error)
+        throw error
+      }
+      
+      console.log('🔍 DashboardPage: Found urgent activities:', activities?.length || 0)
 
       // Get all unique counterparty IDs from all practices
       const allCounterpartyIds = new Set<string>()
