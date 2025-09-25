@@ -96,26 +96,39 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       if (error) throw error
 
-      // Convert activities to tasks format for compatibility
-      const convertedTasks: Task[] = (activities || []).map(activity => ({
-        id: activity.id,
-        user_id: activity.user_id,
-        pratica: activity.practices.numero,
-        attivita: activity.attivita,
-        scadenza: activity.data,
-        ora: activity.ora,
-        categoria: activity.categoria,
-        autorita_giudiziaria: activity.autorita_giudiziaria,
-        rg: activity.rg,
-        giudice: activity.giudice,
-        note: activity.note,
-        stato: activity.stato,
-        urgent: activity.urgent,
-        cliente: null, // Will be populated from practices
-        controparte: null, // Will be populated from practices
-        created_at: activity.created_at,
-        updated_at: activity.updated_at
-      }))
+      // Get client names for each practice
+      const convertedTasks: Task[] = (activities || []).map(activity => {
+        // Find the client for this practice
+        const cliente = clients.find(c => c.id === activity.practices.cliente_id)
+        const clienteName = cliente ? (cliente.ragione || `${cliente.nome} ${cliente.cognome}`) : null
+        
+        // Find counterparties for this practice
+        const controparti = activity.practices.controparti_ids
+          .map((id: string) => clients.find((c: Client) => c.id === id))
+          .filter(Boolean)
+          .map((c: Client) => c!.ragione || `${c!.nome} ${c!.cognome}`)
+          .join(', ')
+        
+        return {
+          id: activity.id,
+          user_id: activity.user_id,
+          pratica: activity.practices.numero,
+          attivita: activity.attivita,
+          scadenza: activity.data,
+          ora: activity.ora,
+          categoria: activity.categoria,
+          autorita_giudiziaria: activity.autorita_giudiziaria,
+          rg: activity.rg,
+          giudice: activity.giudice,
+          note: activity.note,
+          stato: activity.stato,
+          urgent: activity.urgent,
+          cliente: clienteName,
+          controparte: controparti || null,
+          created_at: activity.created_at,
+          updated_at: activity.updated_at
+        }
+      })
 
       setTasks(convertedTasks)
     } catch (error) {
@@ -168,26 +181,39 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       if (error) throw error
 
-      // Convert activities to tasks format for compatibility
-      const convertedTasks: Task[] = (activities || []).map(activity => ({
-        id: activity.id,
-        user_id: activity.user_id,
-        pratica: activity.practices.numero,
-        attivita: activity.attivita,
-        scadenza: activity.data,
-        ora: activity.ora,
-        categoria: activity.categoria,
-        autorita_giudiziaria: activity.autorita_giudiziaria,
-        rg: activity.rg,
-        giudice: activity.giudice,
-        note: activity.note,
-        stato: activity.stato,
-        urgent: activity.urgent,
-        cliente: null,
-        controparte: null,
-        created_at: activity.created_at,
-        updated_at: activity.updated_at
-      }))
+      // Get client names for each practice
+      const convertedTasks: Task[] = (activities || []).map(activity => {
+        // Find the client for this practice
+        const cliente = clients.find(c => c.id === activity.practices.cliente_id)
+        const clienteName = cliente ? (cliente.ragione || `${cliente.nome} ${cliente.cognome}`) : null
+        
+        // Find counterparties for this practice
+        const controparti = activity.practices.controparti_ids
+          .map((id: string) => clients.find((c: Client) => c.id === id))
+          .filter(Boolean)
+          .map((c: Client) => c!.ragione || `${c!.nome} ${c!.cognome}`)
+          .join(', ')
+        
+        return {
+          id: activity.id,
+          user_id: activity.user_id,
+          pratica: activity.practices.numero,
+          attivita: activity.attivita,
+          scadenza: activity.data,
+          ora: activity.ora,
+          categoria: activity.categoria,
+          autorita_giudiziaria: activity.autorita_giudiziaria,
+          rg: activity.rg,
+          giudice: activity.giudice,
+          note: activity.note,
+          stato: activity.stato,
+          urgent: activity.urgent,
+          cliente: clienteName,
+          controparte: controparti || null,
+          created_at: activity.created_at,
+          updated_at: activity.updated_at
+        }
+      })
 
       setUrgentTasks(convertedTasks)
     } catch (error) {
