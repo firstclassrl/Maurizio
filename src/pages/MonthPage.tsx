@@ -29,16 +29,29 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
 
   const loadTasks = async () => {
     try {
+      console.log('MonthPage: Loading tasks for user:', user.id)
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
         .eq('user_id', user.id)
         .order('scadenza', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.error('MonthPage: Error loading tasks:', error)
+        // Se la tabella tasks non esiste, mostra un array vuoto
+        if (error.code === 'PGRST116' || error.message.includes('relation "public.tasks" does not exist')) {
+          console.warn('MonthPage: Tasks table does not exist, showing empty list')
+          setTasks([])
+          return
+        }
+        throw error
+      }
+
+      console.log('MonthPage: Loaded tasks:', data)
       setTasks(data || [])
     } catch (error) {
-      console.error('Error loading tasks:', error)
+      console.error('MonthPage: Error loading tasks:', error)
+      setTasks([])
     }
   }
 
@@ -154,12 +167,23 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
 
       {/* Main Content */}
       <div className="flex-1">
-        <MonthlyCalendar 
-          tasks={getFilteredTasks()} 
-          onTaskClick={handleTaskClick}
-          userId={user.id}
-          onTaskUpdate={loadTasks}
-        />
+        {tasks.length === 0 ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <p className="text-gray-500 text-lg mb-2">Nessuna attività trovata</p>
+              <p className="text-gray-400 text-sm">
+                Le attività appariranno qui quando verranno create dalla Dashboard
+              </p>
+            </div>
+          </div>
+        ) : (
+          <MonthlyCalendar 
+            tasks={getFilteredTasks()} 
+            onTaskClick={handleTaskClick}
+            userId={user.id}
+            onTaskUpdate={loadTasks}
+          />
+        )}
       </div>
 
       <TaskDialog
