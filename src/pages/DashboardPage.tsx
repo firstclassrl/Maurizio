@@ -417,6 +417,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       console.log('🔍 DEBUG: cleanData creato con successo!')
       
       console.log('🔍 DEBUG: Clean data to save:', cleanData)
+      console.log('🚨 CACHE BUSTER v3.0.2 - Se vedi questo, il nuovo codice è attivo!')
       console.log('🔍 DEBUG: Clean data - codice_fiscale:', cleanData.codice_fiscale)
       console.log('🔍 DEBUG: Clean data - partita_iva:', cleanData.partita_iva)
       console.log('🔍 DEBUG: Clean data - cliente:', cleanData.cliente)
