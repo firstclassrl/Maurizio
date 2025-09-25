@@ -154,9 +154,9 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
       const newDate = destinationDate.toISOString().split('T')[0]
       
       const { error } = await supabase
-        .from('tasks')
+        .from('activities')
         .update({ 
-          scadenza: newDate,
+          data: newDate,
           updated_at: new Date().toISOString()
         })
         .eq('id', task.id)

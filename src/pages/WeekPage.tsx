@@ -125,19 +125,23 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
 
   const handleTaskMove = async (taskId: string, newDate: string) => {
     try {
+      console.log('WeekPage: Moving task', taskId, 'to date', newDate)
+      
       const { error } = await supabase
-        .from('tasks')
+        .from('activities')
         .update({ 
-          scadenza: newDate,
+          data: newDate,
           updated_at: new Date().toISOString()
         })
         .eq('id', taskId)
+        .eq('user_id', user.id)
 
       if (error) throw error
 
+      console.log('WeekPage: Task moved successfully')
       await loadTasks()
     } catch (error) {
-      console.error('Error moving task:', error)
+      console.error('WeekPage: Error moving task:', error)
     }
   }
 
