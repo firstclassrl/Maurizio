@@ -54,16 +54,26 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
         }`}
         title={`${task.pratica} - ${task.attivita}`}
       >
-        {/* RIGA 1: Numero pratica - attivita' - categoria attivita' - semaforo rosso */}
+        {/* RIGA 1: Numero pratica - attivita' - Cliente - Controparte - categoria attivita' - semaforo rosso */}
         <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-1 flex-1">
-            <span className="font-medium truncate text-xs">
-              {task.pratica}
+          <div className="flex items-center gap-1 flex-1 text-xs">
+            <span className="text-gray-600">
+              Pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
             </span>
-            <span className="truncate text-xs opacity-90 flex-1">
-              {task.attivita}
+            <span className="text-gray-600">
+              attivita': <span className="font-bold text-gray-900">{task.attivita}</span>
             </span>
-            <span className="text-xs px-1 py-0.5 rounded bg-gray-200 text-gray-800">
+            {task.cliente && (
+              <span className="text-gray-600">
+                Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
+              </span>
+            )}
+            {task.controparte && (
+              <span className="text-gray-600">
+                Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
+              </span>
+            )}
+            <span className="text-xs px-1 py-0.5 rounded-full bg-gray-200 text-gray-800 border border-gray-300">
               {task.categoria}
             </span>
           </div>
@@ -73,20 +83,20 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
           )}
         </div>
         
-        {/* RIGA 2: ora - data - cliente - controparte - eventuale urgente */}
+        {/* RIGA 2: ora - data - note - eventuale urgente */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 flex-1">
+          <div className="flex items-center gap-1 flex-1 text-xs">
             {task.ora && (
-              <span className="text-xs font-medium">
-                {task.ora}
+              <span className="text-gray-600">
+                ora: <span className="font-medium text-gray-900">{task.ora}</span>
               </span>
             )}
-            <span className="text-xs opacity-75">
-              {new Date(task.scadenza).toLocaleDateString('it-IT')}
+            <span className="text-gray-600">
+              data: <span className="font-medium text-gray-900">{new Date(task.scadenza).toLocaleDateString('it-IT')}</span>
             </span>
-            {task.cliente && (
-              <span className="text-xs opacity-75 truncate">
-                {task.cliente}
+            {task.note && (
+              <span className="text-gray-600">
+                note: <span className="font-medium text-gray-900 italic">{task.note}</span>
               </span>
             )}
           </div>

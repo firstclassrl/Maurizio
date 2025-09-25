@@ -22,7 +22,7 @@ import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { OptionsModal } from '../components/ui/OptionsModal'
-import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText, FolderOpen } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
 interface DashboardPageProps {
@@ -424,41 +424,52 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               
               <div className="flex gap-2">
                 <Button
+                  onClick={onNavigateToClients}
+                  className="bg-orange-600 hover:bg-orange-700 text-white"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nuovo Cliente
+                </Button>
+                
+                <Button
                   onClick={() => setIsNewActivityWizardOpen(true)}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                   size="sm"
                 >
-                    <Plus className="h-4 w-4 mr-2" />
+                  <FolderOpen className="h-4 w-4 mr-2" />
                   Nuova Pratica
                 </Button>
             
-                  <Button
+                <Button
                   onClick={handleAddActivityClick}
                   className="bg-green-600 hover:bg-green-700 text-white"
                   size="sm"
                 >
-                    <Plus className="h-4 w-4 mr-2" />
+                  <FileText className="h-4 w-4 mr-2" />
                   Aggiungi Attività
-                  </Button>
-                </div>
+                </Button>
+              </div>
 
-            <Button
-              onClick={onNavigateToClients}
-              className="bg-orange-600 hover:bg-orange-700 text-white border-0"
-              size="sm"
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Clienti
-            </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={onNavigateToPracticeArchive}
+                  className="bg-white hover:bg-gray-50 text-blue-600 border border-blue-600"
+                  size="sm"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Archivio Pratiche
+                </Button>
 
-            <Button
-              onClick={onNavigateToPracticeArchive}
-              className="bg-white hover:bg-gray-50 text-blue-600 border border-blue-600"
-              size="sm"
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Archivio Pratiche
-            </Button>
+                <Button
+                  onClick={onNavigateToClients}
+                  className="bg-white hover:bg-gray-50 text-orange-600 border border-orange-600"
+                  size="sm"
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  Archivio Clienti
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -502,16 +513,26 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     className={`p-4 rounded-lg border-2 hover:shadow-md transition-shadow cursor-pointer ${getCategoryColor(task.categoria)}`}
                     onClick={() => handleTaskClick(task)}
                   >
-                    {/* RIGA 1: Numero pratica - attivita' - categoria attivita' - semaforo rosso */}
+                    {/* RIGA 1: Numero pratica - attivita' - Cliente - Controparte - categoria attivita' - semaforo rosso */}
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3 flex-1">
-                        <span className="font-semibold text-gray-900 text-sm">
-                          {task.pratica}
+                      <div className="flex items-center gap-3 flex-1 text-xs">
+                        <span className="text-gray-600">
+                          Numero pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
                         </span>
-                        <span className="text-gray-600 text-sm flex-1">
-                          {task.attivita}
+                        <span className="text-gray-600">
+                          attivita': <span className="font-bold text-gray-900">{task.attivita}</span>
                         </span>
-                        <span className="text-sm font-medium px-2 py-1 rounded bg-gray-100 text-gray-800">
+                        {task.cliente && (
+                          <span className="text-gray-600">
+                            Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
+                          </span>
+                        )}
+                        {task.controparte && (
+                          <span className="text-gray-600">
+                            Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
+                          </span>
+                        )}
+                        <span className="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-800 border border-gray-300">
                           {task.categoria}
                         </span>
                       </div>
@@ -521,25 +542,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                       )}
                     </div>
                     
-                    {/* RIGA 2: ora - data - cliente - controparte - eventuale urgente */}
+                    {/* RIGA 2: ora - data - note - eventuale urgente */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 flex-1">
+                      <div className="flex items-center gap-4 flex-1 text-xs">
                         {task.ora && (
-                          <span className="text-sm text-gray-600 font-medium">
-                            {task.ora}
+                          <span className="text-gray-600">
+                            ora: <span className="font-medium text-gray-900">{task.ora}</span>
                           </span>
                         )}
-                        <span className="text-sm text-gray-600">
-                          {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                        <span className="text-gray-600">
+                          data: <span className="font-medium text-gray-900">{new Date(task.scadenza).toLocaleDateString('it-IT')}</span>
                         </span>
-                        {task.cliente && (
-                          <span className="text-sm text-gray-600">
-                            {task.cliente}
-                          </span>
-                        )}
-                        {task.controparte && (
-                          <span className="text-sm text-gray-600">
-                            {task.controparte}
+                        {task.note && (
+                          <span className="text-gray-600">
+                            note: <span className="font-medium text-gray-900 italic">{task.note}</span>
                           </span>
                         )}
                       </div>
@@ -645,16 +661,26 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                       setShowUrgentTasks(false)
                     }}
                   >
-                    {/* RIGA 1: Numero pratica - attivita' - categoria attivita' - semaforo rosso */}
+                    {/* RIGA 1: Numero pratica - attivita' - Cliente - Controparte - categoria attivita' - semaforo rosso */}
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3 flex-1">
-                        <span className="font-semibold text-gray-900 text-sm">
-                          {task.pratica}
+                      <div className="flex items-center gap-3 flex-1 text-xs">
+                        <span className="text-gray-600">
+                          Numero pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
                         </span>
-                        <span className="text-gray-600 text-sm flex-1">
-                          {task.attivita}
+                        <span className="text-gray-600">
+                          attivita': <span className="font-bold text-gray-900">{task.attivita}</span>
                         </span>
-                        <span className="text-sm font-medium px-2 py-1 rounded bg-gray-100 text-gray-800">
+                        {task.cliente && (
+                          <span className="text-gray-600">
+                            Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
+                          </span>
+                        )}
+                        {task.controparte && (
+                          <span className="text-gray-600">
+                            Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
+                          </span>
+                        )}
+                        <span className="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-800 border border-gray-300">
                           {task.categoria}
                         </span>
                       </div>
@@ -664,25 +690,20 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                       )}
                     </div>
                     
-                    {/* RIGA 2: ora - data - cliente - controparte - eventuale urgente */}
+                    {/* RIGA 2: ora - data - note - eventuale urgente */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 flex-1">
+                      <div className="flex items-center gap-4 flex-1 text-xs">
                         {task.ora && (
-                          <span className="text-sm text-gray-600 font-medium">
-                            {task.ora}
+                          <span className="text-gray-600">
+                            ora: <span className="font-medium text-gray-900">{task.ora}</span>
                           </span>
                         )}
-                        <span className="text-sm text-gray-600">
-                          {new Date(task.scadenza).toLocaleDateString('it-IT')}
+                        <span className="text-gray-600">
+                          data: <span className="font-medium text-gray-900">{new Date(task.scadenza).toLocaleDateString('it-IT')}</span>
                         </span>
-                        {task.cliente && (
-                          <span className="text-sm text-gray-600">
-                            {task.cliente}
-                          </span>
-                        )}
-                        {task.controparte && (
-                          <span className="text-sm text-gray-600">
-                            {task.controparte}
+                        {task.note && (
+                          <span className="text-gray-600">
+                            note: <span className="font-medium text-gray-900 italic">{task.note}</span>
                           </span>
                         )}
                       </div>
@@ -706,14 +727,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                         </Button>
                       </div>
                     </div>
-                    
-                    {task.note && (
-                      <div className="mt-2 pt-2 border-t border-gray-200">
-                        <p className="text-sm text-gray-600 italic">
-                          {task.note}
-                        </p>
-                      </div>
-                    )}
                   </div>
                 ))
               )}
