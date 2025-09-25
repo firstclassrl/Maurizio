@@ -120,6 +120,64 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
     loadPractices()
   }
 
+  // Funzione per pulire le pratiche duplicate (solo per debug)
+  const cleanupDuplicatePractices = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      // Trova pratiche duplicate per numero
+      const { data: allPractices, error } = await supabase
+        .from('practices')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true })
+
+      if (error) throw error
+
+      // Raggruppa per numero pratica
+      const groupedByNumber = allPractices?.reduce((acc: Record<string, any[]>, practice: any) => {
+        if (!acc[practice.numero]) {
+          acc[practice.numero] = []
+        }
+        acc[practice.numero].push(practice)
+        return acc
+      }, {})
+
+      // Elimina duplicati, mantieni solo il più recente
+      const duplicatesToDelete: any[] = []
+      if (groupedByNumber) {
+        Object.entries(groupedByNumber).forEach(([, practices]) => {
+          if (practices.length > 1) {
+            // Ordina per data creazione e mantieni solo l'ultimo
+            const sorted = practices.sort((a: any, b: any) => 
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            )
+            // Aggiungi tutti tranne il primo (più recente) alla lista da eliminare
+            duplicatesToDelete.push(...sorted.slice(1))
+          }
+        })
+      }
+
+      if (duplicatesToDelete.length > 0) {
+        console.log(`Found ${duplicatesToDelete.length} duplicate practices to delete`)
+        
+        // Elimina le pratiche duplicate
+        for (const practice of duplicatesToDelete) {
+          await supabase
+            .from('practices')
+            .delete()
+            .eq('id', practice.id)
+        }
+        
+        console.log('Duplicate practices cleaned up')
+        loadPractices() // Ricarica la lista
+      }
+    } catch (error) {
+      console.error('Error cleaning up duplicates:', error)
+    }
+  }
+
   // Filtra le pratiche
   const getFilteredPractices = () => {
     let filtered = practices
@@ -233,9 +291,21 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold">Lista Pratiche</h2>
-              <span className="text-sm text-gray-600">
-                {filteredPractices.length} pratiche trovate
-              </span>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-600">
+                  {filteredPractices.length} pratiche trovate
+                </span>
+                {practices.length > 1 && (
+                  <Button
+                    onClick={cleanupDuplicatePractices}
+                    variant="outline"
+                    size="sm"
+                    className="text-red-600 border-red-600 hover:bg-red-50"
+                  >
+                    🧹 Pulisci Duplicati
+                  </Button>
+                )}
+              </div>
             </div>
 
             {loading ? (

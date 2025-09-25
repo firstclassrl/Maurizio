@@ -75,25 +75,43 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         throw new Error('User not authenticated')
       }
       
-      const { data, error } = await supabase
-        .rpc('get_next_practice_number', { user_id_param: user.id })
+      // Conta le pratiche esistenti per questo utente nell'anno corrente
+      const currentYear = new Date().getFullYear()
+      const { data: existingPractices, error } = await supabase
+        .from('practices')
+        .select('numero')
+        .eq('user_id', user.id)
+        .like('numero', `${currentYear}/%`)
       
       if (error) {
-        console.warn('Practice number function not available, using fallback:', error)
-        throw error
+        console.warn('Error fetching existing practices, using fallback:', error)
+        // Fallback semplice
+        const timestamp = Date.now()
+        const sequentialNum = (timestamp % 999) + 1
+        return `${currentYear}/${sequentialNum.toString().padStart(3, '0')}`
       }
       
-      if (data) {
-        return data
+      // Trova il numero più alto per l'anno corrente
+      let maxNumber = 0
+      if (existingPractices && existingPractices.length > 0) {
+        existingPractices.forEach(practice => {
+          const match = practice.numero.match(new RegExp(`^${currentYear}/(\\d+)$`))
+          if (match) {
+            const num = parseInt(match[1], 10)
+            if (num > maxNumber) {
+              maxNumber = num
+            }
+          }
+        })
       }
       
-      // Fallback: genera numero sequenziale basato su timestamp
-      const currentYear = new Date().getFullYear()
-      const timestamp = Date.now()
-      const sequentialNum = (timestamp % 999) + 1
-      return `${currentYear}/${sequentialNum.toString().padStart(3, '0')}`
+      // Genera il prossimo numero
+      const nextNumber = maxNumber + 1
+      return `${currentYear}/${nextNumber.toString().padStart(3, '0')}`
+      
     } catch (error) {
       console.error('Error generating practice number:', error)
+      // Fallback di emergenza
       const currentYear = new Date().getFullYear()
       const timestamp = Date.now()
       const sequentialNum = (timestamp % 999) + 1
@@ -105,6 +123,28 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     console.log('handleClose called')
     setStep('practice')
     setCurrentPractice(null)
+    setIsCreatingPractice(false)
+    setIsCreatingActivity(false)
+    
+    // Reset form data
+    setPracticeData({
+      numero: '',
+      cliente_id: '',
+      controparti_ids: [],
+      tipo_procedura: 'STRAGIUDIZIALE'
+    })
+    
+    setActivityData({
+      categoria: 'Appuntamento',
+      attivita: '',
+      data: '',
+      ora: '',
+      autorita_giudiziaria: '',
+      rg: '',
+      giudice: '',
+      note: ''
+    })
+    
     onOpenChange(false)
     console.log('onOpenChange(false) called')
   }
@@ -131,6 +171,18 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
 
       // Generate practice number
       const practiceNumber = await generatePracticeNumber()
+      
+      // Verifica che il numero pratica non esista già
+      const { data: existingPractice } = await supabase
+        .from('practices')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('numero', practiceNumber)
+        .single()
+      
+      if (existingPractice) {
+        throw new Error(`Pratica ${practiceNumber} esiste già`)
+      }
       
       // Save practice to database
       const practiceDataToSave = {
