@@ -693,15 +693,15 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 }
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {getFilteredTasks().map((task) => (
                   <div
                     key={task.id}
-                    className={`p-4 rounded-lg border-2 hover:shadow-md transition-shadow cursor-pointer ${getCategoryColor(task.categoria)}`}
+                    className={`p-2 rounded-lg border-2 hover:shadow-md transition-shadow cursor-pointer ${getCategoryColor(task.categoria)}`}
                     onClick={() => handleTaskClick(task)}
                   >
                     {/* RIGA 1: Numero pratica - Attività - Cliente/Controparte centrali - categoria attivita' - semaforo rosso */}
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-3 text-xs">
                         <span className="text-gray-600">
                           Numero pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
@@ -849,7 +849,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               urgentTasks.map((task) => (
                   <div
                     key={task.id}
-                    className={`p-4 rounded-lg border-2 hover:shadow-md transition-shadow cursor-pointer ${getCategoryColor(task.categoria)}`}
+                    className={`p-2 rounded-lg border-2 hover:shadow-md transition-shadow cursor-pointer ${getCategoryColor(task.categoria)}`}
                     onClick={() => {
                       setSelectedTask(task)
                       setIsTaskDialogOpen(true)
@@ -857,7 +857,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     }}
                   >
                     {/* RIGA 1: Numero pratica - Attività - Cliente/Controparte centrali - categoria attivita' - semaforo rosso */}
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-3 text-xs">
                         <span className="text-gray-600">
                           Numero pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
