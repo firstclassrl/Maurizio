@@ -46,6 +46,18 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
     loadClients()
   }, [])
 
+  // Reload clients when page becomes visible (user navigates back to this page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadClients()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
   useEffect(() => {
     filterClients()
   }, [clients, searchTerm])

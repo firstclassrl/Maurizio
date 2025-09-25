@@ -74,6 +74,19 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     loadData()
   }, [])
 
+  // Reload data when page becomes visible (user navigates back to this page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadClients()
+        loadTasks()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
   // Reload tasks when clients change
   useEffect(() => {
     if (clients.length > 0) {
@@ -171,10 +184,37 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         throw error
       }
       
-      console.log('Loaded clients:', data)
-      setClients(data || [])
+      // Parsa i campi JSON che potrebbero essere stringhe
+      const parsedClients = (data || []).map(client => {
+        let indirizzi = []
+        let contatti = []
+        
+        try {
+          indirizzi = Array.isArray(client.indirizzi) ? client.indirizzi : 
+                     (typeof client.indirizzi === 'string' ? JSON.parse(client.indirizzi) : [])
+        } catch (e) {
+          console.warn('Errore parsing indirizzi per cliente', client.id, ':', e)
+          indirizzi = []
+        }
+        
+        try {
+          contatti = Array.isArray(client.contatti) ? client.contatti : 
+                    (typeof client.contatti === 'string' ? JSON.parse(client.contatti) : [])
+        } catch (e) {
+          console.warn('Errore parsing contatti per cliente', client.id, ':', e)
+          contatti = []
+        }
+        
+        return {
+          ...client,
+          indirizzi,
+          contatti
+        }
+      })
+      
+      console.log('Loaded clients:', parsedClients)
+      setClients(parsedClients)
     } catch (error) {
-      console.error('Errore nel caricamento dei clienti:', error)
       console.error('Errore nel caricamento dei clienti:', error)
     }
   }
