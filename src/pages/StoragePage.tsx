@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
-import { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { Task } from '../lib/calendar-utils'
-// import { Client } from '../types/client'
+import { Client } from '../types/client'
 import { Button } from '../components/ui/button'
 import { Card } from '../components/ui/card'
 // import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog'
@@ -20,11 +19,10 @@ import { PartyFilter } from '../components/ui/PartyFilter'
 import { ArrowLeft, Trash2, RotateCcw, Search } from 'lucide-react'
 
 interface StoragePageProps {
-  user: User
   onNavigateBack: () => void
 }
 
-export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
+export function StoragePage({ onNavigateBack }: StoragePageProps) {
   // const isMobile = useMobile()
   const { message, showMessage, hideMessage } = useMessage()
   const { toasts, addToast, removeToast } = useToast()
@@ -42,7 +40,7 @@ export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
-  // const [clients, setClients] = useState<Client[]>([])
+  const [clients, setClients] = useState<Client[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedParty, setSelectedParty] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
@@ -50,50 +48,94 @@ export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
 
   useEffect(() => {
     loadTasks()
-    // loadClients()
+    loadClients()
   }, [])
 
   const loadTasks = async () => {
     try {
       setLoading(true)
-      // First try with evaso filter, fallback without it if column doesn't exist
-      let { data, error } = await supabase
-        .from('tasks')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('evaso', true) // Only load evased tasks
-        .order('scadenza', { ascending: false })
-
-      // If error due to missing evaso column, return empty array (no evased tasks yet)
-      if (error && error.message.includes('evaso')) {
-        console.log('evaso column not found, no evased tasks available')
-        data = []
-        error = null
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('User not authenticated')
       }
 
+      // Load completed activities from the new activities table
+      const { data: activities, error } = await supabase
+        .from('activities')
+        .select(`
+          *,
+          practices!inner(
+            numero,
+            cliente_id,
+            controparti_ids,
+            tipo_procedura
+          )
+        `)
+        .eq('user_id', user.id)
+        .eq('stato', 'done') // Only load completed activities
+        .order('data', { ascending: false })
+
       if (error) throw error
-      setTasks(data || [])
+
+      // Get client names for each practice
+      const convertedTasks: Task[] = (activities || []).map(activity => {
+        // Find the client for this practice
+        const cliente = clients.find(c => c.id === activity.practices.cliente_id)
+        const clienteName = cliente ? (cliente.ragione || `${cliente.nome} ${cliente.cognome}`) : null
+        
+        // Find counterparties for this practice
+        const controparti = activity.practices.controparti_ids
+          .map((id: string) => clients.find((c: Client) => c.id === id))
+          .filter(Boolean)
+          .map((c: Client) => c!.ragione || `${c!.nome} ${c!.cognome}`)
+          .join(', ')
+        
+        return {
+          id: activity.id,
+          user_id: activity.user_id,
+          pratica: activity.practices.numero,
+          attivita: activity.attivita,
+          scadenza: activity.data,
+          ora: activity.ora,
+          categoria: activity.categoria,
+          autorita_giudiziaria: activity.autorita_giudiziaria,
+          rg: activity.rg,
+          giudice: activity.giudice,
+          note: activity.note,
+          stato: activity.stato,
+          urgent: activity.urgent,
+          cliente: clienteName,
+          controparte: controparti || null,
+          created_at: activity.created_at,
+          updated_at: activity.updated_at
+        }
+      })
+
+      setTasks(convertedTasks)
     } catch (error) {
-      console.error('Error loading tasks:', error)
+      console.error('Error loading activities:', error)
       showMessage('error', 'Errore', 'Errore nel caricamento delle attività')
     } finally {
       setLoading(false)
     }
   }
 
-  // const loadClients = async () => {
-  //   try {
-  //     const { data, error } = await supabase
-  //       .from('clients')
-  //       .select('*')
-  //       .eq('user_id', user.id)
+  const loadClients = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
 
-  //     if (error) throw error
-  //     setClients(data || [])
-  //   } catch (error) {
-  //     console.error('Error loading clients:', error)
-  //   }
-  // }
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('user_id', user.id)
+
+      if (error) throw error
+      setClients(data || [])
+    } catch (error) {
+      console.error('Error loading clients:', error)
+    }
+  }
 
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task)
@@ -110,7 +152,7 @@ export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
 
     try {
       const { error } = await supabase
-        .from('tasks')
+        .from('activities')
         .delete()
         .eq('id', taskToDelete.id)
 
@@ -130,8 +172,8 @@ export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
   const handleRestoreTask = async (task: Task) => {
     try {
       const { error } = await supabase
-        .from('tasks')
-        .update({ evaso: false })
+        .from('activities')
+        .update({ stato: 'todo' })
         .eq('id', task.id)
 
       if (error) throw error
@@ -139,7 +181,7 @@ export function StoragePage({ user, onNavigateBack }: StoragePageProps) {
       setTasks(tasks.filter(t => t.id !== task.id))
       addToast({ type: 'success', title: 'Ripristino', message: 'Attività ripristinata nella lista principale' })
     } catch (error) {
-      console.error('Error restoring task:', error)
+      console.error('Error restoring activity:', error)
       addToast({ type: 'error', title: 'Errore', message: 'Errore nel ripristino dell\'attività' })
     }
   }

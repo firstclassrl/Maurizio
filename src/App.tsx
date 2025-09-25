@@ -107,7 +107,6 @@ function App() {
       case 'storage':
         return (
           <StoragePage 
-            user={user} 
             onNavigateBack={() => setCurrentView('dashboard')}
           />
         )
