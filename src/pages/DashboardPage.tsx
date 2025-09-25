@@ -391,7 +391,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       const cleanData = {
         tipologia: clientData.tipologia || 'Persona fisica',
         alternativa: clientData.alternativa || false,
-        ragione: clientData.ragione || (clientData.nome && clientData.cognome ? `${clientData.nome} ${clientData.cognome}` : 'Cliente'),
+        ragione: clientData.ragione || (clientData.nome && clientData.cognome ? `${clientData.nome} ${clientData.cognome}` : (clientData.denominazione || 'Cliente')),
         titolo: clientData.titolo || null,
         cognome: clientData.cognome || null,
         nome: clientData.nome || null,
