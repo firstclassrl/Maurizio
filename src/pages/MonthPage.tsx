@@ -32,7 +32,15 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
       console.log('MonthPage: Loading activities for user:', user.id)
       const { data, error } = await supabase
         .from('activities')
-        .select('*')
+        .select(`
+          *,
+          practices (
+            numero,
+            cliente,
+            controparte,
+            controparti_ids
+          )
+        `)
         .eq('user_id', user.id)
         .order('data', { ascending: true })
 
@@ -48,7 +56,7 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
       const convertedTasks = (data || []).map(activity => ({
         id: activity.id,
         user_id: activity.user_id,
-        pratica: activity.pratica_id || 'N/A',
+        pratica: activity.practices?.numero || 'N/A', // Use practice number instead of ID
         attivita: activity.attivita,
         scadenza: activity.data,
         ora: activity.ora,

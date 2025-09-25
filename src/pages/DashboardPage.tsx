@@ -103,10 +103,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       console.log('DashboardPage: Caricamento attività per utente:', user.id)
 
-      // Load activities from the activities table (simplified query first)
+      // Load activities from the activities table with practice info
       const { data: activitiesData, error } = await supabase
         .from('activities')
-        .select('*')
+        .select(`
+          *,
+          practices (
+            numero,
+            cliente,
+            controparte,
+            controparti_ids
+          )
+        `)
         .eq('user_id', user.id)
         .order('data', { ascending: true })
 
@@ -120,18 +128,31 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       // Convert activities to tasks format for compatibility
       const convertedTasks = (activitiesData || []).map(activity => {
+        // Find client info
+        const cliente = clients.find(c => c.id === activity.practices?.cliente)
+        
+        // Handle counterparties
+        let controparti = null
+        if (activity.practices?.controparti_ids && activity.practices.controparti_ids.length > 0) {
+          controparti = activity.practices.controparti_ids
+            .map((id: string) => clients.find(c => c.id === id))
+            .filter(Boolean)
+            .map((c: any) => c?.nome && c?.cognome ? `${c.nome} ${c.cognome}` : c?.denominazione || c?.ragione || 'Cliente')
+            .join(', ')
+        }
+
         return {
           id: activity.id,
           user_id: activity.user_id,
-          pratica: activity.pratica_id || 'N/A', // Use pratica_id directly
+          pratica: activity.practices?.numero || 'N/A', // Use practice number instead of ID
           attivita: activity.attivita,
           scadenza: activity.data,
           ora: activity.ora,
           stato: activity.stato,
           urgent: activity.priorita === 'alta',
           note: activity.note,
-          cliente: null, // Will be populated later if needed
-          controparte: null, // Will be populated later if needed
+          cliente: cliente ? (cliente.nome && cliente.cognome ? `${cliente.nome} ${cliente.cognome}` : cliente.denominazione || cliente.ragione || 'Cliente') : null,
+          controparte: controparti,
           categoria: activity.categoria,
           evaso: activity.stato === 'done',
           created_at: activity.created_at,
@@ -210,7 +231,15 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       const today = new Date().toISOString().split('T')[0]
       const { data: activities, error } = await supabase
         .from('activities')
-        .select('*')
+        .select(`
+          *,
+          practices (
+            numero,
+            cliente,
+            controparte,
+            controparti_ids
+          )
+        `)
         .eq('user_id', user.id)
         .eq('stato', 'todo')
         .or(`priorita.eq.alta,data.lt.${today}`)
@@ -220,10 +249,23 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       // Convert activities to tasks format for compatibility
       const convertedTasks: Task[] = (activities || []).map(activity => {
+        // Find client info
+        const cliente = clients.find(c => c.id === activity.practices?.cliente)
+        
+        // Handle counterparties
+        let controparti = null
+        if (activity.practices?.controparti_ids && activity.practices.controparti_ids.length > 0) {
+          controparti = activity.practices.controparti_ids
+            .map((id: string) => clients.find(c => c.id === id))
+            .filter(Boolean)
+            .map((c: any) => c?.nome && c?.cognome ? `${c.nome} ${c.cognome}` : c?.denominazione || c?.ragione || 'Cliente')
+            .join(', ')
+        }
+
         return {
           id: activity.id,
           user_id: activity.user_id,
-          pratica: activity.pratica_id || 'N/A',
+          pratica: activity.practices?.numero || 'N/A', // Use practice number instead of ID
           attivita: activity.attivita,
           scadenza: activity.data,
           ora: activity.ora,
@@ -231,8 +273,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           note: activity.note,
           stato: activity.stato,
           urgent: activity.priorita === 'alta',
-          cliente: null, // Will be populated later if needed
-          controparte: null, // Will be populated later if needed
+          cliente: cliente ? (cliente.nome && cliente.cognome ? `${cliente.nome} ${cliente.cognome}` : cliente.denominazione || cliente.ragione || 'Cliente') : null,
+          controparte: controparti,
           evaso: activity.stato === 'done',
           created_at: activity.created_at,
           updated_at: activity.updated_at
