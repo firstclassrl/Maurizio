@@ -117,7 +117,25 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         .eq('stato', 'todo')
         .order('data', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.error('Error loading activities:', error)
+        
+        // Fallback: try to load from tasks table if activities table doesn't exist
+        const { data: tasksData, error: tasksError } = await supabase
+          .from('tasks')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('scadenza', { ascending: true })
+
+        if (tasksError) {
+          console.error('Error loading tasks:', tasksError)
+          throw tasksError
+        }
+
+        console.log('Loaded tasks from tasks table:', tasksData)
+        setTasks(tasksData || [])
+        return
+      }
 
       // Get client names for each practice
       const convertedTasks: Task[] = (activities || []).map(activity => {

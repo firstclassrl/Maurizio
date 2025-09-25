@@ -1247,7 +1247,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
                 disabled={isLoading}
                 className="flex items-center gap-2"
               >
-                {isLoading ? 'Salvataggio...' : (client ? 'Aggiorna Cliente' : 'Crea Cliente')}
+                {isLoading ? 'Salvataggio...' : (client ? 'Aggiorna Parte' : 'Crea Parte')}
               </Button>
             </div>
           </form>
