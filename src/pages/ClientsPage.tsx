@@ -252,7 +252,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -272,7 +272,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
             
             <Button
               onClick={openNewForm}
-              className="flex items-center gap-2"
+              className="bg-orange-600 hover:bg-orange-700 text-white flex items-center gap-2"
               disabled={isLoading}
             >
               <Plus className="w-4 h-4" />
@@ -283,7 +283,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {/* Search and Stats */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
@@ -323,7 +323,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
               }
             </p>
             {!searchTerm && (
-              <Button onClick={openNewForm} className="flex items-center gap-2">
+              <Button onClick={openNewForm} className="bg-orange-600 hover:bg-orange-700 text-white flex items-center gap-2">
                 <Plus className="w-4 h-4" />
                 Crea Primo Cliente
               </Button>

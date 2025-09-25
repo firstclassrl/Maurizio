@@ -22,6 +22,7 @@ import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { OptionsModal } from '../components/ui/OptionsModal'
+import { ClientForm } from '../components/clients/ClientForm'
 import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText, FolderOpen } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
@@ -56,6 +57,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const [isAppuntamentoDialogOpen, setIsAppuntamentoDialogOpen] = useState(false)
   const [clients, setClients] = useState<Client[]>([])
+  const [isClientFormOpen, setIsClientFormOpen] = useState(false)
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const [isClientLoading, setIsClientLoading] = useState(false)
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isAddActivityModalOpen, setIsAddActivityModalOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
@@ -253,6 +257,71 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     }
   }
 
+  const handleSaveClient = async (clientData: Client) => {
+    try {
+      setIsClientLoading(true)
+      
+      // Pulisce i dati prima di inviarli al database
+      const cleanData = {
+        tipologia: clientData.tipologia || 'Persona fisica',
+        alternativa: clientData.alternativa || false,
+        ragione: clientData.ragione || '',
+        titolo: clientData.titolo || null,
+        cognome: clientData.cognome || null,
+        nome: clientData.nome || null,
+        sesso: clientData.sesso || null,
+        data_nascita: clientData.dataNascita || null,
+        luogo_nascita: clientData.luogoNascita || null,
+        partita_iva: clientData.partitaIva || null,
+        indirizzi: JSON.stringify(clientData.indirizzi || []),
+        contatti: JSON.stringify(clientData.contatti || []),
+        codice_destinatario: clientData.codiceDestinatario || null,
+        codice_destinatario_pa: clientData.codiceDestinatarioPA || null,
+        note: clientData.note || null,
+        sigla: clientData.sigla || null
+      }
+
+      if (clientData.id) {
+        // Update existing client
+        const { error } = await supabase
+          .from('clients')
+          .update({
+            ...cleanData,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', clientData.id)
+          .eq('user_id', user.id)
+
+        if (error) throw error
+        showToastSuccess('Successo', 'Cliente aggiornato con successo')
+      } else {
+        // Create new client
+        const { error } = await supabase
+          .from('clients')
+          .insert({
+            ...cleanData,
+            user_id: user.id
+          })
+
+        if (error) throw error
+        showToastSuccess('Successo', 'Cliente creato con successo')
+      }
+
+      setIsClientFormOpen(false)
+      setSelectedClient(null)
+      await loadClients()
+    } catch (error) {
+      console.error('Error saving client:', error)
+      showToastSuccess('Errore', 'Errore nel salvataggio del cliente')
+    } finally {
+      setIsClientLoading(false)
+    }
+  }
+
+  const openNewClientForm = () => {
+    setSelectedClient(null)
+    setIsClientFormOpen(true)
+  }
 
   const handleLogout = async () => {
     try {
@@ -424,7 +493,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               
               <div className="flex gap-2">
                 <Button
-                  onClick={onNavigateToClients}
+                  onClick={openNewClientForm}
                   className="bg-orange-600 hover:bg-orange-700 text-white"
                   size="sm"
                 >
@@ -764,6 +833,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onNavigateToStorage={onNavigateToStorage}
       />
 
+      <ClientForm
+        open={isClientFormOpen}
+        onOpenChange={setIsClientFormOpen}
+        client={selectedClient}
+        onSave={handleSaveClient}
+        isLoading={isClientLoading}
+      />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
       
