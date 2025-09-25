@@ -57,6 +57,27 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
 
       console.log('MonthPage: Loaded activities:', data)
 
+      // Get all unique counterparty IDs from all practices
+      const allCounterpartyIds = new Set<string>()
+      data?.forEach(activity => {
+        const counterparties = activity.practices?.controparti_ids || []
+        counterparties.forEach((id: string) => allCounterpartyIds.add(id))
+      })
+
+      // Load counterparty names
+      let counterpartyNames: Record<string, string> = {}
+      if (allCounterpartyIds.size > 0) {
+        const { data: counterpartyData } = await supabase
+          .from('clients')
+          .select('id, ragione, nome, cognome')
+          .in('id', Array.from(allCounterpartyIds))
+
+        counterpartyData?.forEach(client => {
+          const name = client.ragione || `${client.nome || ''} ${client.cognome || ''}`.trim()
+          counterpartyNames[client.id] = name
+        })
+      }
+
       // Convert activities to tasks format for compatibility
       const convertedTasks = (data || []).map(activity => {
         // Get practice number
@@ -66,9 +87,11 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         const client = activity.practices?.clients
         const clientName = client ? (client.ragione || `${client.nome || ''} ${client.cognome || ''}`.trim()) : null
         
-        // Get counterparties (for now, just show the first one if any)
+        // Get counterparty names
         const counterparties = activity.practices?.controparti_ids || []
-        const counterpartyName = counterparties.length > 0 ? 'Controparte' : null // TODO: Load actual counterparty names
+        const counterpartyName = counterparties.length > 0 
+          ? counterparties.map((id: string) => counterpartyNames[id]).filter(Boolean).join(', ')
+          : null
         
         return {
           id: activity.id,
