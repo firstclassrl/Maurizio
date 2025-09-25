@@ -456,12 +456,21 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       if (clientData.id) {
         // Update existing client
         console.log('🔍 DEBUG: Updating existing client with ID:', clientData.id)
+        // FORZA l'aggiunta dei campi mancanti direttamente nella query
+        const updateData = {
+          ...cleanData,
+          codice_fiscale: clientData.codiceFiscale || cleanData.codice_fiscale,
+          cliente: clientData.cliente !== undefined ? clientData.cliente : cleanData.cliente,
+          controparte: clientData.controparte !== undefined ? clientData.controparte : cleanData.controparte,
+          altri: clientData.altri !== undefined ? clientData.altri : cleanData.altri,
+          updated_at: new Date().toISOString()
+        }
+        
+        console.log('🔍 DEBUG: Update data finale:', updateData)
+        
         const { error } = await supabase
           .from('clients')
-          .update({
-            ...cleanData,
-            updated_at: new Date().toISOString()
-          })
+          .update(updateData)
           .eq('id', clientData.id)
           .eq('user_id', user.id)
 
