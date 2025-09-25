@@ -46,7 +46,7 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
       <div
         draggable
         onDragStart={(e) => handleDragStart(e, task)}
-        className={`p-2 rounded text-xs cursor-move transition-all hover:shadow-md ${
+        className={`p-1.5 rounded text-xs cursor-move transition-all hover:shadow-md ${
           task.stato === 'done'
             ? 'bg-green-100 text-green-800 border border-green-200'
             : isOverdue
@@ -56,7 +56,7 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
         title={`${task.pratica} - ${task.attivita}`}
       >
         {/* RIGA 1: Numero pratica - Attività - Cliente/Controparte centrali - categoria attivita' - semaforo rosso */}
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-0.5">
           <div className="flex items-center gap-1 text-xs">
             <span className="text-gray-600">
               Pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
@@ -81,8 +81,8 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
             <span className="text-xs px-1 py-0.5 rounded-full bg-gray-200 text-gray-800 border border-gray-300">
               {task.categoria}
             </span>
-            {/* Semaforo rosso per scadenze */}
-            {isOverdue && (
+            {/* Semaforo rosso per scadenze e urgenti */}
+            {(isOverdue || task.urgent) && (
               <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
             )}
           </div>

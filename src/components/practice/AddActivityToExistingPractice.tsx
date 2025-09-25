@@ -4,20 +4,10 @@ import { Card } from '../ui/card'
 import { DateInput } from '../ui/DateInput'
 import { TimeInput } from '../ui/TimeInput'
 import { Plus, ArrowLeft, Calendar } from 'lucide-react'
-import { Activity } from '../../types/practice'
+import { Activity, Practice } from '../../types/practice'
 import { Client } from '../../types/client'
 import { useMobile } from '../../hooks/useMobile'
 import { supabase } from '../../lib/supabase'
-
-interface Practice {
-  id: string
-  numero: string
-  cliente_id: string
-  controparti_ids: string[]
-  tipo_procedura: 'STRAGIUDIZIALE' | 'GIUDIZIALE'
-  created_at: string
-  updated_at: string
-}
 
 interface AddActivityToExistingPracticeProps {
   open: boolean
@@ -201,7 +191,7 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
       const newActivity: Activity = {
         id: data.id,
         user_id: data.user_id,
-        pratica_id: isRealPractice ? selectedPractice!.id : `practice_${selectedPractice!.numero.replace(/\//g, '_')}`,
+        pratica_id: isRealPractice ? selectedPractice!.id! : `practice_${selectedPractice!.numero.replace(/\//g, '_')}`,
         categoria: activityData.categoria,
         attivita: activityData.attivita,
         data: activityData.data,

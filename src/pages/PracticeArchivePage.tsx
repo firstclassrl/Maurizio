@@ -10,6 +10,7 @@ import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
 import { Footer } from '../components/ui/Footer'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
+import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { Client } from '../types/client'
 import { Activity } from '../types/practice'
 
@@ -431,37 +432,56 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                     <p className="text-gray-500">Nessuna attività trovata per questa pratica</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {practiceActivities.map((activity) => (
-                      <div key={activity.id} className="border border-gray-200 rounded-lg p-4">
+                      <div key={activity.id} className="border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow bg-white">
+                        {/* Header con icona e stato */}
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-gray-900">{activity.attivita}</h4>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-blue-600" />
+                            <span className={`w-2 h-2 rounded-full ${
+                              activity.stato === 'done' ? 'bg-green-500' : 'bg-yellow-500'
+                            }`}></span>
+                          </div>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                             activity.stato === 'done' 
                               ? 'bg-green-100 text-green-800' 
                               : 'bg-yellow-100 text-yellow-800'
                           }`}>
-                            {activity.stato === 'done' ? 'Completata' : 'In corso'}
+                            {activity.stato === 'done' ? 'Fatto' : 'Todo'}
                           </span>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                          <div>
-                            <span className="font-medium">Categoria:</span> {activity.categoria}
+                        
+                        {/* Titolo attività */}
+                        <h4 className="font-semibold text-gray-900 text-sm mb-2 line-clamp-2">
+                          {activity.attivita}
+                        </h4>
+                        
+                        {/* Informazioni compatte */}
+                        <div className="space-y-1 text-xs text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <span className="font-medium">📅</span>
+                            <span>{new Date(activity.data).toLocaleDateString('it-IT')}</span>
+                            {activity.ora && (
+                              <>
+                                <span className="mx-1">•</span>
+                                <span>{activity.ora}</span>
+                              </>
+                            )}
                           </div>
-                          <div>
-                            <span className="font-medium">Data:</span> {new Date(activity.data).toLocaleDateString('it-IT')}
+                          <div className="flex items-center gap-1">
+                            <span className="font-medium">🏷️</span>
+                            <span className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">
+                              {activity.categoria}
+                            </span>
                           </div>
-                          {activity.ora && (
-                            <div>
-                              <span className="font-medium">Ora:</span> {activity.ora}
+                          {activity.note && (
+                            <div className="flex items-start gap-1">
+                              <span className="font-medium">📝</span>
+                              <span className="line-clamp-2 italic">{activity.note}</span>
                             </div>
                           )}
                         </div>
-                        {activity.note && (
-                          <div className="mt-2 text-sm text-gray-600">
-                            <span className="font-medium">Note:</span> {activity.note}
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
@@ -507,6 +527,22 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
           </div>
         </div>
       )}
+
+      {/* Add Activity to Existing Practice Modal */}
+      <AddActivityToExistingPractice
+        open={selectedPracticeForActivity !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedPracticeForActivity(null)
+        }}
+        clients={clients}
+        preselectedPractice={selectedPracticeForActivity}
+        onActivityCreated={(activity) => {
+          console.log('Activity created for practice:', activity)
+          setSelectedPracticeForActivity(null)
+          // Ricarica le pratiche per aggiornare i contatori
+          loadPractices()
+        }}
+      />
 
       {/* Footer */}
       <Footer />
