@@ -54,8 +54,14 @@ export function TimeInput({
     
     // Se ha solo numeri, prova a formattare automaticamente
     if (/^\d{1,4}$/.test(cleanTime)) {
-      if (cleanTime.length <= 2) {
-        // Solo ore (es. "9" -> "09:00")
+      if (cleanTime.length === 1) {
+        // Solo una cifra (es. "9" -> "09:00")
+        const h = parseInt(cleanTime);
+        if (h >= 0 && h <= 9) {
+          return `${h.toString().padStart(2, '0')}:00`;
+        }
+      } else if (cleanTime.length === 2) {
+        // Due cifre (es. "23" -> "23:00")
         const h = parseInt(cleanTime);
         if (h >= 0 && h <= 23) {
           return `${h.toString().padStart(2, '0')}:00`;
@@ -85,16 +91,8 @@ export function TimeInput({
     const inputValue = e.target.value;
     const formattedTime = formatInputTime(inputValue);
     
-    // Aggiorna il valore visualizzato nel campo
-    e.target.value = formattedTime;
-    
-    // Chiama onChange solo se il formato è valido
-    if (formattedTime && formattedTime.includes(':') && formattedTime.length === 5) {
-      onChange(formattedTime);
-    } else if (formattedTime === '') {
-      // Permette di cancellare tutto
-      onChange('');
-    }
+    // Chiama onChange con il valore formattato
+    onChange(formattedTime);
   };
 
   const handleFocus = () => {

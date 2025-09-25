@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { format } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Task, buildMonthGrid, buildWeekGrid, getWeekDayNames, CalendarDay } from '../../lib/calendar-utils'
-import { Calendar as CalendarIcon, AlertCircle, CheckCircle } from 'lucide-react'
+import { Calendar as CalendarIcon } from 'lucide-react'
 
 interface CalendarProps {
   currentDate: Date
@@ -54,24 +54,48 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
         }`}
         title={`${task.pratica} - ${task.attivita}`}
       >
-        <div className="flex items-center gap-1 mb-1">
-          {task.stato === 'done' ? (
-            <CheckCircle className="h-3 w-3" />
-          ) : isOverdue ? (
-            <AlertCircle className="h-3 w-3" />
-          ) : null}
-          <span className="font-medium truncate">
-            {task.pratica}
-          </span>
-        </div>
-        <div className="truncate text-xs opacity-90">
-          {task.attivita}
-        </div>
-        {task.urgent && (
-          <div className="mt-1 inline-flex items-center px-1 py-0.5 rounded text-xs font-medium bg-red-200 text-red-800">
-            URGENTE
+        {/* RIGA 1: Numero pratica - attivita' - categoria attivita' - semaforo rosso */}
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-1 flex-1">
+            <span className="font-medium truncate text-xs">
+              {task.pratica}
+            </span>
+            <span className="truncate text-xs opacity-90 flex-1">
+              {task.attivita}
+            </span>
+            <span className="text-xs px-1 py-0.5 rounded bg-gray-200 text-gray-800">
+              {task.categoria}
+            </span>
           </div>
-        )}
+          {/* Semaforo rosso per scadenze */}
+          {isOverdue && (
+            <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+          )}
+        </div>
+        
+        {/* RIGA 2: ora - data - cliente - controparte - eventuale urgente */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1 flex-1">
+            {task.ora && (
+              <span className="text-xs font-medium">
+                {task.ora}
+              </span>
+            )}
+            <span className="text-xs opacity-75">
+              {new Date(task.scadenza).toLocaleDateString('it-IT')}
+            </span>
+            {task.cliente && (
+              <span className="text-xs opacity-75 truncate">
+                {task.cliente}
+              </span>
+            )}
+          </div>
+          {task.urgent && (
+            <span className="px-1 py-0.5 rounded text-xs font-medium bg-red-200 text-red-800">
+              URGENTE
+            </span>
+          )}
+        </div>
       </div>
     )
   }

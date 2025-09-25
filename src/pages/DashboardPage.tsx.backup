@@ -692,6 +692,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                             URGENTE
                           </span>
                         )}
+                      </div>
+                    </div>
+                      {task.note && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          <strong>Note:</strong> {task.note}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2">
                         <Button
                           onClick={(e) => {
                             e.stopPropagation()
@@ -706,14 +714,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                         </Button>
                       </div>
                     </div>
-                    
-                    {task.note && (
-                      <div className="mt-2 pt-2 border-t border-gray-200">
-                        <p className="text-sm text-gray-600 italic">
-                          {task.note}
-                        </p>
-                      </div>
-                    )}
                   </div>
                 ))
               )}
