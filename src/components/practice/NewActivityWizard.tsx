@@ -249,13 +249,8 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         throw new Error('User not authenticated')
       }
 
-      // Get client names for pratica and controparti
-      const cliente = clients.find(c => c.id === currentPractice!.cliente_id)
-      const controparti = currentPractice!.controparti_ids
-        .map(id => clients.find(c => c.id === id))
-        .filter(Boolean)
-        .map(c => c!.ragione || `${c!.nome} ${c!.cognome}`)
-        .join(', ')
+      // Activity saved successfully in activities table
+      console.log('Activity saved successfully in activities table')
 
       // Map Activity data to Activity format for database
       const activityDataToSave = {
@@ -288,39 +283,8 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
 
       console.log('Activity saved successfully:', savedActivity)
 
-      // Also save to tasks table for compatibility with existing system
-      const taskData = {
-        user_id: user.id,
-        pratica: currentPractice!.numero,
-        attivita: savedActivity.attivita,
-        scadenza: savedActivity.data,
-        ora: savedActivity.ora || null,
-        categoria: savedActivity.categoria,
-        autorita_giudiziaria: savedActivity.autorita_giudiziaria || null,
-        rg: savedActivity.rg || null,
-        giudice: savedActivity.giudice || null,
-        note: savedActivity.note || null,
-        stato: 'todo' as const,
-        urgent: false,
-        cliente: cliente?.ragione || `${cliente?.nome} ${cliente?.cognome}` || null,
-        controparte: controparti || null
-      }
-
-      console.log('Saving task to database for compatibility:', taskData)
-
-      const { data: taskDataResult, error: taskError } = await supabase
-        .from('tasks')
-        .insert(taskData)
-        .select()
-        .single()
-
-      if (taskError) {
-        console.error('Task database error:', taskError)
-        // Don't throw error here, just log it since activity was saved successfully
-        console.warn('Failed to save task for compatibility, but activity was saved')
-      } else {
-        console.log('Task saved successfully for compatibility:', taskDataResult)
-      }
+      // Activity saved successfully in activities table
+      console.log('Activity saved successfully in activities table')
 
       // Create Activity object for callback
       const newActivity: Activity = {

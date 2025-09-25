@@ -73,32 +73,54 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   const loadTasks = async () => {
     try {
-      // First try with evaso filter, fallback without it if column doesn't exist
-      let { data, error } = await supabase
-        .from('tasks')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('evaso', false) // Only load non-evased tasks
-        .order('scadenza', { ascending: true })
-
-      // If error due to missing evaso column, try without the filter
-      if (error && error.message.includes('evaso')) {
-        console.log('evaso column not found, loading all tasks')
-        const fallbackResult = await supabase
-          .from('tasks')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('scadenza', { ascending: true })
-        
-        data = fallbackResult.data
-        error = fallbackResult.error
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('User not authenticated')
       }
 
+      // Load activities from the new activities table
+      const { data: activities, error } = await supabase
+        .from('activities')
+        .select(`
+          *,
+          practices!inner(
+            numero,
+            cliente_id,
+            controparti_ids,
+            tipo_procedura
+          )
+        `)
+        .eq('user_id', user.id)
+        .eq('stato', 'todo')
+        .order('data', { ascending: true })
+
       if (error) throw error
-      setTasks(data || [])
+
+      // Convert activities to tasks format for compatibility
+      const convertedTasks: Task[] = (activities || []).map(activity => ({
+        id: activity.id,
+        user_id: activity.user_id,
+        pratica: activity.practices.numero,
+        attivita: activity.attivita,
+        scadenza: activity.data,
+        ora: activity.ora,
+        categoria: activity.categoria,
+        autorita_giudiziaria: activity.autorita_giudiziaria,
+        rg: activity.rg,
+        giudice: activity.giudice,
+        note: activity.note,
+        stato: activity.stato,
+        urgent: activity.urgent,
+        cliente: null, // Will be populated from practices
+        controparte: null, // Will be populated from practices
+        created_at: activity.created_at,
+        updated_at: activity.updated_at
+      }))
+
+      setTasks(convertedTasks)
     } catch (error) {
       console.error('Errore nel caricamento delle attività:', error)
-      console.error('Errore nel caricamento delle attività:', error)
+      setTasks([])
     }
   }
 
@@ -128,19 +150,49 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const loadUrgentTasks = async () => {
     try {
       const today = new Date().toISOString().split('T')[0]
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*')
+      const { data: activities, error } = await supabase
+        .from('activities')
+        .select(`
+          *,
+          practices!inner(
+            numero,
+            cliente_id,
+            controparti_ids,
+            tipo_procedura
+          )
+        `)
         .eq('user_id', user.id)
         .eq('stato', 'todo')
-        .or(`urgent.eq.true,scadenza.lt.${today}`)
-        .order('scadenza', { ascending: true })
+        .or(`urgent.eq.true,data.lt.${today}`)
+        .order('data', { ascending: true })
 
       if (error) throw error
-      setUrgentTasks(data || [])
+
+      // Convert activities to tasks format for compatibility
+      const convertedTasks: Task[] = (activities || []).map(activity => ({
+        id: activity.id,
+        user_id: activity.user_id,
+        pratica: activity.practices.numero,
+        attivita: activity.attivita,
+        scadenza: activity.data,
+        ora: activity.ora,
+        categoria: activity.categoria,
+        autorita_giudiziaria: activity.autorita_giudiziaria,
+        rg: activity.rg,
+        giudice: activity.giudice,
+        note: activity.note,
+        stato: activity.stato,
+        urgent: activity.urgent,
+        cliente: null,
+        controparte: null,
+        created_at: activity.created_at,
+        updated_at: activity.updated_at
+      }))
+
+      setUrgentTasks(convertedTasks)
     } catch (error) {
       console.error('Errore nel caricamento delle scadenze urgenti:', error)
-      console.error('Errore nel caricamento delle scadenze urgenti:', error)
+      setUrgentTasks([])
     }
   }
 
@@ -168,9 +220,17 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const handleTaskUpdate = async (updatedTask: Task) => {
     try {
         const { error } = await supabase
-          .from('tasks')
-        .update(updatedTask)
-        .eq('id', updatedTask.id)
+          .from('activities')
+          .update({
+            attivita: updatedTask.attivita,
+            data: updatedTask.scadenza,
+            ora: updatedTask.ora,
+            categoria: updatedTask.categoria,
+            note: updatedTask.note,
+            stato: updatedTask.stato,
+            urgent: updatedTask.urgent
+          })
+          .eq('id', updatedTask.id)
 
         if (error) throw error
 
@@ -182,7 +242,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       showToastSuccess('Successo', 'Attività aggiornata con successo')
     } catch (error) {
       console.error('Errore nell\'aggiornamento dell\'attività:', error)
-      console.error('Errore nell\'aggiornamento dell\'attività:', error)
+      setTasks([])
     }
   }
 
@@ -196,7 +256,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
     try {
       const { error } = await supabase
-        .from('tasks')
+        .from('activities')
         .delete()
         .eq('id', taskToDelete.id)
 
@@ -208,7 +268,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       showToastSuccess('Successo', 'Attività eliminata con successo')
     } catch (error) {
       console.error('Errore nell\'eliminazione dell\'attività:', error)
-      console.error('Errore nell\'eliminazione dell\'attività:', error)
+      setTasks([])
     }
   }
 

@@ -100,43 +100,7 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
       setPractices(practices || [])
     } catch (error) {
       console.error('Error loading practices:', error)
-      // Fallback: try to load from tasks table if practices table doesn't exist
-      try {
-        const { data: { user: fallbackUser } } = await supabase.auth.getUser()
-        if (!fallbackUser) {
-          throw new Error('User not authenticated')
-        }
-        
-        const { data: tasks, error: tasksError } = await supabase
-          .from('tasks')
-          .select('pratica, cliente, controparte, categoria')
-          .eq('user_id', fallbackUser.id)
-          .not('pratica', 'is', null)
-
-        if (tasksError) throw tasksError
-
-        // Group by pratica to get unique practices
-        const practiceMap = new Map()
-        tasks?.forEach(task => {
-          if (!practiceMap.has(task.pratica)) {
-            practiceMap.set(task.pratica, {
-              id: `practice_${task.pratica.replace(/\//g, '_')}`,
-              numero: task.pratica,
-              cliente_id: '', // We'll need to find this from clients
-              controparti_ids: [],
-              tipo_procedura: 'STRAGIUDIZIALE' as const, // Default, we'll need to determine this
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
-          }
-        })
-
-        const fallbackPractices = Array.from(practiceMap.values())
-        setPractices(fallbackPractices)
-      } catch (fallbackError) {
-        console.error('Fallback loading failed:', fallbackError)
-        setPractices([])
-      }
+      setPractices([])
     } finally {
       setLoading(false)
     }
@@ -222,34 +186,8 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         data = result.data
         error = result.error
       } else {
-        // Save to tasks table (fallback)
-        const taskData = {
-          user_id: user.id,
-          pratica: selectedPractice!.numero,
-          attivita: activityData.attivita,
-          scadenza: activityData.data,
-          ora: activityData.ora || null,
-          categoria: activityData.categoria,
-          autorita_giudiziaria: activityData.autorita_giudiziaria || null,
-          rg: activityData.rg || null,
-          giudice: activityData.giudice || null,
-          note: activityData.note || null,
-          stato: 'todo' as const,
-          urgent: activityData.urgent,
-          cliente: cliente ? (cliente.ragione || `${cliente.nome} ${cliente.cognome}`) : null,
-          controparte: controparti || null
-        }
-
-        console.log('Saving task to database:', taskData)
-
-        const result = await supabase
-          .from('tasks')
-          .insert(taskData)
-          .select()
-          .single()
-        
-        data = result.data
-        error = result.error
+        // This should not happen with real practices
+        throw new Error('Cannot save activity: practice not found in practices table')
       }
 
       if (error) {
