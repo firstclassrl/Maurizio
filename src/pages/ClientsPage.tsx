@@ -4,7 +4,7 @@ import { Input } from '../components/ui/input'
 import { Card } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
-import { ClientForm } from '../components/clients/ClientForm'
+import { NewClientForm } from '../components/clients/NewClientForm'
 import { Footer } from '../components/ui/Footer'
 import { Client } from '../types/client'
 import { supabase } from '../lib/supabase'
@@ -40,7 +40,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  // const [isLoading, setIsLoading] = useState(false) // Rimosso - non più necessario
 
   useEffect(() => {
     loadClients()
@@ -64,7 +64,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
 
   const loadClients = async () => {
     try {
-      setIsLoading(true)
+      // setIsLoading(true) // Rimosso
       const { data, error } = await supabase
         .from('clients')
         .select('*')
@@ -106,7 +106,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
       console.error('Error loading clients:', error)
       showError('Errore', 'Errore nel caricamento dei clienti')
     } finally {
-      setIsLoading(false)
+      // setIsLoading(false) // Rimosso
     }
   }
 
@@ -125,80 +125,18 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
     setFilteredClients(filtered)
   }
 
-  const handleSaveClient = async (clientData: Client) => {
-    try {
-      setIsLoading(true)
-      
-      // Pulisce i dati prima di inviarli al database
-      const cleanData = {
-        tipologia: clientData.tipologia || 'Persona fisica',
-        alternativa: clientData.alternativa || false,
-        ragione: clientData.ragione || '',
-        titolo: clientData.titolo || null,
-        cognome: clientData.cognome || null,
-        nome: clientData.nome || null,
-        sesso: clientData.sesso || null,
-        data_nascita: clientData.dataNascita || null,
-        luogo_nascita: clientData.luogoNascita || null,
-        partita_iva: clientData.partitaIva || null,
-        indirizzi: JSON.stringify(clientData.indirizzi || []),
-        contatti: JSON.stringify(clientData.contatti || []),
-        codice_destinatario: clientData.codiceDestinatario || null,
-        codice_destinatario_pa: clientData.codiceDestinatarioPA || null,
-        note: clientData.note || null,
-        sigla: clientData.sigla || null
-      }
-
-      console.log('Dati da salvare:', cleanData)
-      
-      if (clientData.id) {
-        // Update existing client
-        const { error } = await supabase
-          .from('clients')
-          .update({
-            ...cleanData,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', clientData.id)
-          .eq('user_id', user.id)
-
-        if (error) {
-          console.error('Errore update:', error)
-          throw error
-        }
-        showSuccess('Successo', 'Cliente aggiornato con successo')
-      } else {
-        // Create new client
-        const { error } = await supabase
-          .from('clients')
-          .insert({
-            ...cleanData,
-            user_id: user.id
-          })
-
-        if (error) {
-          console.error('Errore insert:', error)
-          throw error
-        }
-        showSuccess('Successo', 'Cliente creato con successo')
-      }
-
-      setIsFormOpen(false)
-      setSelectedClient(null)
-      loadClients()
-    } catch (error) {
-      console.error('Error saving client:', error)
-      showError('Errore', 'Errore nel salvataggio del cliente')
-    } finally {
-      setIsLoading(false)
-    }
+  const handleFormSuccess = async () => {
+    console.log('🆕 NEW FORM: handleFormSuccess called in ClientsPage')
+    setIsFormOpen(false)
+    setSelectedClient(null)
+    await loadClients()
   }
 
   const handleDeleteClient = async () => {
     if (!clientToDelete) return
 
     try {
-      setIsLoading(true)
+      // setIsLoading(true) // Rimosso
       const { error } = await supabase
         .from('clients')
         .delete()
@@ -212,7 +150,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
       console.error('Error deleting client:', error)
       showError('Errore', 'Errore nell\'eliminazione del cliente')
     } finally {
-      setIsLoading(false)
+      // setIsLoading(false) // Rimosso
       setIsDeleteDialogOpen(false)
       setClientToDelete(null)
     }
@@ -285,7 +223,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
             <Button
               onClick={openNewForm}
               className="bg-orange-600 hover:bg-orange-700 text-white flex items-center gap-2"
-              disabled={isLoading}
+              disabled={false}
             >
               <Plus className="w-4 h-4" />
               Nuova Parte
@@ -318,7 +256,7 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
         </div>
 
         {/* Clients Grid */}
-        {isLoading && clients.length === 0 ? (
+        {false && clients.length === 0 ? (
           <div className="flex justify-center items-center py-12">
             <div className="text-gray-500">Caricamento clienti...</div>
           </div>
@@ -434,12 +372,11 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
       </div>
 
       {/* Forms and Dialogs */}
-      <ClientForm
-        open={isFormOpen}
-        onOpenChange={setIsFormOpen}
+      <NewClientForm
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSuccess={handleFormSuccess}
         client={selectedClient}
-        onSave={handleSaveClient}
-        isLoading={isLoading}
       />
 
       <ConfirmDialog
