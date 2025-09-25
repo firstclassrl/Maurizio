@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Task, buildMonthGrid, buildWeekGrid, getWeekDayNames, CalendarDay } from '../../lib/calendar-utils'
 import { Calendar as CalendarIcon } from 'lucide-react'
+import { formatTimeWithoutSeconds } from '../../lib/time-utils'
 
 interface CalendarProps {
   currentDate: Date
@@ -54,46 +55,52 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
         }`}
         title={`${task.pratica} - ${task.attivita}`}
       >
-        {/* RIGA 1: Numero pratica - attivita' - Cliente - Controparte - categoria attivita' - semaforo rosso */}
+        {/* RIGA 1: Numero pratica - Attività - Cliente/Controparte centrali - categoria attivita' - semaforo rosso */}
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-1 flex-1 text-xs">
             <span className="text-gray-600">
               Pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
             </span>
             <span className="text-gray-600">
-              attivita': <span className="font-bold text-gray-900">{task.attivita}</span>
+              Attività: <span className="font-bold text-gray-900">{task.attivita}</span>
             </span>
-            {task.cliente && (
-              <span className="text-gray-600">
-                Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
-              </span>
-            )}
-            {task.controparte && (
-              <span className="text-gray-600">
-                Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
-              </span>
-            )}
+            <div className="flex items-center gap-1">
+              {task.cliente && (
+                <span className="text-gray-600">
+                  Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
+                </span>
+              )}
+              {task.controparte && (
+                <span className="text-gray-600">
+                  Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
             <span className="text-xs px-1 py-0.5 rounded-full bg-gray-200 text-gray-800 border border-gray-300">
               {task.categoria}
             </span>
+            {/* Semaforo rosso per scadenze */}
+            {isOverdue && (
+              <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+            )}
           </div>
-          {/* Semaforo rosso per scadenze */}
-          {isOverdue && (
-            <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
-          )}
         </div>
         
         {/* RIGA 2: ora - data - note - eventuale urgente */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 flex-1 text-xs">
+          <div className="flex items-center gap-1 text-xs">
             {task.ora && (
               <span className="text-gray-600">
-                ora: <span className="font-medium text-gray-900">{task.ora}</span>
+                ora: <span className="font-medium text-gray-900">{formatTimeWithoutSeconds(task.ora)}</span>
               </span>
             )}
             <span className="text-gray-600">
               data: <span className="font-medium text-gray-900">{new Date(task.scadenza).toLocaleDateString('it-IT')}</span>
             </span>
+          </div>
+          <div className="flex items-center gap-1 text-xs">
             {task.note && (
               <span className="text-gray-600">
                 note: <span className="font-medium text-gray-900 italic">{task.note}</span>

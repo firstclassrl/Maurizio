@@ -513,46 +513,52 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     className={`p-4 rounded-lg border-2 hover:shadow-md transition-shadow cursor-pointer ${getCategoryColor(task.categoria)}`}
                     onClick={() => handleTaskClick(task)}
                   >
-                    {/* RIGA 1: Numero pratica - attivita' - Cliente - Controparte - categoria attivita' - semaforo rosso */}
+                    {/* RIGA 1: Numero pratica - Attività - Cliente/Controparte centrali - categoria attivita' - semaforo rosso */}
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3 flex-1 text-xs">
                         <span className="text-gray-600">
                           Numero pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
                         </span>
                         <span className="text-gray-600">
-                          attivita': <span className="font-bold text-gray-900">{task.attivita}</span>
+                          Attività: <span className="font-bold text-gray-900">{task.attivita}</span>
                         </span>
-                        {task.cliente && (
-                          <span className="text-gray-600">
-                            Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
-                          </span>
-                        )}
-                        {task.controparte && (
-                          <span className="text-gray-600">
-                            Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
-                          </span>
-                        )}
+                        <div className="flex items-center gap-3">
+                          {task.cliente && (
+                            <span className="text-gray-600">
+                              Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
+                            </span>
+                          )}
+                          {task.controparte && (
+                            <span className="text-gray-600">
+                              Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
                         <span className="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-800 border border-gray-300">
                           {task.categoria}
                         </span>
+                        {/* Semaforo rosso per scadenze */}
+                        {new Date(task.scadenza) < new Date() && task.stato === 'todo' && (
+                          <div className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></div>
+                        )}
                       </div>
-                      {/* Semaforo rosso per scadenze */}
-                      {new Date(task.scadenza) < new Date() && task.stato === 'todo' && (
-                        <div className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></div>
-                      )}
                     </div>
                     
                     {/* RIGA 2: ora - data - note - eventuale urgente */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 flex-1 text-xs">
+                      <div className="flex items-center gap-4 text-xs">
                         {task.ora && (
                           <span className="text-gray-600">
-                            ora: <span className="font-medium text-gray-900">{task.ora}</span>
+                            ora: <span className="font-medium text-gray-900">{formatTimeWithoutSeconds(task.ora)}</span>
                           </span>
                         )}
                         <span className="text-gray-600">
                           data: <span className="font-medium text-gray-900">{new Date(task.scadenza).toLocaleDateString('it-IT')}</span>
                         </span>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs">
                         {task.note && (
                           <span className="text-gray-600">
                             note: <span className="font-medium text-gray-900 italic">{task.note}</span>
@@ -661,46 +667,52 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                       setShowUrgentTasks(false)
                     }}
                   >
-                    {/* RIGA 1: Numero pratica - attivita' - Cliente - Controparte - categoria attivita' - semaforo rosso */}
+                    {/* RIGA 1: Numero pratica - Attività - Cliente/Controparte centrali - categoria attivita' - semaforo rosso */}
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3 flex-1 text-xs">
                         <span className="text-gray-600">
                           Numero pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
                         </span>
                         <span className="text-gray-600">
-                          attivita': <span className="font-bold text-gray-900">{task.attivita}</span>
+                          Attività: <span className="font-bold text-gray-900">{task.attivita}</span>
                         </span>
-                        {task.cliente && (
-                          <span className="text-gray-600">
-                            Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
-                          </span>
-                        )}
-                        {task.controparte && (
-                          <span className="text-gray-600">
-                            Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
-                          </span>
-                        )}
+                        <div className="flex items-center gap-3">
+                          {task.cliente && (
+                            <span className="text-gray-600">
+                              Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
+                            </span>
+                          )}
+                          {task.controparte && (
+                            <span className="text-gray-600">
+                              Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
                         <span className="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-800 border border-gray-300">
                           {task.categoria}
                         </span>
+                        {/* Semaforo rosso per scadenze */}
+                        {new Date(task.scadenza) < new Date() && task.stato === 'todo' && (
+                          <div className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></div>
+                        )}
                       </div>
-                      {/* Semaforo rosso per scadenze */}
-                      {new Date(task.scadenza) < new Date() && task.stato === 'todo' && (
-                        <div className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></div>
-                      )}
                     </div>
                     
                     {/* RIGA 2: ora - data - note - eventuale urgente */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 flex-1 text-xs">
+                      <div className="flex items-center gap-4 text-xs">
                         {task.ora && (
                           <span className="text-gray-600">
-                            ora: <span className="font-medium text-gray-900">{task.ora}</span>
+                            ora: <span className="font-medium text-gray-900">{formatTimeWithoutSeconds(task.ora)}</span>
                           </span>
                         )}
                         <span className="text-gray-600">
                           data: <span className="font-medium text-gray-900">{new Date(task.scadenza).toLocaleDateString('it-IT')}</span>
                         </span>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs">
                         {task.note && (
                           <span className="text-gray-600">
                             note: <span className="font-medium text-gray-900 italic">{task.note}</span>
