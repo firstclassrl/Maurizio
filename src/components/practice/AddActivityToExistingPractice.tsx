@@ -24,9 +24,10 @@ interface AddActivityToExistingPracticeProps {
   onOpenChange: (open: boolean) => void
   clients: Client[]
   onActivityCreated: (activity: Activity) => void
+  preselectedPractice?: Practice | null
 }
 
-export function AddActivityToExistingPractice({ open, onOpenChange, clients, onActivityCreated }: AddActivityToExistingPracticeProps) {
+export function AddActivityToExistingPractice({ open, onOpenChange, clients, onActivityCreated, preselectedPractice }: AddActivityToExistingPracticeProps) {
   const isMobile = useMobile()
   const [step, setStep] = useState<'select-practice' | 'add-activity'>('select-practice')
   const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null)
@@ -50,8 +51,16 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
   // Reset when modal opens/closes
   useEffect(() => {
     if (open) {
-      setStep('select-practice')
-      setSelectedPractice(null)
+      if (preselectedPractice) {
+        // Se c'è una pratica pre-selezionata, vai direttamente al form attività
+        setStep('add-activity')
+        setSelectedPractice(preselectedPractice)
+      } else {
+        // Altrimenti vai alla selezione pratica
+        setStep('select-practice')
+        setSelectedPractice(null)
+      }
+      
       setActivityData({
         categoria: 'Appuntamento',
         attivita: '',
@@ -65,7 +74,7 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
       })
       loadPractices()
     }
-  }, [open])
+  }, [open, preselectedPractice])
 
   const loadPractices = async () => {
     try {
@@ -175,6 +184,13 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
 
       // Check if this is a real practice (from practices table) or a fallback practice
       const isRealPractice = selectedPractice!.id && !selectedPractice!.id.startsWith('practice_')
+      
+      console.log('Practice validation:', {
+        selectedPractice: selectedPractice,
+        practiceId: selectedPractice!.id,
+        isRealPractice: isRealPractice,
+        idStartsWithPractice: selectedPractice!.id?.startsWith('practice_')
+      })
       
       let data, error
       
