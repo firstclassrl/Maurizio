@@ -191,7 +191,6 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
                   label="Ora"
                   value={formData.ora}
                   onChange={(value) => handleInputChange('ora', value)}
-                  placeholder="hh:mm"
                 />
               </div>
             </div>

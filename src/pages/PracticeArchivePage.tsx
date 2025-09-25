@@ -107,10 +107,10 @@ export function PracticeArchivePage({ onNavigateBack, onNavigateToNewPractice }:
               onClick={onNavigateBack}
               variant="outline"
               size="sm"
-              className="border-white text-white hover:bg-white hover:text-slate-900"
+              className="border-white text-white hover:bg-white hover:text-slate-900 bg-transparent"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Torna alla Dashboard
+              <ArrowLeft className="h-4 w-4 mr-2 text-white" />
+              <span className="text-white">Torna alla Dashboard</span>
             </Button>
             <h1 className="text-xl font-semibold">Archivio Pratiche</h1>
           </div>
@@ -126,7 +126,7 @@ export function PracticeArchivePage({ onNavigateBack, onNavigateToNewPractice }:
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-6">
+      <main className="container mx-auto px-6 py-6 pb-20">
         {/* Filtri */}
         <Card className="mb-6">
           <CardContent className="p-6">
@@ -242,7 +242,7 @@ export function PracticeArchivePage({ onNavigateBack, onNavigateToNewPractice }:
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer absolute />
     </div>
   )
 }

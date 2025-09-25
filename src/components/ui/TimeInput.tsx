@@ -9,7 +9,6 @@ interface TimeInputProps {
   onChange: (value: string) => void;
   label?: string;
   className?: string;
-  placeholder?: string;
   required?: boolean;
 }
 
@@ -19,7 +18,6 @@ export function TimeInput({
   onChange, 
   label, 
   className = "", 
-  placeholder = "hh:mm",
   required = false 
 }: TimeInputProps) {
   const [isFocused, setIsFocused] = useState(false);
@@ -84,13 +82,8 @@ export function TimeInput({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    // Per input type="time", il valore è già nel formato HH:MM
-    if (inputValue && inputValue.includes(':')) {
-      onChange(inputValue);
-    } else {
-      const formattedTime = formatInputTime(inputValue);
-      onChange(formattedTime);
-    }
+    const formattedTime = formatInputTime(inputValue);
+    onChange(formattedTime);
   };
 
   const handleFocus = () => {
@@ -157,14 +150,12 @@ export function TimeInput({
         <Input
           ref={inputRef}
           id={id}
-          type="time"
-          step="60"
-          data-format="24"
+          type="text"
           value={formatTime(value)}
           onChange={handleInputChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          placeholder={placeholder}
+          placeholder="--:--"
           className={`pr-10 ${className} ${isFocused ? 'ring-2 ring-blue-500 border-blue-500' : ''}`}
           required={required}
         />
