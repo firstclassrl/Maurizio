@@ -417,9 +417,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       console.log('🔍 DEBUG: Clean data - cliente:', cleanData.cliente)
       console.log('🔍 DEBUG: Clean data - controparte:', cleanData.controparte)
       console.log('🔍 DEBUG: Clean data - altri:', cleanData.altri)
+      console.log('🔍 DEBUG: Clean data - id:', cleanData.id)
+      console.log('🔍 DEBUG: Clean data - user_id:', cleanData.user_id)
 
       if (clientData.id) {
         // Update existing client
+        console.log('🔍 DEBUG: Updating existing client with ID:', clientData.id)
         const { error } = await supabase
           .from('clients')
           .update({
@@ -429,8 +432,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           .eq('id', clientData.id)
           .eq('user_id', user.id)
 
-        if (error) throw error
-        console.log('🔍 DEBUG: Cliente aggiornato, mostrando notifica...')
+        if (error) {
+          console.error('🔍 DEBUG: Errore nell\'aggiornamento:', error)
+          throw error
+        }
+        console.log('🔍 DEBUG: Cliente aggiornato con successo!')
         showSuccess('Successo', 'Cliente aggiornato con successo')
       } else {
         // Create new client
