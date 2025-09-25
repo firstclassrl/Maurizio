@@ -378,7 +378,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     try {
       setIsClientLoading(true)
       
-      console.log('Saving client data:', clientData)
+      console.log('🔍 DEBUG: Saving client data:', clientData)
+      console.log('🔍 DEBUG: Codice Fiscale:', clientData.codiceFiscale)
+      console.log('🔍 DEBUG: Partita IVA:', clientData.partitaIva)
+      console.log('🔍 DEBUG: Cliente:', clientData.cliente)
+      console.log('🔍 DEBUG: Controparte:', clientData.controparte)
+      console.log('🔍 DEBUG: Altri:', clientData.altri)
       
       // Pulisce i dati prima di inviarli al database
       const cleanData = {
@@ -405,7 +410,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         sigla: clientData.sigla || null
       }
       
-      console.log('Clean data to save:', cleanData)
+      console.log('🔍 DEBUG: Clean data to save:', cleanData)
+      console.log('🔍 DEBUG: Clean data - codice_fiscale:', cleanData.codice_fiscale)
+      console.log('🔍 DEBUG: Clean data - partita_iva:', cleanData.partita_iva)
+      console.log('🔍 DEBUG: Clean data - cliente:', cleanData.cliente)
+      console.log('🔍 DEBUG: Clean data - controparte:', cleanData.controparte)
+      console.log('🔍 DEBUG: Clean data - altri:', cleanData.altri)
 
       if (clientData.id) {
         // Update existing client
@@ -419,6 +429,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           .eq('user_id', user.id)
 
         if (error) throw error
+        console.log('🔍 DEBUG: Cliente aggiornato, mostrando notifica...')
         showSuccess('Successo', 'Cliente aggiornato con successo')
       } else {
         // Create new client
@@ -430,6 +441,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           })
 
         if (error) throw error
+        console.log('🔍 DEBUG: Cliente creato, mostrando notifica...')
         showSuccess('Successo', 'Cliente creato con successo')
       }
 
