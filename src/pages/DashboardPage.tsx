@@ -72,11 +72,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       await loadTasks()
     }
     loadData()
-    
-    // Test notifiche
-    setTimeout(() => {
-      showSuccess('Test', 'Notifiche funzionano!')
-    }, 2000)
   }, [])
 
   const loadTasks = async () => {
@@ -622,7 +617,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   size="sm"
                 >
                   <FileText className="h-4 w-4 mr-2" />
-                  Archivio Pratiche
+                  Pratiche
                 </Button>
 
                 <Button
@@ -631,7 +626,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   size="sm"
                 >
                   <Users className="h-4 w-4 mr-2" />
-                  Archivio Clienti
+                  Clienti
                 </Button>
               </div>
             </div>

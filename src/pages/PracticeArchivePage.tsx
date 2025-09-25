@@ -226,7 +226,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
               <ArrowLeft className="h-4 w-4 mr-2" />
               Torna alla Dashboard
             </Button>
-            <h1 className="text-xl font-semibold">Archivio Pratiche</h1>
+            <h1 className="text-xl font-semibold">Pratiche</h1>
           </div>
           <Button
             onClick={() => setIsNewPracticeModalOpen(true)}

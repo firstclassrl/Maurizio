@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { subscription, userAgent } = await req.json()
+    const { subscription, title, body } = await req.json()
     
     // Estrai user_id dal token JWT
     const authHeader = req.headers.get('Authorization')
@@ -31,24 +31,41 @@ serve(async (req) => {
       throw new Error('Utente non autenticato')
     }
 
-    // Salva o aggiorna subscription
-    const { error } = await supabase
-      .from('push_subscriptions')
-      .upsert({
-        user_id: user.id,
-        endpoint: subscription.endpoint,
-        p256dh: subscription.keys.p256dh,
-        auth: subscription.keys.auth,
-        user_agent: userAgent
-      })
+    // Invia notifica push usando web-push
+    const webPush = await import('https://esm.sh/web-push@3.6.7')
+    
+    const payload = JSON.stringify({
+      title: title || 'Test Notifica LexAgenda',
+      body: body || 'Questa è una notifica di test per verificare che le push notifications funzionino correttamente!',
+      icon: '/favicon.png',
+      badge: '/favicon.png',
+      data: {
+        type: 'test',
+        timestamp: new Date().toISOString(),
+        message: 'Test successful'
+      }
+    })
 
-    if (error) throw error
+    await webPush.sendNotification({
+      endpoint: subscription.endpoint,
+      keys: {
+        p256dh: subscription.keys.p256dh,
+        auth: subscription.keys.auth
+      }
+    }, payload, {
+      vapidDetails: {
+        subject: 'mailto:your-email@example.com',
+        publicKey: Deno.env.get('VAPID_PUBLIC_KEY'),
+        privateKey: Deno.env.get('VAPID_PRIVATE_KEY')
+      }
+    })
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ success: true, message: 'Test notification sent' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
+    console.error('Error sending test notification:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

@@ -108,7 +108,7 @@ export function PracticeArchive({ open, onOpenChange }: PracticeArchiveProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Archivio Pratiche
+              Pratiche
             </DialogTitle>
           </DialogHeader>
 

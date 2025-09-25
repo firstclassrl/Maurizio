@@ -44,8 +44,8 @@ serve(async (req) => {
     await webPush.sendNotification({
       endpoint: subscription.endpoint,
       keys: {
-        p256dh: subscription.p256dh_key,
-        auth: subscription.auth_key
+        p256dh: subscription.p256dh,
+        auth: subscription.auth
       }
     }, payload, {
       vapidDetails: {

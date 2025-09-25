@@ -162,30 +162,41 @@ export function usePushNotifications() {
   };
 
   const sendTestNotification = async (): Promise<boolean> => {
-    if (!state.isSubscribed) {
+    if (!state.isSubscribed || !state.subscription) {
       console.log('Nessuna subscription attiva per il test');
       return false;
     }
 
     try {
-      // Invia notifica di test al server
-      const response = await fetch('/api/send-test-notification', {
+      // Usa l'endpoint Supabase Edge Function
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabase = await import('../lib/supabase');
+      const { data: { session } } = await supabase.supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        console.error('Nessun token di accesso disponibile');
+        return false;
+      }
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/send-test-notification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({
-          subscription: state.subscription,
-          title: 'Test Notifica',
-          body: 'Questa è una notifica di test da LexAgenda!'
+          subscription: state.subscription.toJSON(),
+          title: 'Test Notifica LexAgenda',
+          body: 'Questa è una notifica di test per verificare che le push notifications funzionino correttamente!'
         })
       });
 
       if (response.ok) {
-        console.log('Notifica di test inviata');
+        console.log('Notifica di test inviata con successo');
         return true;
       } else {
-        console.error('Errore nell\'invio notifica di test');
+        const errorData = await response.json();
+        console.error('Errore nell\'invio notifica di test:', errorData);
         return false;
       }
     } catch (error) {
