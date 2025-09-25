@@ -9,19 +9,42 @@ import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
 import { Footer } from '../components/ui/Footer'
+import { NewActivityWizard } from '../components/practice/NewActivityWizard'
+import { Client } from '../types/client'
+import { Activity } from '../types/practice'
 
 interface PracticeArchivePageProps {
   onNavigateBack: () => void
-  onNavigateToNewPractice: () => void
 }
 
-export function PracticeArchivePage({ onNavigateBack, onNavigateToNewPractice }: PracticeArchivePageProps) {
+export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps) {
   const [practices, setPractices] = useState<Practice[]>([])
   const [filteredPractices, setFilteredPractices] = useState<Practice[]>([])
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedParty, setSelectedParty] = useState<string>('all')
   const [loading, setLoading] = useState(false)
+  const [clients, setClients] = useState<Client[]>([])
+  const [isNewPracticeModalOpen, setIsNewPracticeModalOpen] = useState(false)
+
+  // Carica tutti i clienti
+  const loadClients = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      setClients(data || [])
+    } catch (error) {
+      console.error('Errore nel caricamento dei clienti:', error)
+    }
+  }
 
   // Carica tutte le pratiche
   const loadPractices = async () => {
@@ -44,6 +67,13 @@ export function PracticeArchivePage({ onNavigateBack, onNavigateToNewPractice }:
     } finally {
       setLoading(false)
     }
+  }
+
+  // Gestisce la creazione di una nuova attività
+  const handleActivityCreated = (activity: Activity) => {
+    console.log('New activity created from archive:', activity)
+    // Ricarica le pratiche per mostrare eventuali aggiornamenti
+    loadPractices()
   }
 
   // Filtra le pratiche
@@ -90,6 +120,7 @@ export function PracticeArchivePage({ onNavigateBack, onNavigateToNewPractice }:
   }
 
   useEffect(() => {
+    loadClients()
     loadPractices()
   }, [])
 
@@ -109,13 +140,13 @@ export function PracticeArchivePage({ onNavigateBack, onNavigateToNewPractice }:
               size="sm"
               className="border-white text-white hover:bg-white hover:text-slate-900 bg-transparent"
             >
-              <ArrowLeft className="h-4 w-4 mr-2 text-white" />
-              <span className="text-white">Torna alla Dashboard</span>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Torna alla Dashboard
             </Button>
             <h1 className="text-xl font-semibold">Archivio Pratiche</h1>
           </div>
           <Button
-            onClick={onNavigateToNewPractice}
+            onClick={() => setIsNewPracticeModalOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white"
             size="sm"
           >
@@ -240,6 +271,14 @@ export function PracticeArchivePage({ onNavigateBack, onNavigateToNewPractice }:
           </CardContent>
         </Card>
       </main>
+
+      {/* New Practice Modal */}
+      <NewActivityWizard
+        open={isNewPracticeModalOpen}
+        onOpenChange={setIsNewPracticeModalOpen}
+        clients={clients}
+        onActivityCreated={handleActivityCreated}
+      />
 
       {/* Footer */}
       <Footer absolute />

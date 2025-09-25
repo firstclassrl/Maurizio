@@ -115,7 +115,6 @@ function App() {
         return (
           <PracticeArchivePage 
             onNavigateBack={() => setCurrentView('dashboard')}
-            onNavigateToNewPractice={() => setCurrentView('dashboard')}
           />
         )
       default:
