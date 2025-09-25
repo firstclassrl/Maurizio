@@ -211,7 +211,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
   }, [selectedPractice, selectedCategory, selectedParty, practices])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <header className="bg-slate-900 text-white py-4 px-6">
         <div className="container mx-auto flex items-center justify-between">
@@ -239,7 +239,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-6 pb-20">
+      <main className="flex-1 container mx-auto px-6 py-6">
         {/* Filtri */}
         <Card className="mb-6">
           <CardContent className="p-6">
@@ -509,7 +509,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       )}
 
       {/* Footer */}
-      <Footer absolute />
+      <Footer />
     </div>
   )
 }
