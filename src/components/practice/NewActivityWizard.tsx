@@ -115,18 +115,48 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
 
     setIsCreatingPractice(true)
     try {
-      // Generate practice number only when creating activity
+      // Get current user ID
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('User not authenticated')
+      }
+
+      // Generate practice number
       const practiceNumber = await generatePracticeNumber()
       
-      const newPractice: Practice = {
-        id: `practice_${Date.now()}`,
-        user_id: 'current_user_id',
+      // Save practice to database
+      const practiceDataToSave = {
+        user_id: user.id,
         numero: practiceNumber,
         cliente_id: practiceData.cliente_id,
         controparti_ids: practiceData.controparti_ids,
-        tipo_procedura: practiceData.tipo_procedura,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        tipo_procedura: practiceData.tipo_procedura
+      }
+
+      console.log('Saving practice to database:', practiceDataToSave)
+
+      const { data: savedPractice, error: practiceError } = await supabase
+        .from('practices')
+        .insert(practiceDataToSave)
+        .select()
+        .single()
+
+      if (practiceError) {
+        console.error('Practice database error:', practiceError)
+        throw practiceError
+      }
+
+      console.log('Practice saved successfully:', savedPractice)
+
+      const newPractice: Practice = {
+        id: savedPractice.id,
+        user_id: savedPractice.user_id,
+        numero: savedPractice.numero,
+        cliente_id: savedPractice.cliente_id,
+        controparti_ids: savedPractice.controparti_ids,
+        tipo_procedura: savedPractice.tipo_procedura,
+        created_at: savedPractice.created_at,
+        updated_at: savedPractice.updated_at
       }
 
       setCurrentPractice(newPractice)
@@ -161,63 +191,88 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         .map(c => c!.ragione || `${c!.nome} ${c!.cognome}`)
         .join(', ')
 
-      // Map Activity data to Task format for database
-      const taskData = {
+      // Map Activity data to Activity format for database
+      const activityDataToSave = {
         user_id: user.id,
-        pratica: currentPractice!.numero,
-        attivita: activityData.attivita,
-        scadenza: activityData.data,
-        ora: activityData.ora || null,
+        pratica_id: currentPractice!.id,
         categoria: activityData.categoria,
+        attivita: activityData.attivita,
+        data: activityData.data,
+        ora: activityData.ora || null,
         autorita_giudiziaria: activityData.autorita_giudiziaria || null,
         rg: activityData.rg || null,
         giudice: activityData.giudice || null,
         note: activityData.note || null,
+        stato: 'todo' as const
+      }
+
+      console.log('Saving activity to database:', activityDataToSave)
+
+      // Save to activities table
+      const { data: savedActivity, error: activityError } = await supabase
+        .from('activities')
+        .insert(activityDataToSave)
+        .select()
+        .single()
+
+      if (activityError) {
+        console.error('Activity database error:', activityError)
+        throw activityError
+      }
+
+      console.log('Activity saved successfully:', savedActivity)
+
+      // Also save to tasks table for compatibility with existing system
+      const taskData = {
+        user_id: user.id,
+        pratica: currentPractice!.numero,
+        attivita: savedActivity.attivita,
+        scadenza: savedActivity.data,
+        ora: savedActivity.ora || null,
+        categoria: savedActivity.categoria,
+        autorita_giudiziaria: savedActivity.autorita_giudiziaria || null,
+        rg: savedActivity.rg || null,
+        giudice: savedActivity.giudice || null,
+        note: savedActivity.note || null,
         stato: 'todo' as const,
         urgent: false,
         cliente: cliente?.ragione || `${cliente?.nome} ${cliente?.cognome}` || null,
         controparte: controparti || null
       }
 
-      console.log('Saving task to database:', taskData)
-      console.log('Task data details:', {
-        pratica: taskData.pratica,
-        attivita: taskData.attivita,
-        categoria: taskData.categoria,
-        scadenza: taskData.scadenza
-      })
+      console.log('Saving task to database for compatibility:', taskData)
 
-      // Save to database
-      const { data, error } = await supabase
+      const { data: taskDataResult, error: taskError } = await supabase
         .from('tasks')
         .insert(taskData)
         .select()
         .single()
 
-      if (error) {
-        console.error('Database error:', error)
-        throw error
+      if (taskError) {
+        console.error('Task database error:', taskError)
+        // Don't throw error here, just log it since activity was saved successfully
+        console.warn('Failed to save task for compatibility, but activity was saved')
+      } else {
+        console.log('Task saved successfully for compatibility:', taskDataResult)
       }
-
-      console.log('Task saved successfully:', data)
 
       // Create Activity object for callback
       const newActivity: Activity = {
-        id: data.id,
-        user_id: data.user_id,
+        id: savedActivity.id,
+        user_id: savedActivity.user_id,
         pratica_id: currentPractice!.id!,
-        categoria: activityData.categoria,
-        attivita: activityData.attivita,
-        data: activityData.data,
-        ora: activityData.ora,
-        autorita_giudiziaria: activityData.autorita_giudiziaria,
-        rg: activityData.rg,
-        giudice: activityData.giudice,
-        note: activityData.note,
+        categoria: savedActivity.categoria,
+        attivita: savedActivity.attivita,
+        data: savedActivity.data,
+        ora: savedActivity.ora,
+        autorita_giudiziaria: savedActivity.autorita_giudiziaria,
+        rg: savedActivity.rg,
+        giudice: savedActivity.giudice,
+        note: savedActivity.note,
         stato: 'todo',
         urgent: false,
-        created_at: data.created_at,
-        updated_at: data.updated_at
+        created_at: savedActivity.created_at,
+        updated_at: savedActivity.updated_at
       }
 
       console.log('Activity created successfully:', newActivity)
