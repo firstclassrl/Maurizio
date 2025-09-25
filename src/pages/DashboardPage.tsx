@@ -388,6 +388,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       
       // Pulisce i dati prima di inviarli al database
       // Gestisce le 4 tipologie di parti con campi specifici
+      console.log('🔍 DEBUG: Creando cleanData con tutti i campi...')
+      
       const cleanData = {
         tipologia: clientData.tipologia || 'Persona fisica',
         alternativa: clientData.alternativa || false,
@@ -411,6 +413,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         note: clientData.note || null,
         sigla: clientData.sigla || null
       }
+      
+      console.log('🔍 DEBUG: cleanData creato con successo!')
       
       console.log('🔍 DEBUG: Clean data to save:', cleanData)
       console.log('🔍 DEBUG: Clean data - codice_fiscale:', cleanData.codice_fiscale)
