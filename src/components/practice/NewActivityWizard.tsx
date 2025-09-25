@@ -87,15 +87,17 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         return data
       }
       
-      // Fallback
+      // Fallback: genera numero sequenziale basato su timestamp
       const currentYear = new Date().getFullYear()
-      const randomNum = Math.floor(Math.random() * 999) + 1
-      return `${currentYear}/${randomNum.toString().padStart(3, '0')}`
+      const timestamp = Date.now()
+      const sequentialNum = (timestamp % 999) + 1
+      return `${currentYear}/${sequentialNum.toString().padStart(3, '0')}`
     } catch (error) {
       console.error('Error generating practice number:', error)
       const currentYear = new Date().getFullYear()
-      const randomNum = Math.floor(Math.random() * 999) + 1
-      return `${currentYear}/${randomNum.toString().padStart(3, '0')}`
+      const timestamp = Date.now()
+      const sequentialNum = (timestamp % 999) + 1
+      return `${currentYear}/${sequentialNum.toString().padStart(3, '0')}`
     }
   }
 
@@ -110,6 +112,12 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
   const handlePracticeSubmit = async () => {
     if (!practiceData.cliente_id) {
       alert('Seleziona un cliente')
+      return
+    }
+
+    // Prevenzione doppi click
+    if (isCreatingPractice) {
+      console.log('Practice creation already in progress, ignoring duplicate call')
       return
     }
 
@@ -172,6 +180,12 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
   const handleActivitySubmit = async () => {
     if (!activityData.attivita || !activityData.data) {
       alert('Compila tutti i campi obbligatori')
+      return
+    }
+
+    // Prevenzione doppi click
+    if (isCreatingActivity) {
+      console.log('Activity creation already in progress, ignoring duplicate call')
       return
     }
 
