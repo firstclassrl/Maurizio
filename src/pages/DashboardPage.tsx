@@ -584,25 +584,25 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   >
                     {/* RIGA 1: Numero pratica - Attività - Cliente/Controparte centrali - categoria attivita' - semaforo rosso */}
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3 flex-1 text-xs">
+                      <div className="flex items-center gap-3 text-xs">
                         <span className="text-gray-600">
                           Numero pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
                         </span>
                         <span className="text-gray-600">
                           Attività: <span className="font-bold text-gray-900">{task.attivita}</span>
                         </span>
-                        <div className="flex items-center gap-3">
-                          {task.cliente && (
-                            <span className="text-gray-600">
-                              Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
-                            </span>
-                          )}
-                          {task.controparte && (
-                            <span className="text-gray-600">
-                              Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
-                            </span>
-                          )}
-                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs">
+                        {task.cliente && (
+                          <span className="text-gray-600">
+                            Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
+                          </span>
+                        )}
+                        {task.controparte && (
+                          <span className="text-gray-600">
+                            Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-800 border border-gray-300">
@@ -738,25 +738,25 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                   >
                     {/* RIGA 1: Numero pratica - Attività - Cliente/Controparte centrali - categoria attivita' - semaforo rosso */}
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3 flex-1 text-xs">
+                      <div className="flex items-center gap-3 text-xs">
                         <span className="text-gray-600">
                           Numero pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
                         </span>
                         <span className="text-gray-600">
                           Attività: <span className="font-bold text-gray-900">{task.attivita}</span>
                         </span>
-                        <div className="flex items-center gap-3">
-                          {task.cliente && (
-                            <span className="text-gray-600">
-                              Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
-                            </span>
-                          )}
-                          {task.controparte && (
-                            <span className="text-gray-600">
-                              Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
-                            </span>
-                          )}
-                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs">
+                        {task.cliente && (
+                          <span className="text-gray-600">
+                            Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
+                          </span>
+                        )}
+                        {task.controparte && (
+                          <span className="text-gray-600">
+                            Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-800 border border-gray-300">

@@ -57,25 +57,25 @@ export function Calendar({ currentDate, viewMode, tasks, onDateChange }: Calenda
       >
         {/* RIGA 1: Numero pratica - Attività - Cliente/Controparte centrali - categoria attivita' - semaforo rosso */}
         <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-1 flex-1 text-xs">
+          <div className="flex items-center gap-1 text-xs">
             <span className="text-gray-600">
               Pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
             </span>
             <span className="text-gray-600">
               Attività: <span className="font-bold text-gray-900">{task.attivita}</span>
             </span>
-            <div className="flex items-center gap-1">
-              {task.cliente && (
-                <span className="text-gray-600">
-                  Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
-                </span>
-              )}
-              {task.controparte && (
-                <span className="text-gray-600">
-                  Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
-                </span>
-              )}
-            </div>
+          </div>
+          <div className="flex items-center gap-1 text-xs">
+            {task.cliente && (
+              <span className="text-gray-600">
+                Cliente: <span className="font-bold text-gray-900">{task.cliente}</span>
+              </span>
+            )}
+            {task.controparte && (
+              <span className="text-gray-600">
+                Controparte: <span className="font-bold text-gray-900">{task.controparte}</span>
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1">
             <span className="text-xs px-1 py-0.5 rounded-full bg-gray-200 text-gray-800 border border-gray-300">
