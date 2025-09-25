@@ -283,7 +283,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           data: updatedTask.scadenza,
           ora: updatedTask.ora,
           stato: updatedTask.stato,
-          priorita: updatedTask.urgent ? 'alta' : 'normale',
           note: updatedTask.note,
           categoria: updatedTask.categoria
         })

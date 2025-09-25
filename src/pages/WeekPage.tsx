@@ -81,7 +81,6 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
         data: taskData.scadenza,
         ora: taskData.ora,
         stato: taskData.stato,
-        priorita: taskData.urgent ? 'alta' : 'normale',
         note: taskData.note || null,
         categoria: taskData.categoria,
         user_id: user.id

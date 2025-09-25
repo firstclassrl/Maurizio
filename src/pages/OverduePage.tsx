@@ -82,7 +82,6 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
         data: taskData.scadenza,
         ora: taskData.ora,
         stato: taskData.stato,
-        priorita: taskData.urgent ? 'alta' : 'normale',
         note: taskData.note,
         categoria: taskData.categoria,
         updated_at: new Date().toISOString()
@@ -116,7 +115,6 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
         data: taskData.scadenza,
         ora: taskData.ora,
         stato: taskData.stato,
-        priorita: taskData.urgent ? 'alta' : 'normale',
         note: taskData.note,
         categoria: taskData.categoria,
         user_id: user.id,
