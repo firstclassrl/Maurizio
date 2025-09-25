@@ -203,6 +203,7 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
+    console.log('🔍 DEBUG: ClientForm handleSubmit called!')
     console.log('🔍 DEBUG: ClientForm formData:', formData)
     console.log('🔍 DEBUG: ClientForm - codiceFiscale:', formData.codiceFiscale)
     console.log('🔍 DEBUG: ClientForm - partitaIva:', formData.partitaIva)

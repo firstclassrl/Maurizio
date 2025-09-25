@@ -375,6 +375,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   }
 
   const handleSaveClient = async (clientData: Client) => {
+    console.log('🔍 DEBUG: handleSaveClient called!')
     try {
       setIsClientLoading(true)
       
