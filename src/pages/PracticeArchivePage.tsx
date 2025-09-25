@@ -60,6 +60,14 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
 
       console.log('Loading practices for user:', user.id)
 
+      // Debug: Controlla se ci sono pratiche per questo utente
+      const { data: debugPractices, error: debugError } = await supabase
+        .from('practices')
+        .select('*')
+        .eq('user_id', user.id)
+      
+      console.log('Debug - All practices for user:', { debugPractices, debugError })
+
       // Prima carica le pratiche con il cliente
       const { data: practicesData, error: practicesError } = await supabase
         .from('practices')
