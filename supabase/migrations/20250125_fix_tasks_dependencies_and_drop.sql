@@ -102,6 +102,11 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 5. Update the get_pending_email_reminders function
 -- =====================================================
+
+-- Drop the existing function first (it has a different return type)
+DROP FUNCTION IF EXISTS get_pending_email_reminders();
+
+-- Create the updated function
 CREATE OR REPLACE FUNCTION get_pending_email_reminders()
 RETURNS TABLE (
     id UUID,
