@@ -352,7 +352,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
 
         {/* Today's Activities - Yellow Card */}
-        {getTodayTasks().length > 0 && (
+        {(
           <Card className="mb-6 border-2 border-yellow-300 bg-yellow-50">
             <CardContent className={isMobile ? "p-4" : "p-6"}>
               <div className="flex items-center justify-between mb-4">
@@ -363,7 +363,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               </div>
               
               <div className="space-y-2">
-                {getTodayTasks().map((task) => (
+                {getTodayTasks().length > 0 ? getTodayTasks().map((task) => (
                   <div
                     key={task.id}
                     className={`p-2 rounded-lg border hover:shadow-sm transition-shadow cursor-pointer ${
@@ -405,7 +405,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                       )}
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <p className="text-yellow-700 text-center py-4">
+                    Nessuna attività per oggi
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -697,7 +701,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       <ToastContainer toasts={toasts} onClose={removeToast} />
       
       {/* Footer */}
-      <Footer />
+      <Footer absolute />
     </div>
   )
 }
