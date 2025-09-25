@@ -418,8 +418,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       console.log('🔍 DEBUG: Clean data - cliente:', cleanData.cliente)
       console.log('🔍 DEBUG: Clean data - controparte:', cleanData.controparte)
       console.log('🔍 DEBUG: Clean data - altri:', cleanData.altri)
+      console.log('🔍 DEBUG: Clean data - denominazione:', cleanData.denominazione)
+      console.log('🔍 DEBUG: Clean data - ragione:', cleanData.ragione)
       console.log('🔍 DEBUG: Clean data - id:', clientData.id)
       console.log('🔍 DEBUG: Clean data - user_id:', user.id)
+      
+      // Verifica che tutti i campi siano presenti
+      console.log('🔍 DEBUG: Verifica campi obbligatori:')
+      console.log('  - codice_fiscale presente:', !!cleanData.codice_fiscale)
+      console.log('  - cliente presente:', cleanData.cliente !== undefined)
+      console.log('  - controparte presente:', cleanData.controparte !== undefined)
+      console.log('  - altri presente:', cleanData.altri !== undefined)
+      console.log('  - ragione non vuota:', !!cleanData.ragione)
 
       if (clientData.id) {
         // Update existing client
