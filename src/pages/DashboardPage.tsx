@@ -21,8 +21,9 @@ import { PartyFilter } from '../components/ui/PartyFilter'
 import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
+import { PracticeArchive } from '../components/practice/PracticeArchive'
 import { OptionsModal } from '../components/ui/OptionsModal'
-import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
 interface DashboardPageProps {
@@ -57,6 +58,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [clients, setClients] = useState<Client[]>([])
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isAddActivityModalOpen, setIsAddActivityModalOpen] = useState(false)
+  const [isPracticeArchiveOpen, setIsPracticeArchiveOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
@@ -448,7 +450,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             >
               <Users className="h-4 w-4 mr-2" />
               Clienti
-              </Button>
+            </Button>
+
+            <Button
+              onClick={() => setIsPracticeArchiveOpen(true)}
+              className="bg-white hover:bg-gray-50 text-blue-600 border border-blue-600"
+              size="sm"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Archivio Pratiche
+            </Button>
             </div>
           </CardContent>
         </Card>
@@ -696,6 +707,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onOpenChange={setIsOptionsModalOpen}
         user={user}
         onNavigateToStorage={onNavigateToStorage}
+      />
+
+      <PracticeArchive
+        open={isPracticeArchiveOpen}
+        onOpenChange={setIsPracticeArchiveOpen}
       />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />

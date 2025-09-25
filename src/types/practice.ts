@@ -32,6 +32,9 @@ export interface Practice {
   tipo_procedura: ProcedureType
   created_at?: string
   updated_at?: string
+  // Campi aggiuntivi per le relazioni
+  clients?: { nome: string }
+  counterparties?: { nome: string }[]
 }
 
 // Interfaccia per un'attività
