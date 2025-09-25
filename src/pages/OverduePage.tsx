@@ -26,15 +26,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
 
       const { data, error } = await supabase
         .from('activities')
-        .select(`
-          *,
-          practices (
-            numero,
-            cliente,
-            controparte,
-            controparti_ids
-          )
-        `)
+        .select('*')
         .eq('user_id', user.id)
         .lt('data', today)
         .eq('stato', 'todo')
@@ -46,7 +38,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
       const convertedTasks = (data || []).map(activity => ({
         id: activity.id,
         user_id: activity.user_id,
-        pratica: activity.practices?.numero || 'N/A',
+        pratica: activity.pratica_id || 'N/A',
         attivita: activity.attivita,
         scadenza: activity.data,
         ora: activity.ora,
