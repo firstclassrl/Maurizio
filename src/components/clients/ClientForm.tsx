@@ -125,10 +125,15 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
   }, [client, open])
 
   const handleInputChange = (field: keyof ClientFormData, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }))
+    console.log('🔍 DEBUG: handleInputChange called with:', { field, value })
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [field]: value
+      }
+      console.log('🔍 DEBUG: New formData after change:', newData)
+      return newData
+    })
   }
 
   const handleTypeSelection = (type: string) => {
