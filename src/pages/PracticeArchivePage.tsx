@@ -26,6 +26,10 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
   const [loading, setLoading] = useState(false)
   const [clients, setClients] = useState<Client[]>([])
   const [isNewPracticeModalOpen, setIsNewPracticeModalOpen] = useState(false)
+  const [selectedPracticeForDetails, setSelectedPracticeForDetails] = useState<Practice | null>(null)
+  const [selectedPracticeForActivity, setSelectedPracticeForActivity] = useState<Practice | null>(null)
+  const [practiceActivities, setPracticeActivities] = useState<any[]>([])
+  const [isLoadingActivities, setIsLoadingActivities] = useState(false)
 
   // Carica tutti i clienti
   const loadClients = async () => {
@@ -120,63 +124,39 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
     loadPractices()
   }
 
-  // Funzione per pulire le pratiche duplicate (solo per debug)
-  const cleanupDuplicatePractices = async () => {
+  // Carica le attività di una pratica specifica
+  const loadPracticeActivities = async (practiceId: string) => {
+    setIsLoadingActivities(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      // Trova pratiche duplicate per numero
-      const { data: allPractices, error } = await supabase
-        .from('practices')
+      const { data, error } = await supabase
+        .from('activities')
         .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true })
+        .eq('pratica_id', practiceId)
+        .order('data', { ascending: true })
 
       if (error) throw error
-
-      // Raggruppa per numero pratica
-      const groupedByNumber = allPractices?.reduce((acc: Record<string, any[]>, practice: any) => {
-        if (!acc[practice.numero]) {
-          acc[practice.numero] = []
-        }
-        acc[practice.numero].push(practice)
-        return acc
-      }, {})
-
-      // Elimina duplicati, mantieni solo il più recente
-      const duplicatesToDelete: any[] = []
-      if (groupedByNumber) {
-        Object.entries(groupedByNumber).forEach(([, practices]) => {
-          if (practices.length > 1) {
-            // Ordina per data creazione e mantieni solo l'ultimo
-            const sorted = practices.sort((a: any, b: any) => 
-              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-            )
-            // Aggiungi tutti tranne il primo (più recente) alla lista da eliminare
-            duplicatesToDelete.push(...sorted.slice(1))
-          }
-        })
-      }
-
-      if (duplicatesToDelete.length > 0) {
-        console.log(`Found ${duplicatesToDelete.length} duplicate practices to delete`)
-        
-        // Elimina le pratiche duplicate
-        for (const practice of duplicatesToDelete) {
-          await supabase
-            .from('practices')
-            .delete()
-            .eq('id', practice.id)
-        }
-        
-        console.log('Duplicate practices cleaned up')
-        loadPractices() // Ricarica la lista
-      }
+      setPracticeActivities(data || [])
     } catch (error) {
-      console.error('Error cleaning up duplicates:', error)
+      console.error('Errore nel caricamento delle attività:', error)
+      setPracticeActivities([])
+    } finally {
+      setIsLoadingActivities(false)
     }
   }
+
+  // Gestisce il click su "Visualizza Dettagli"
+  const handleViewDetails = async (practice: Practice) => {
+    setSelectedPracticeForDetails(practice)
+    if (practice.id) {
+      await loadPracticeActivities(practice.id)
+    }
+  }
+
+  // Gestisce il click su "Aggiungi Attività"
+  const handleAddActivity = (practice: Practice) => {
+    setSelectedPracticeForActivity(practice)
+  }
+
 
   // Filtra le pratiche
   const getFilteredPractices = () => {
@@ -291,21 +271,9 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold">Lista Pratiche</h2>
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-600">
-                  {filteredPractices.length} pratiche trovate
-                </span>
-                {practices.length > 1 && (
-                  <Button
-                    onClick={cleanupDuplicatePractices}
-                    variant="outline"
-                    size="sm"
-                    className="text-red-600 border-red-600 hover:bg-red-50"
-                  >
-                    🧹 Pulisci Duplicati
-                  </Button>
-                )}
-              </div>
+              <span className="text-sm text-gray-600">
+                {filteredPractices.length} pratiche trovate
+              </span>
             </div>
 
             {loading ? (
@@ -363,6 +331,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                             variant="outline"
                             size="sm"
                             className="w-full"
+                            onClick={() => handleViewDetails(practice)}
                           >
                             <FileText className="h-4 w-4 mr-2" />
                             Visualizza Dettagli
@@ -371,6 +340,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                             variant="outline"
                             size="sm"
                             className="w-full"
+                            onClick={() => handleAddActivity(practice)}
                           >
                             <Plus className="h-4 w-4 mr-2" />
                             Aggiungi Attività
@@ -393,6 +363,150 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         clients={clients}
         onActivityCreated={handleActivityCreated}
       />
+
+      {/* Practice Details Modal */}
+      {selectedPracticeForDetails && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Dettagli Pratica {selectedPracticeForDetails.numero}
+                </h2>
+                <button
+                  onClick={() => setSelectedPracticeForDetails(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Informazioni Pratica */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Informazioni Pratica</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <span className="font-medium">Numero:</span> {selectedPracticeForDetails.numero}
+                    </div>
+                    <div>
+                      <span className="font-medium">Tipo Procedura:</span> 
+                      <span className={`ml-2 px-2 py-1 rounded-full text-sm ${
+                        selectedPracticeForDetails.tipo_procedura === 'STRAGIUDIZIALE' 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {selectedPracticeForDetails.tipo_procedura}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Cliente:</span> {selectedPracticeForDetails.clients?.nome || 'N/A'}
+                    </div>
+                    <div>
+                      <span className="font-medium">Controparti:</span> {
+                        selectedPracticeForDetails.counterparties && selectedPracticeForDetails.counterparties.length > 0
+                          ? selectedPracticeForDetails.counterparties.map(c => c.nome).join(', ')
+                          : 'Nessuna'
+                      }
+                    </div>
+                    <div>
+                      <span className="font-medium">Creata:</span> {formatDate(selectedPracticeForDetails.created_at)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Attività Correlate */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Attività Correlate</h3>
+                {isLoadingActivities ? (
+                  <div className="text-center py-4">
+                    <div className="text-gray-500">Caricamento attività...</div>
+                  </div>
+                ) : practiceActivities.length === 0 ? (
+                  <div className="text-center py-8">
+                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500">Nessuna attività trovata per questa pratica</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {practiceActivities.map((activity) => (
+                      <div key={activity.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-gray-900">{activity.attivita}</h4>
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            activity.stato === 'done' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {activity.stato === 'done' ? 'Completata' : 'In corso'}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                          <div>
+                            <span className="font-medium">Categoria:</span> {activity.categoria}
+                          </div>
+                          <div>
+                            <span className="font-medium">Data:</span> {new Date(activity.data).toLocaleDateString('it-IT')}
+                          </div>
+                          {activity.ora && (
+                            <div>
+                              <span className="font-medium">Ora:</span> {activity.ora}
+                            </div>
+                          )}
+                        </div>
+                        {activity.note && (
+                          <div className="mt-2 text-sm text-gray-600">
+                            <span className="font-medium">Note:</span> {activity.note}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Activity Modal */}
+      {selectedPracticeForActivity && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Aggiungi Attività - Pratica {selectedPracticeForActivity.numero}
+                </h2>
+                <button
+                  onClick={() => setSelectedPracticeForActivity(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="text-center py-8">
+                <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500 mb-4">
+                  Funzionalità in sviluppo. Per ora usa il pulsante "+ Nuova Pratica" per creare una nuova attività.
+                </p>
+                <Button
+                  onClick={() => setSelectedPracticeForActivity(null)}
+                  variant="outline"
+                >
+                  Chiudi
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <Footer absolute />
