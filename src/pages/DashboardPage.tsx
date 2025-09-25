@@ -151,7 +151,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           scadenza: activity.data,
           ora: activity.ora,
           stato: activity.stato,
-          urgent: activity.priorita >= 8, // High priority if 8 or above
+          urgent: activity.urgent || false, // Use urgent field directly
           note: activity.note,
           cliente: clientName,
           controparte: counterpartyName,
@@ -248,7 +248,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         `)
         .eq('user_id', user.id)
         .eq('stato', 'todo')
-        .or(`priorita.gte.8,data.lt.${today}`)
+        .or(`urgent.eq.true,data.lt.${today}`)
         .order('data', { ascending: true })
 
       if (error) throw error
@@ -276,7 +276,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           categoria: activity.categoria,
           note: activity.note,
           stato: activity.stato,
-          urgent: activity.priorita >= 8, // High priority if 8 or above
+          urgent: activity.urgent || false, // Use urgent field directly
           cliente: clientName,
           controparte: counterpartyName,
           evaso: activity.stato === 'done',

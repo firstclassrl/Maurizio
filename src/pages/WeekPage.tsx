@@ -78,7 +78,7 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
           scadenza: activity.data,
           ora: activity.ora,
           stato: activity.stato,
-          urgent: activity.priorita >= 8, // High priority if 8 or above
+          urgent: activity.urgent || false, // Use urgent field directly
           note: activity.note,
           cliente: clientName,
           controparte: counterpartyName,
@@ -107,6 +107,7 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
         data: taskData.scadenza,
         ora: taskData.ora,
         stato: taskData.stato,
+        urgent: taskData.urgent || false,
         note: taskData.note || null,
         categoria: taskData.categoria,
         user_id: user.id

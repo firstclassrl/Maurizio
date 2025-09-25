@@ -67,7 +67,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
           scadenza: activity.data,
           ora: activity.ora,
           stato: activity.stato,
-          urgent: activity.priorita >= 8, // High priority if 8 or above
+          urgent: activity.urgent || false, // Use urgent field directly
           note: activity.note,
           cliente: clientName,
           controparte: counterpartyName,
@@ -107,6 +107,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
         data: taskData.scadenza,
         ora: taskData.ora,
         stato: taskData.stato,
+        urgent: taskData.urgent || false,
         note: taskData.note,
         categoria: taskData.categoria,
         updated_at: new Date().toISOString()
@@ -140,6 +141,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
         data: taskData.scadenza,
         ora: taskData.ora,
         stato: taskData.stato,
+        urgent: taskData.urgent || false,
         note: taskData.note,
         categoria: taskData.categoria,
         user_id: user.id,
