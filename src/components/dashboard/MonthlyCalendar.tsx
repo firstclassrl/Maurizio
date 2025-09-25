@@ -8,6 +8,8 @@ import { supabase } from '../../lib/supabase'
 import { PracticeFilter } from '../ui/PracticeFilter'
 import { formatTimeWithoutSeconds } from '../../lib/time-utils'
 import { useWeekendSettings } from '../../hooks/useWeekendSettings'
+import { useActivityTooltip } from '../../hooks/useActivityTooltip'
+import { ActivityTooltip } from '../ui/ActivityTooltip'
 
 interface MonthlyCalendarProps {
   tasks: Task[]
@@ -21,6 +23,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const isMobile = useMobile()
   const { showWeekend } = useWeekendSettings()
+  const { tooltip, handleMouseEnter, handleMouseLeave } = useActivityTooltip(2000)
 
   // Generate colors based on category
   const getTaskColor = (task: Task) => {
@@ -299,8 +302,10 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                         ? 'bg-green-100 text-green-800 border-green-200' 
                                         : getTaskColor(task)
                                     } ${snapshot.isDragging ? 'opacity-50' : ''}`}
-                                    onClick={() => onTaskClick?.(task)}
-                                  >
+                                  onClick={() => onTaskClick?.(task)}
+                                  onMouseEnter={(e) => handleMouseEnter(task, e)}
+                                  onMouseLeave={handleMouseLeave}
+                                >
                                     <div className="flex items-center gap-1">
                                       <div className="flex-shrink-0">
                                         <div className={`w-1.5 h-1.5 rounded-full ${
@@ -392,8 +397,10 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                         ? 'bg-green-100 text-green-800 border-green-200' 
                                         : getTaskColor(task)
                                     } ${snapshot.isDragging ? 'opacity-50' : ''}`}
-                                    onClick={() => onTaskClick?.(task)}
-                                  >
+                                  onClick={() => onTaskClick?.(task)}
+                                  onMouseEnter={(e) => handleMouseEnter(task, e)}
+                                  onMouseLeave={handleMouseLeave}
+                                >
                                     <div className="flex items-center gap-2">
                                       <div className="flex-shrink-0">
                                         <div className={`w-2 h-2 rounded-full ${
@@ -438,6 +445,12 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
         )}
       </div>
 
+      {/* Activity Tooltip */}
+      <ActivityTooltip
+        task={tooltip.task!}
+        isVisible={tooltip.isVisible}
+        position={tooltip.position}
+      />
     </div>
   )
 }

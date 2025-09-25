@@ -8,6 +8,8 @@ import { format } from 'date-fns'
 import { PracticeFilter } from '../ui/PracticeFilter'
 import { formatTimeWithoutSeconds } from '../../lib/time-utils'
 import { useWeekendSettings } from '../../hooks/useWeekendSettings'
+import { useActivityTooltip } from '../../hooks/useActivityTooltip'
+import { ActivityTooltip } from '../ui/ActivityTooltip'
 
 interface WeeklyCalendarProps {
   tasks: Task[]
@@ -20,6 +22,7 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const isMobile = useMobile()
   const { showWeekend } = useWeekendSettings()
+  const { tooltip, handleMouseEnter, handleMouseLeave } = useActivityTooltip(2000)
 
   // Generate colors based on category
   const getTaskColor = (task: Task) => {
@@ -240,6 +243,8 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
                                       : getTaskColor(task)
                                   } ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                   onClick={() => onTaskClick?.(task)}
+                                  onMouseEnter={(e) => handleMouseEnter(task, e)}
+                                  onMouseLeave={handleMouseLeave}
                                 >
                                   <div className="flex items-center gap-2">
                                     <div className="flex-shrink-0">
@@ -328,6 +333,8 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
                                       : getTaskColor(task)
                                   } ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                   onClick={() => onTaskClick?.(task)}
+                                  onMouseEnter={(e) => handleMouseEnter(task, e)}
+                                  onMouseLeave={handleMouseLeave}
                                 >
                                   <div className="flex items-center gap-2">
                                     <div className="flex-shrink-0">
@@ -373,6 +380,12 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
         </DragDropContext>
       </div>
 
+      {/* Activity Tooltip */}
+      <ActivityTooltip
+        task={tooltip.task!}
+        isVisible={tooltip.isVisible}
+        position={tooltip.position}
+      />
     </div>
   )
 }
