@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { Task } from '../lib/calendar-utils'
-import { useSafeData } from '../lib/supabase-safe'
 import { Button } from '../components/ui/button'
 import { WeeklyCalendar } from '../components/dashboard/WeeklyCalendar'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
@@ -18,8 +17,6 @@ interface WeekPageProps {
 }
 
 export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPageProps) {
-  // Sistema di caricamento sicuro con ottimizzazioni
-  const { loadData } = useSafeData()
   
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
@@ -27,17 +24,7 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedParty, setSelectedParty] = useState('all')
 
-  // Caricamento sicuro con ottimizzazioni
-  const loadUserData = async () => {
-    try {
-      await loadData(user.id)
-    } catch (error) {
-      console.error('Errore nel caricamento dei dati:', error)
-    }
-  }
-
   useEffect(() => {
-    loadUserData()
     loadTasks()
   }, [])
 

@@ -11,15 +11,15 @@ import { PartyFilter } from '../components/ui/PartyFilter'
 import { Footer } from '../components/ui/Footer'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
-import { useSafeData } from '../lib/supabase-safe'
 
 interface PracticeArchivePageProps {
   onNavigateBack: () => void
 }
 
 export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps) {
-  // Sistema di caricamento sicuro con ottimizzazioni
-  const { practices: safePractices, clients: safeClients, loading: safeLoading, loadData } = useSafeData()
+  const [practices, setPractices] = useState<Practice[]>([])
+  const [clients] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
   
   const [filteredPractices, setFilteredPractices] = useState<Practice[]>([])
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
@@ -37,29 +37,21 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
     giudice: ''
   })
 
-  // Caricamento sicuro con ottimizzazioni
   const loadUserData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        await loadData(user.id)
-      }
+      await loadPractices()
     } catch (error) {
       console.error('Errore nel caricamento dei dati:', error)
     }
   }
 
-  // Carica tutte le pratiche (deprecato - usa loadUserData)
   const loadPractices = async () => {
     try {
-      // Get current user ID
+      setLoading(true)
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         return
       }
-
-
-      
 
       // Prima carica le pratiche con il cliente
       const { data: practicesData, error: practicesError } = await supabase
@@ -71,11 +63,10 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         .eq('user_id', user.id)
         .order('numero', { ascending: false })
 
-
       if (practicesError) throw practicesError
 
       // Poi per ogni pratica, carica le controparti se ci sono
-      await Promise.all(
+      const practicesWithCounterparties = await Promise.all(
         (practicesData || []).map(async (practice) => {
           if (practice.controparti_ids && practice.controparti_ids.length > 0) {
             const { data: counterpartiesData } = await supabase
@@ -95,13 +86,14 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         })
       )
 
-      // Non più necessario - gestito dal sistema sicuro
+      setPractices(practicesWithCounterparties)
     } catch (error) {
       console.error('Errore nel caricamento delle pratiche:', error)
     } finally {
-      // Non più necessario - gestito dal sistema sicuro
+      setLoading(false)
     }
   }
+
 
   // Gestisce la creazione di una nuova attività
   const handleActivityCreated = () => {
@@ -185,7 +177,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
 
   // Filtra le pratiche
   const getFilteredPractices = () => {
-    let filtered = safePractices
+    let filtered = practices
 
     // Filtro per pratica
     if (selectedPractice !== 'all') {
@@ -232,14 +224,14 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
 
   useEffect(() => {
     setFilteredPractices(getFilteredPractices())
-  }, [selectedPractice, selectedCategory, selectedParty, safePractices])
+  }, [selectedPractice, selectedCategory, selectedParty, practices])
 
   // Aggiorna filteredPractices quando cambiano i dati sicuri
   useEffect(() => {
-    if (safePractices.length > 0) {
-      setFilteredPractices(safePractices)
+    if (practices.length > 0) {
+      setFilteredPractices(practices)
     }
-  }, [safePractices])
+  }, [practices])
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -310,7 +302,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
               </span>
             </div>
 
-            {safeLoading ? (
+            {loading ? (
               <div className="flex justify-center py-8">
                 <div className="text-gray-500">Caricamento pratiche...</div>
               </div>
@@ -424,7 +416,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       <NewActivityWizard
         open={isNewPracticeModalOpen}
         onOpenChange={setIsNewPracticeModalOpen}
-        clients={safeClients}
+        clients={clients}
         onActivityCreated={handleActivityCreated}
       />
 
@@ -687,7 +679,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         onOpenChange={(open) => {
           if (!open) setSelectedPracticeForActivity(null)
         }}
-        clients={safeClients}
+        clients={clients}
         preselectedPractice={selectedPracticeForActivity}
         onActivityCreated={() => {
           setSelectedPracticeForActivity(null)

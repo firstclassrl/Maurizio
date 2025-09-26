@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { Task } from '../lib/calendar-utils'
 import { User } from '@supabase/supabase-js'
-import { useSafeData } from '../lib/supabase-safe'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
@@ -15,22 +14,10 @@ interface OverduePageProps {
 }
 
 export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
-  // Sistema di caricamento sicuro con ottimizzazioni
-  const { loadData } = useSafeData()
-  
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [loading, setLoading] = useState(true)
-
-  // Caricamento sicuro con ottimizzazioni
-  const loadUserData = async () => {
-    try {
-      await loadData(user.id)
-    } catch (error) {
-      console.error('Errore nel caricamento dei dati:', error)
-    }
-  }
 
   const loadOverdueTasks = async () => {
     try {
@@ -123,7 +110,6 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
 
   useEffect(() => {
     if (user) {
-      loadUserData()
       loadOverdueTasks()
     }
   }, [user])
