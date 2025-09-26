@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { Task } from '../lib/calendar-utils'
+import { useSafeData } from '../lib/supabase-safe'
+import { OptimizationControl } from '../components/admin/OptimizationControl'
 import { Button } from '../components/ui/button'
 import { WeeklyCalendar } from '../components/dashboard/WeeklyCalendar'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
@@ -17,13 +19,27 @@ interface WeekPageProps {
 }
 
 export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPageProps) {
+  // Sistema di caricamento sicuro con ottimizzazioni
+  const { loadData } = useSafeData()
+  
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedParty, setSelectedParty] = useState('all')
+  const [showOptimizationControl, setShowOptimizationControl] = useState(false)
+
+  // Caricamento sicuro con ottimizzazioni
+  const loadUserData = async () => {
+    try {
+      await loadData(user.id)
+    } catch (error) {
+      console.error('Errore nel caricamento dei dati:', error)
+    }
+  }
 
   useEffect(() => {
+    loadUserData()
     loadTasks()
   }, [])
 
@@ -225,6 +241,14 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
             <h1 className="text-xl font-bold text-gray-900">Calendario Settimanale</h1>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              onClick={() => setShowOptimizationControl(!showOptimizationControl)}
+              variant="outline"
+              size="sm"
+              className="border-green-300 text-green-700 hover:bg-green-100 bg-transparent"
+            >
+              🔧 Ottimizzazioni
+            </Button>
             <div className="flex gap-4">
               <CategoryFilter 
                 selectedCategory={selectedCategory}
@@ -243,6 +267,13 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
 
       {/* Main Content */}
       <div className="flex-1">
+        {/* Pannello di Controllo Ottimizzazioni */}
+        {showOptimizationControl && (
+          <div className="p-6">
+            <OptimizationControl />
+          </div>
+        )}
+
         {tasks.length === 0 ? (
           <div className="flex items-center justify-center h-64">
             <div className="text-center">

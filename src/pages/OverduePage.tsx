@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { Task } from '../lib/calendar-utils'
 import { User } from '@supabase/supabase-js'
+import { useSafeData } from '../lib/supabase-safe'
+import { OptimizationControl } from '../components/admin/OptimizationControl'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
@@ -14,10 +16,23 @@ interface OverduePageProps {
 }
 
 export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
+  // Sistema di caricamento sicuro con ottimizzazioni
+  const { loadData } = useSafeData()
+  
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [showOptimizationControl, setShowOptimizationControl] = useState(false)
+
+  // Caricamento sicuro con ottimizzazioni
+  const loadUserData = async () => {
+    try {
+      await loadData(user.id)
+    } catch (error) {
+      console.error('Errore nel caricamento dei dati:', error)
+    }
+  }
 
   const loadOverdueTasks = async () => {
     try {
@@ -110,6 +125,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
 
   useEffect(() => {
     if (user) {
+      loadUserData()
       loadOverdueTasks()
     }
   }, [user])
@@ -230,15 +246,32 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
               <h1 className="text-2xl font-bold text-gray-900">Attività Scadute</h1>
             </div>
           </div>
-          <Button onClick={handleNewTask} variant="outline" size="sm" className="bg-red-600 text-white hover:bg-red-700">
-            <AlertTriangle className="h-4 w-4 mr-2" />
-            Nuova Attività Urgente
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setShowOptimizationControl(!showOptimizationControl)}
+              variant="outline"
+              size="sm"
+              className="border-red-300 text-red-700 hover:bg-red-100 bg-transparent"
+            >
+              🔧 Ottimizzazioni
+            </Button>
+            <Button onClick={handleNewTask} variant="outline" size="sm" className="bg-red-600 text-white hover:bg-red-700">
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              Nuova Attività Urgente
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="container mx-auto px-6 py-6">
+        {/* Pannello di Controllo Ottimizzazioni */}
+        {showOptimizationControl && (
+          <div className="mb-6">
+            <OptimizationControl />
+          </div>
+        )}
+
         {tasks.length === 0 ? (
           <Card className="text-center py-12">
             <CardContent>
