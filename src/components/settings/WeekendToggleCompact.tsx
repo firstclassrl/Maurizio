@@ -23,7 +23,10 @@ export const WeekendToggleCompact: React.FC<WeekendToggleCompactProps> = ({ clas
       </span>
       <Switch
         checked={showWeekend}
-        onCheckedChange={handleToggle}
+        onCheckedChange={(checked) => {
+          console.log('🔧 Switch onCheckedChange called with:', checked)
+          handleToggle(checked)
+        }}
       />
     </div>
   )
