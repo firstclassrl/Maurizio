@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Badge } from '../ui/badge'
@@ -7,18 +7,16 @@ import {
   getOptimizationConfig, 
   resetOptimizationConfig,
   enableOptimizationsGradually,
-  emergencyDisable,
-  getCacheStats
+  emergencyDisable
 } from '../../lib/optimization-toggle'
 
 export function OptimizationControl() {
   const [config, setConfig] = useState(getOptimizationConfig())
-  const [cacheStats, setCacheStats] = useState(getCacheStats())
 
   useEffect(() => {
-    // Aggiorna stats ogni 5 secondi
+    // Aggiorna config ogni 5 secondi
     const interval = setInterval(() => {
-      setCacheStats(getCacheStats())
+      setConfig(getOptimizationConfig())
     }, 5000)
 
     return () => clearInterval(interval)
@@ -139,7 +137,7 @@ export function OptimizationControl() {
         {/* Statistiche Cache */}
         {config.useCache && (
           <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-medium mb-2">Statistiche Cache</h4>
+            <h4 className="font-medium mb-2">Configurazione Cache</h4>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-600">Durata TTL:</span>

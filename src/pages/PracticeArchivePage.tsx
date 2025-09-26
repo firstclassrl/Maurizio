@@ -11,7 +11,6 @@ import { PartyFilter } from '../components/ui/PartyFilter'
 import { Footer } from '../components/ui/Footer'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
-import { Client } from '../types/client'
 import { useSafeData } from '../lib/supabase-safe'
 import { OptimizationControl } from '../components/admin/OptimizationControl'
 
@@ -21,7 +20,7 @@ interface PracticeArchivePageProps {
 
 export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps) {
   // Sistema di caricamento sicuro con ottimizzazioni
-  const { practices: safePractices, clients: safeClients, loading: safeLoading, error: safeError, loadData, refresh } = useSafeData()
+  const { practices: safePractices, clients: safeClients, loading: safeLoading, loadData } = useSafeData()
   
   const [filteredPractices, setFilteredPractices] = useState<Practice[]>([])
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
@@ -52,14 +51,12 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
     }
   }
 
-  // Carica tutte le pratiche
+  // Carica tutte le pratiche (deprecato - usa loadUserData)
   const loadPractices = async () => {
-    setLoading(true)
     try {
       // Get current user ID
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        setLoading(false)
         return
       }
 
@@ -80,7 +77,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       if (practicesError) throw practicesError
 
       // Poi per ogni pratica, carica le controparti se ci sono
-      const practicesWithCounterparties = await Promise.all(
+      await Promise.all(
         (practicesData || []).map(async (practice) => {
           if (practice.controparti_ids && practice.controparti_ids.length > 0) {
             const { data: counterpartiesData } = await supabase
@@ -194,22 +191,22 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
 
     // Filtro per pratica
     if (selectedPractice !== 'all') {
-      filtered = filtered.filter(practice => practice.numero === selectedPractice)
+      filtered = filtered.filter((practice: any) => practice.numero === selectedPractice)
     }
 
     // Filtro per categoria (basato sulle attività della pratica)
     if (selectedCategory !== 'all') {
       // Per ora filtriamo solo per tipo procedura
       if (selectedCategory === 'STRAGIUDIZIALE' || selectedCategory === 'GIUDIZIALE') {
-        filtered = filtered.filter(practice => practice.tipo_procedura === selectedCategory)
+        filtered = filtered.filter((practice: any) => practice.tipo_procedura === selectedCategory)
       }
     }
 
     // Filtro per cliente/controparte
     if (selectedParty !== 'all') {
-      filtered = filtered.filter(practice => {
+      filtered = filtered.filter((practice: any) => {
         const clientName = practice.clients?.nome?.toLowerCase() || ''
-        const counterpartyNames = practice.counterparties?.map(c => c.nome.toLowerCase()).join(' ') || ''
+        const counterpartyNames = practice.counterparties?.map((c: any) => c.nome.toLowerCase()).join(' ') || ''
         const searchTerm = selectedParty.toLowerCase()
         return clientName.includes(searchTerm) || counterpartyNames.includes(searchTerm)
       })

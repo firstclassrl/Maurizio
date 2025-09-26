@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 // Sistema di toggle per ottimizzazioni - Implementazione sicura
 export interface OptimizationConfig {
   useOptimizedQueries: boolean
@@ -79,19 +81,19 @@ export const useOptimizationMonitoring = () => {
   })
 
   const logCacheHit = () => {
-    setMetrics(prev => ({ ...prev, cacheHits: prev.cacheHits + 1 }))
+    setMetrics((prev: any) => ({ ...prev, cacheHits: prev.cacheHits + 1 }))
   }
 
   const logCacheMiss = () => {
-    setMetrics(prev => ({ ...prev, cacheMisses: prev.cacheMisses + 1 }))
+    setMetrics((prev: any) => ({ ...prev, cacheMisses: prev.cacheMisses + 1 }))
   }
 
   const logQueryTime = (time: number) => {
-    setMetrics(prev => ({ ...prev, queryTime: time }))
+    setMetrics((prev: any) => ({ ...prev, queryTime: time }))
   }
 
   const logError = () => {
-    setMetrics(prev => ({ ...prev, errors: prev.errors + 1 }))
+    setMetrics((prev: any) => ({ ...prev, errors: prev.errors + 1 }))
   }
 
   return {

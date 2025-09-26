@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { supabase } from './supabase'
 import { getOptimizationConfig } from './optimization-toggle'
 
@@ -95,7 +96,7 @@ export const loadClientsSafe = async (userId: string): Promise<any[]> => {
   const cacheKey = `clients_${userId}`
   
   // Prova cache prima (se abilitata)
-  const cached = getFromCache('clients', cacheKey)
+  const cached = getFromCache<any[]>('clients', cacheKey)
   if (cached) {
     return cached
   }
@@ -136,7 +137,7 @@ export const loadPracticesSafe = async (userId: string): Promise<any[]> => {
   const cacheKey = `practices_${userId}`
   
   // Prova cache prima (se abilitata)
-  const cached = getFromCache('practices', cacheKey)
+  const cached = getFromCache<any[]>('practices', cacheKey)
   if (cached) {
     return cached
   }
