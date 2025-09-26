@@ -13,7 +13,7 @@ export function Footer({ className = '', absolute = false }: FooterProps) {
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2">
-            <span className="text-white text-sm">LexAgenda v3.0.0 Beta - Created by</span>
+            <span className="text-white text-sm">LexAgenda v3.1.0 - Created by</span>
             <span className="text-white text-sm">Abruzzo.AI</span>
             <img 
               src="/Marchio AbruzzoAI.png" 
