@@ -3,7 +3,7 @@ import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { DateInput } from '../ui/DateInput'
 import { TimeInput } from '../ui/TimeInput'
-import { Plus, ArrowRight, FileText, Calendar, ArrowLeft } from 'lucide-react'
+import { Plus, ArrowLeft } from 'lucide-react'
 import { Practice, Activity } from '../../types/practice'
 import { Client } from '../../types/client'
 import { useMobile } from '../../hooks/useMobile'
@@ -389,30 +389,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
 
         {/* Content */}
         <div className="p-4">
-          {/* Step Indicator */}
-          <div className="flex items-center justify-center mb-4">
-            <div className="flex items-center space-x-4">
-              <div className={`flex items-center space-x-2 ${step === 'practice' ? 'text-blue-600' : 'text-green-600'}`}>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  step === 'practice' ? 'bg-blue-100' : 'bg-green-100'
-                }`}>
-                  <FileText className="w-3 h-3" />
-                </div>
-                <span className="text-xs font-medium">1. Pratica</span>
-              </div>
-
-              <ArrowRight className="w-3 h-3 text-gray-400" />
-
-              <div className={`flex items-center space-x-2 ${step === 'activity' ? 'text-blue-600' : 'text-gray-400'}`}>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  step === 'activity' ? 'bg-blue-100' : 'bg-gray-100'
-                }`}>
-                  <Calendar className="w-3 h-3" />
-                </div>
-                <span className="text-xs font-medium">2. Attività</span>
-              </div>
-            </div>
-          </div>
 
           {/* Step Content */}
           {step === 'practice' ? (
