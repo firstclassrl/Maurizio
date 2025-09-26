@@ -57,7 +57,6 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
         indirizzi = Array.isArray(client.indirizzi) ? client.indirizzi : 
                    (typeof client.indirizzi === 'string' ? JSON.parse(client.indirizzi) : [])
       } catch (e) {
-        console.warn('Errore parsing indirizzi:', e)
         indirizzi = []
       }
       
@@ -65,7 +64,6 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
         contatti = Array.isArray(client.contatti) ? client.contatti : 
                   (typeof client.contatti === 'string' ? JSON.parse(client.contatti) : [])
       } catch (e) {
-        console.warn('Errore parsing contatti:', e)
         contatti = []
       }
       
@@ -125,13 +123,11 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
   }, [client, open])
 
   const handleInputChange = (field: keyof ClientFormData, value: any) => {
-    console.log('🔍 DEBUG: handleInputChange called with:', { field, value })
     setFormData(prev => {
       const newData = {
         ...prev,
         [field]: value
       }
-      console.log('🔍 DEBUG: New formData after change:', newData)
       return newData
     })
   }
@@ -203,13 +199,6 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    console.log('🔍 DEBUG: ClientForm handleSubmit called!')
-    console.log('🔍 DEBUG: ClientForm formData:', formData)
-    console.log('🔍 DEBUG: ClientForm - codiceFiscale:', formData.codiceFiscale)
-    console.log('🔍 DEBUG: ClientForm - partitaIva:', formData.partitaIva)
-    console.log('🔍 DEBUG: ClientForm - cliente:', formData.cliente)
-    console.log('🔍 DEBUG: ClientForm - controparte:', formData.controparte)
-    console.log('🔍 DEBUG: ClientForm - altri:', formData.altri)
     
     const clientData: Client = {
       ...formData,
@@ -217,7 +206,6 @@ export function ClientForm({ open, onOpenChange, client, onSave, isLoading = fal
       user_id: client?.user_id
     }
     
-    console.log('🔍 DEBUG: ClientForm clientData to save:', clientData)
     onSave(clientData)
   }
 

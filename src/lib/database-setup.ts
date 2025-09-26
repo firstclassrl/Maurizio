@@ -6,7 +6,6 @@ import { supabase } from './supabase'
  */
 export async function ensureTasksTableExists(): Promise<boolean> {
   try {
-    console.log('Verificando esistenza tabella tasks...')
     
     // Prova a fare una query semplice sulla tabella tasks
     const { error } = await supabase
@@ -15,21 +14,17 @@ export async function ensureTasksTableExists(): Promise<boolean> {
       .limit(1)
 
     if (error) {
-      console.error('Errore accesso tabella tasks:', error)
       
       // Se l'errore indica che la tabella non esiste, proviamo a crearla
       if (error.code === 'PGRST116' || error.message.includes('relation "public.tasks" does not exist')) {
-        console.log('Tabella tasks non esiste, tentativo di creazione...')
         return await createTasksTable()
       }
       
       return false
     }
 
-    console.log('Tabella tasks esiste e accessibile')
     return true
   } catch (error) {
-    console.error('Errore nella verifica tabella tasks:', error)
     return false
   }
 }
@@ -39,7 +34,6 @@ export async function ensureTasksTableExists(): Promise<boolean> {
  */
 async function createTasksTable(): Promise<boolean> {
   try {
-    console.log('Creazione tabella tasks...')
     
     // Query SQL per creare la tabella tasks
     const createTableSQL = `
@@ -66,14 +60,11 @@ async function createTasksTable(): Promise<boolean> {
     const { error } = await supabase.rpc('exec_sql', { sql: createTableSQL })
     
     if (error) {
-      console.error('Errore creazione tabella tasks:', error)
       return false
     }
 
-    console.log('Tabella tasks creata con successo')
     return true
   } catch (error) {
-    console.error('Errore nella creazione tabella tasks:', error)
     return false
   }
 }
@@ -83,12 +74,10 @@ async function createTasksTable(): Promise<boolean> {
  */
 export async function createTasksTableFallback(): Promise<boolean> {
   try {
-    console.log('Tentativo fallback creazione tabella tasks...')
     
     // Prova a inserire un record di test per forzare la creazione della tabella
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      console.error('Utente non autenticato')
       return false
     }
 
@@ -104,7 +93,6 @@ export async function createTasksTableFallback(): Promise<boolean> {
       })
 
     if (error) {
-      console.error('Errore inserimento test:', error)
       return false
     }
 
@@ -115,10 +103,8 @@ export async function createTasksTableFallback(): Promise<boolean> {
       .eq('pratica', 'TEMP')
       .eq('user_id', user.id)
 
-    console.log('Tabella tasks verificata e funzionante')
     return true
   } catch (error) {
-    console.error('Errore nel fallback creazione tabella:', error)
     return false
   }
 }

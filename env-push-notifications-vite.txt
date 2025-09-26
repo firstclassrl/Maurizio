@@ -1,9 +1,0 @@
-# Copia questo contenuto nel file .env.local
-
-# Push Notifications Configuration (Vite)
-VITE_VAPID_PUBLIC_KEY=BBtzXffm323WoFzkn6tSqS-ZP5Hr3pJluGbkuD20hcgUet0gO84sZWbPJptoCbJ90rLFd0vpL8yuMPM-M4tceSE
-VITE_VAPID_PRIVATE_KEY=x91rDGXIZhTELfJ8XVv90h8sQlGQpBR67t-EZ6BNp2w
-
-# Supabase Configuration (sostituisci con i tuoi valori)
-VITE_SUPABASE_URL=your_supabase_url_here
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here

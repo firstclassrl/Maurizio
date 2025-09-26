@@ -8,10 +8,9 @@ import { Card } from '../components/ui/card'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { Logo } from '../components/ui/Logo'
 import { Footer } from '../components/ui/Footer'
-import { MessageModal } from '../components/ui/MessageModal'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
-import { useMessage } from '../hooks/useMessage'
-import { useToast, ToastContainer } from '../components/ui/Toast'
+import { useToast } from '../components/ui/Toast'
+import { ToastContainer } from '../components/ui/Toast'
 import { STRAGIUDIZIALE_CATEGORIES, GIUDIZIALE_CATEGORIES } from '../types/practice'
 // import { useMobile } from '../hooks/useMobile'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
@@ -24,8 +23,8 @@ interface StoragePageProps {
 
 export function StoragePage({ onNavigateBack }: StoragePageProps) {
   // const isMobile = useMobile()
-  const { message, showMessage, hideMessage } = useMessage()
-  const { toasts, addToast, removeToast, showSuccess, showError } = useToast()
+  const { showSuccess, showError } = useToast()
+  const { toasts, removeToast } = useToast()
 
   // Function to get category color
   const getCategoryColor = (categoria?: string) => {
@@ -114,7 +113,7 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
       setTasks(convertedTasks)
     } catch (error) {
       console.error('Error loading activities:', error)
-      showMessage('error', 'Errore', 'Errore nel caricamento delle attività')
+      showError('Errore', 'Errore nel caricamento delle attività')
     } finally {
       setLoading(false)
     }
@@ -162,7 +161,7 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
       showError('Attività Eliminata', `Attività "${taskToDelete.attivita}" eliminata definitivamente`)
     } catch (error) {
       console.error('Error deleting task:', error)
-      addToast({ type: 'error', title: 'Errore', message: 'Errore nell\'eliminazione dell\'attività' })
+      showError('Errore', 'Errore nell\'eliminazione dell\'attività')
     } finally {
       setIsConfirmDialogOpen(false)
       setTaskToDelete(null)
@@ -182,7 +181,7 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
       showSuccess('Attività Ripristinata', `Attività "${task.attivita}" ripristinata nella lista principale`)
     } catch (error) {
       console.error('Error restoring activity:', error)
-      addToast({ type: 'error', title: 'Errore', message: 'Errore nel ripristino dell\'attività' })
+      showError('Errore', 'Errore nel ripristino dell\'attività')
     }
   }
 
@@ -399,14 +398,6 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
         cancelText="Annulla"
       />
 
-      {/* Message Modal */}
-      <MessageModal
-        open={!!message}
-        onClose={hideMessage}
-        title="Informazione"
-        message={message?.message || ''}
-        type="info"
-      />
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
       

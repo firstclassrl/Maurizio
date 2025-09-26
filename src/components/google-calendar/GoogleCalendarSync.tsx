@@ -5,7 +5,7 @@ import { Badge } from '../ui/badge'
 import { Alert, AlertDescription } from '../ui/alert'
 import { Calendar, ExternalLink, RefreshCw, CheckCircle, AlertCircle, Clock } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
-import { useMessage } from '../../hooks/useMessage'
+import { useToast } from '../ui/Toast'
 
 interface SyncStatus {
   google_connected: boolean
@@ -24,7 +24,7 @@ export function GoogleCalendarSync({ user, onSyncStatusChange }: GoogleCalendarS
   const [isConnecting, setIsConnecting] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
   const [isHidden, setIsHidden] = useState(false)
-  const { showError, showSuccess } = useMessage()
+  const { showError, showSuccess } = useToast()
 
   useEffect(() => {
     loadSyncStatus()

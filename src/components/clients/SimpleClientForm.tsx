@@ -6,7 +6,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Switch } from '../ui/switch';
 import { supabase } from '../../lib/supabase';
-import { useMessage } from '../../hooks/useMessage';
+import { useToast } from '../ui/Toast';
 
 interface Client {
   id?: string;
@@ -71,7 +71,7 @@ export const SimpleClientForm: React.FC<SimpleClientFormProps> = ({
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const { showSuccess, showError } = useMessage();
+  const { showSuccess, showError } = useToast();
 
   useEffect(() => {
     if (client) {
@@ -137,8 +137,6 @@ export const SimpleClientForm: React.FC<SimpleClientFormProps> = ({
     setIsLoading(true);
 
     try {
-      console.log('🆕 SIMPLE FORM: handleSubmit called');
-      console.log('🆕 SIMPLE FORM: formData:', formData);
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -186,11 +184,9 @@ export const SimpleClientForm: React.FC<SimpleClientFormProps> = ({
         sigla: null
       };
 
-      console.log('🆕 SIMPLE FORM: dbData to save:', dbData);
 
       if (client?.id) {
         // Update existing client
-        console.log('🆕 SIMPLE FORM: Updating client with ID:', client.id);
         const { error } = await supabase
           .from('clients')
           .update({
@@ -201,30 +197,24 @@ export const SimpleClientForm: React.FC<SimpleClientFormProps> = ({
           .eq('user_id', user.id);
 
         if (error) {
-          console.error('🆕 SIMPLE FORM: Update error:', error);
           throw error;
         }
-        console.log('🆕 SIMPLE FORM: Client updated successfully!');
         showSuccess('Successo', 'Parte aggiornata con successo');
       } else {
         // Create new client
-        console.log('🆕 SIMPLE FORM: Creating new client');
         const { error } = await supabase
           .from('clients')
           .insert([dbData]);
 
         if (error) {
-          console.error('🆕 SIMPLE FORM: Insert error:', error);
           throw error;
         }
-        console.log('🆕 SIMPLE FORM: Client created successfully!');
         showSuccess('Successo', 'Parte creata con successo');
       }
 
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('🆕 SIMPLE FORM: Error:', error);
       showError('Errore', 'Errore nel salvataggio della parte');
     } finally {
       setIsLoading(false);

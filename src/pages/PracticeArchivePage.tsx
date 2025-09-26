@@ -12,7 +12,6 @@ import { Footer } from '../components/ui/Footer'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { Client } from '../types/client'
-import { Activity } from '../types/practice'
 
 interface PracticeArchivePageProps {
   onNavigateBack: () => void
@@ -47,7 +46,6 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       if (error) throw error
       setClients(data || [])
     } catch (error) {
-      console.error('Errore nel caricamento dei clienti:', error)
     }
   }
 
@@ -58,20 +56,12 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       // Get current user ID
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        console.error('User not authenticated')
         setLoading(false)
         return
       }
 
-      console.log('Loading practices for user:', user.id)
 
-      // Debug: Controlla se ci sono pratiche per questo utente
-      const { data: debugPractices, error: debugError } = await supabase
-        .from('practices')
-        .select('*')
-        .eq('user_id', user.id)
       
-      console.log('Debug - All practices for user:', { debugPractices, debugError })
 
       // Prima carica le pratiche con il cliente
       const { data: practicesData, error: practicesError } = await supabase
@@ -83,7 +73,6 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         .eq('user_id', user.id)
         .order('numero', { ascending: false })
 
-      console.log('Practices query result:', { practicesData, practicesError })
 
       if (practicesError) throw practicesError
 
@@ -108,19 +97,16 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         })
       )
 
-      console.log('Final practices with counterparties:', practicesWithCounterparties)
       setPractices(practicesWithCounterparties)
       setFilteredPractices(practicesWithCounterparties)
     } catch (error) {
-      console.error('Errore nel caricamento delle pratiche:', error)
     } finally {
       setLoading(false)
     }
   }
 
   // Gestisce la creazione di una nuova attività
-  const handleActivityCreated = (activity: Activity) => {
-    console.log('New activity created from archive:', activity)
+  const handleActivityCreated = () => {
     // Ricarica le pratiche per mostrare eventuali aggiornamenti
     loadPractices()
   }
@@ -138,7 +124,6 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       if (error) throw error
       setPracticeActivities(data || [])
     } catch (error) {
-      console.error('Errore nel caricamento delle attività:', error)
       setPracticeActivities([])
     } finally {
       setIsLoadingActivities(false)
@@ -536,8 +521,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         }}
         clients={clients}
         preselectedPractice={selectedPracticeForActivity}
-        onActivityCreated={(activity) => {
-          console.log('Activity created for practice:', activity)
+        onActivityCreated={() => {
           setSelectedPracticeForActivity(null)
           // Ricarica le pratiche per aggiornare i contatori
           loadPractices()

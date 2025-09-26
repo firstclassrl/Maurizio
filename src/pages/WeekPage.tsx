@@ -29,7 +29,6 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
 
   const loadTasks = async () => {
     try {
-      console.log('WeekPage: Loading activities for user:', user.id)
       const { data, error } = await supabase
         .from('activities')
         .select(`
@@ -47,14 +46,13 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
         `)
         .eq('user_id', user.id)
         .order('data', { ascending: true })
+        .limit(1000) // Limit to prevent excessive data loading
 
       if (error) {
-        console.error('WeekPage: Error loading activities:', error)
         setTasks([])
         return
       }
 
-      console.log('WeekPage: Loaded activities:', data)
 
       // Get all unique counterparty IDs from all practices
       const allCounterpartyIds = new Set<string>()
@@ -111,17 +109,14 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
         }
       })
 
-      console.log('WeekPage: Converted tasks:', convertedTasks)
       setTasks(convertedTasks)
     } catch (error) {
-      console.error('WeekPage: Error loading activities:', error)
       setTasks([])
     }
   }
 
   const handleTaskSave = async (taskData: Partial<Task>) => {
     try {
-      console.log('WeekPage handleTaskSave called with:', taskData)
       
       // Map to activities table format
       const mappedData = {
@@ -135,7 +130,6 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
         user_id: user.id
       }
       
-      console.log('WeekPage mappedData:', mappedData)
 
       if (selectedTask) {
         // Update existing activity
@@ -161,7 +155,6 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
     } catch (error) {
-      console.error('Error saving task:', error)
     }
   }
 
@@ -173,7 +166,6 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
 
   const handleTaskMove = async (taskId: string, newDate: string) => {
     try {
-      console.log('WeekPage: Moving task', taskId, 'to date', newDate)
       
       const { error } = await supabase
         .from('activities')
@@ -186,10 +178,8 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
 
       if (error) throw error
 
-      console.log('WeekPage: Task moved successfully')
       await loadTasks()
     } catch (error) {
-      console.error('WeekPage: Error moving task:', error)
     }
   }
 

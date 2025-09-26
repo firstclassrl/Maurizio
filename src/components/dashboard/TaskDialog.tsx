@@ -7,8 +7,7 @@ import { TimeInput } from '../ui/TimeInput'
 import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Switch } from '../ui/switch'
-import { MessageModal } from '../ui/MessageModal'
-import { useMessage } from '../../hooks/useMessage'
+import { useToast } from '../ui/Toast'
 import { useMobile } from '../../hooks/useMobile'
 import { Task } from '../../lib/calendar-utils'
 import { AlertTriangle } from 'lucide-react'
@@ -22,7 +21,7 @@ interface TaskDialogProps {
 }
 
 export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onSave }: TaskDialogProps) {
-  const { message, showError, hideMessage } = useMessage()
+  const { showError } = useToast()
   const isMobile = useMobile()
   const [formData, setFormData] = useState({
     pratica: '',
@@ -318,13 +317,6 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
         </form>
       </DialogContent>
       
-      <MessageModal
-        open={!!message}
-        onClose={hideMessage}
-        type={message?.type || 'info'}
-        title={message?.title || ''}
-        message={message?.message || ''}
-      />
     </Dialog>
   )
 }

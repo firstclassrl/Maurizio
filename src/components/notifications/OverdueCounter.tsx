@@ -23,12 +23,12 @@ export function OverdueCounter({ userId, onClick }: OverdueCounterProps) {
         .eq('user_id', userId)
         .lt('data', today)
         .eq('stato', 'todo')
+        .limit(100) // Limit to prevent excessive counting
 
       if (error) throw error
 
       setOverdueCount(data?.length || 0)
     } catch (error) {
-      console.error('Error loading overdue count:', error)
     } finally {
       setLoading(false)
     }

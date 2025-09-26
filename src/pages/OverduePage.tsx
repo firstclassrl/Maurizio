@@ -103,7 +103,6 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
 
       setTasks(convertedTasks)
     } catch (error) {
-      console.error('Error loading overdue activities:', error)
     } finally {
       setLoading(false)
     }
@@ -147,7 +146,6 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
     } catch (error) {
-      console.error('Error updating activity:', error)
     }
   }
 
@@ -182,7 +180,6 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
     } catch (error) {
-      console.error('Error creating activity:', error)
     }
   }
 

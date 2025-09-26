@@ -36,7 +36,6 @@ export function PracticeArchive({ open, onOpenChange }: PracticeArchiveProps) {
       if (error) throw error
       setPractices(data || [])
     } catch (error) {
-      console.error('Errore nel caricamento delle pratiche:', error)
     } finally {
       setLoading(false)
     }
@@ -55,7 +54,6 @@ export function PracticeArchive({ open, onOpenChange }: PracticeArchiveProps) {
       if (error) throw error
       setPracticeActivities(data || [])
     } catch (error) {
-      console.error('Errore nel caricamento delle attività:', error)
     } finally {
       setActivitiesLoading(false)
     }

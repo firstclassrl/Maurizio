@@ -17,28 +17,23 @@ export function UrgentCounter({ userId, onClick }: UrgentCounterProps) {
       setLoading(true)
       const today = new Date().toISOString().split('T')[0]
       
-      console.log('🔍 UrgentCounter: Loading urgent count for user:', userId)
-      console.log('🔍 UrgentCounter: Today date:', today)
 
-      // Get urgent tasks OR overdue tasks, excluding evaded tasks
+      // Get urgent tasks OR overdue tasks, excluding evaded tasks - optimized query
       const { data: urgentTasks, error: urgentError } = await supabase
         .from('activities')
-        .select('id, urgent, data, stato')
+        .select('id')
         .eq('user_id', userId)
         .eq('stato', 'todo')
         .or(`urgent.eq.true,data.lt.${today}`)
+        .limit(100) // Limit to prevent excessive counting
 
       if (urgentError) {
-        console.error('❌ UrgentCounter: Error loading urgent tasks:', urgentError)
         throw urgentError
       }
 
-      console.log('🔍 UrgentCounter: Found urgent tasks:', urgentTasks)
-      console.log('🔍 UrgentCounter: Count:', urgentTasks?.length || 0)
 
       setUrgentCount(urgentTasks?.length || 0)
     } catch (error) {
-      console.error('❌ UrgentCounter: Error loading urgent count:', error)
     } finally {
       setLoading(false)
     }
@@ -60,7 +55,6 @@ export function UrgentCounter({ userId, onClick }: UrgentCounterProps) {
             filter: `user_id=eq.${userId}`
           },
           () => {
-            console.log('🔄 UrgentCounter: Real-time update triggered')
             loadUrgentCount()
           }
         )

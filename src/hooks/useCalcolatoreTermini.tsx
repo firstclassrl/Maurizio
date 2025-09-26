@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import { useMessage } from './useMessage';
+import { useToast } from '../components/ui/Toast';
 import { RisultatoCalcolo } from '../utils/terminiProcessuali';
 
 export function useCalcolatoreTermini() {
-  const { showSuccess, showError } = useMessage();
+  const { showSuccess, showError } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   // Aggiunge una scadenza al calendario dell'app

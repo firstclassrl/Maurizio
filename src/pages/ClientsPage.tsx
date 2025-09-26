@@ -8,7 +8,7 @@ import { SimpleClientForm } from '../components/clients/SimpleClientForm'
 import { Footer } from '../components/ui/Footer'
 import { Client } from '../types/client'
 import { supabase } from '../lib/supabase'
-import { useMessage } from '../hooks/useMessage'
+import { useToast } from '../components/ui/Toast'
 import { useMobile } from '../hooks/useMobile'
 import { 
   Plus, 
@@ -30,7 +30,7 @@ interface ClientsPageProps {
 }
 
 export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
-  const { message, showError, showSuccess } = useMessage()
+  const { showError, showSuccess } = useToast()
   const isMobile = useMobile()
   
   const [clients, setClients] = useState<Client[]>([])
@@ -82,7 +82,6 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
           indirizzi = Array.isArray(client.indirizzi) ? client.indirizzi : 
                      (typeof client.indirizzi === 'string' ? JSON.parse(client.indirizzi) : [])
         } catch (e) {
-          console.warn('Errore parsing indirizzi per cliente', client.id, ':', e)
           indirizzi = []
         }
         
@@ -90,7 +89,6 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
           contatti = Array.isArray(client.contatti) ? client.contatti : 
                     (typeof client.contatti === 'string' ? JSON.parse(client.contatti) : [])
         } catch (e) {
-          console.warn('Errore parsing contatti per cliente', client.id, ':', e)
           contatti = []
         }
         
@@ -103,7 +101,6 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
       
       setClients(parsedClients)
     } catch (error) {
-      console.error('Error loading clients:', error)
       showError('Errore', 'Errore nel caricamento dei clienti')
     } finally {
       // setIsLoading(false) // Rimosso
@@ -126,7 +123,6 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
   }
 
   const handleFormSuccess = async () => {
-    console.log('🆕 NEW FORM: handleFormSuccess called in ClientsPage')
     setIsFormOpen(false)
     setSelectedClient(null)
     await loadClients()
@@ -147,7 +143,6 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
       showSuccess('Successo', 'Cliente eliminato con successo')
       loadClients()
     } catch (error) {
-      console.error('Error deleting client:', error)
       showError('Errore', 'Errore nell\'eliminazione del cliente')
     } finally {
       // setIsLoading(false) // Rimosso
@@ -390,19 +385,6 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
         type="danger"
       />
 
-      {/* Message Display */}
-      {message && (
-        <div className="fixed top-4 right-4 z-50">
-          <div className={`p-4 rounded-lg shadow-lg ${
-            message.type === 'error' 
-              ? 'bg-red-100 text-red-800 border border-red-200' 
-              : 'bg-green-100 text-green-800 border border-green-200'
-          }`}>
-            <div className="font-semibold">{message.title}</div>
-            <div>{message.message}</div>
-          </div>
-        </div>
-      )}
       
       {/* Footer */}
       <Footer />

@@ -29,7 +29,6 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
 
   const loadTasks = async () => {
     try {
-      console.log('MonthPage: Loading activities for user:', user.id)
       const { data, error } = await supabase
         .from('activities')
         .select(`
@@ -47,14 +46,13 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         `)
         .eq('user_id', user.id)
         .order('data', { ascending: true })
+        .limit(1000) // Limit to prevent excessive data loading
 
       if (error) {
-        console.error('MonthPage: Error loading activities:', error)
         setTasks([])
         return
       }
 
-      console.log('MonthPage: Loaded activities:', data)
 
       // Get all unique counterparty IDs from all practices
       const allCounterpartyIds = new Set<string>()
@@ -111,17 +109,14 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         }
       })
 
-      console.log('MonthPage: Converted tasks:', convertedTasks)
       setTasks(convertedTasks)
     } catch (error) {
-      console.error('MonthPage: Error loading activities:', error)
       setTasks([])
     }
   }
 
   const handleTaskSave = async (taskData: Partial<Task>) => {
     try {
-      console.log('MonthPage handleTaskSave called with:', taskData)
       
       // Map to activities table format
       const mappedData = {
@@ -135,7 +130,6 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         user_id: user.id
       }
       
-      console.log('MonthPage mappedData:', mappedData)
 
       if (selectedTask) {
         // Update existing activity
@@ -161,7 +155,6 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
       setIsTaskDialogOpen(false)
       setSelectedTask(null)
     } catch (error) {
-      console.error('Error saving task:', error)
     }
   }
 

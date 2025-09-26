@@ -19,7 +19,6 @@ function ToastComponent({ toast, onClose }: ToastProps) {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    console.log('🔍 DEBUG: ToastComponent mounted for toast:', toast)
     // Animate in
     setIsVisible(true)
 
@@ -93,7 +92,6 @@ interface ToastContainerProps {
 }
 
 export function ToastContainer({ toasts, onClose }: ToastContainerProps) {
-  console.log('🔍 DEBUG: ToastContainer rendering with toasts:', toasts)
   return (
     <div className="fixed bottom-4 right-4 z-50 space-y-2">
       {toasts.map((toast) => (
@@ -109,10 +107,8 @@ export function useToast() {
 
   const addToast = (toast: Omit<Toast, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9)
-    console.log('🔍 DEBUG: addToast called with:', { ...toast, id })
     setToasts(prev => {
       const newToasts = [...prev, { ...toast, id }]
-      console.log('🔍 DEBUG: New toasts array:', newToasts)
       return newToasts
     })
   }
@@ -122,7 +118,6 @@ export function useToast() {
   }
 
   const showSuccess = (title: string, message: string) => {
-    console.log('🔍 DEBUG: showSuccess called with:', { title, message })
     addToast({ type: 'success', title, message })
   }
 

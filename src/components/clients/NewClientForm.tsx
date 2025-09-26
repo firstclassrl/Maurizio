@@ -6,7 +6,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Switch } from '../ui/switch';
 import { supabase } from '../../lib/supabase';
-import { useMessage } from '../../hooks/useMessage';
+import { useToast } from '../ui/Toast';
 
 interface Client {
   id?: string;
@@ -87,7 +87,7 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const { showSuccess, showError } = useMessage();
+  const { showSuccess, showError } = useToast();
 
   useEffect(() => {
     if (client) {
@@ -125,7 +125,6 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
   }, [client]);
 
   const handleInputChange = (field: keyof Client, value: any) => {
-    console.log('🆕 NEW FORM: handleInputChange', { field, value });
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -137,8 +136,6 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
     setIsLoading(true);
 
     try {
-      console.log('🆕 NEW FORM: handleSubmit called');
-      console.log('🆕 NEW FORM: formData:', formData);
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -171,11 +168,9 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
         sigla: formData.sigla || null
       };
 
-      console.log('🆕 NEW FORM: dbData to save:', dbData);
 
       if (client?.id) {
         // Update existing client
-        console.log('🆕 NEW FORM: Updating client with ID:', client.id);
         const { error } = await supabase
           .from('clients')
           .update({
@@ -186,30 +181,24 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
           .eq('user_id', user.id);
 
         if (error) {
-          console.error('🆕 NEW FORM: Update error:', error);
           throw error;
         }
-        console.log('🆕 NEW FORM: Client updated successfully!');
         showSuccess('Successo', 'Parte aggiornata con successo');
       } else {
         // Create new client
-        console.log('🆕 NEW FORM: Creating new client');
         const { error } = await supabase
           .from('clients')
           .insert([dbData]);
 
         if (error) {
-          console.error('🆕 NEW FORM: Insert error:', error);
           throw error;
         }
-        console.log('🆕 NEW FORM: Client created successfully!');
         showSuccess('Successo', 'Parte creata con successo');
       }
 
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('🆕 NEW FORM: Error:', error);
       showError('Errore', 'Errore nel salvataggio della parte');
     } finally {
       setIsLoading(false);

@@ -102,9 +102,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         throw new Error('User not authenticated')
       }
 
-      console.log('DashboardPage: Caricamento attività per utente:', user.id)
 
-      // Load activities with practice and client information
+      // Load activities with practice and client information - optimized query
       const { data: activitiesData, error } = await supabase
         .from('activities')
         .select(`
@@ -122,14 +121,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         `)
         .eq('user_id', user.id)
         .order('data', { ascending: true })
+        .limit(1000) // Limit to prevent excessive data loading
 
       if (error) {
-        console.error('DashboardPage: Errore caricamento attività:', error)
         setTasks([])
         return
       }
 
-      console.log('DashboardPage: Attività caricate:', activitiesData)
 
       // Get all unique counterparty IDs from all practices
       const allCounterpartyIds = new Set<string>()
@@ -186,10 +184,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         }
       })
 
-      console.log('DashboardPage: Attività convertite:', convertedTasks)
       setTasks(convertedTasks)
     } catch (error) {
-      console.error('DashboardPage: Errore nel caricamento delle attività:', error)
       setTasks([])
     }
   }
@@ -198,15 +194,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   const loadClients = async () => {
     try {
-      console.log('Loading clients for user:', user.id)
       const { data, error } = await supabase
         .from('clients')
         .select('*')
         .eq('user_id', user.id)
         .order('ragione', { ascending: true })
+        .limit(500) // Limit to prevent excessive data loading
 
       if (error) {
-        console.error('Error loading clients:', error)
         throw error
       }
       
@@ -219,7 +214,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           indirizzi = Array.isArray(client.indirizzi) ? client.indirizzi : 
                      (typeof client.indirizzi === 'string' ? JSON.parse(client.indirizzi) : [])
         } catch (e) {
-          console.warn('Errore parsing indirizzi per cliente', client.id, ':', e)
           indirizzi = []
         }
         
@@ -227,7 +221,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           contatti = Array.isArray(client.contatti) ? client.contatti : 
                     (typeof client.contatti === 'string' ? JSON.parse(client.contatti) : [])
         } catch (e) {
-          console.warn('Errore parsing contatti per cliente', client.id, ':', e)
           contatti = []
         }
         
@@ -245,18 +238,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         }
       })
       
-      console.log('Loaded clients:', parsedClients)
       setClients(parsedClients)
     } catch (error) {
-      console.error('Errore nel caricamento dei clienti:', error)
     }
   }
 
   const loadUrgentTasks = async () => {
     try {
       const today = new Date().toISOString().split('T')[0]
-      console.log('🔍 DashboardPage: Loading urgent tasks for user:', user.id)
-      console.log('🔍 DashboardPage: Today date:', today)
       
       const { data: activities, error } = await supabase
         .from('activities')
@@ -277,13 +266,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         .eq('stato', 'todo')
         .or(`urgent.eq.true,data.lt.${today}`)
         .order('data', { ascending: true })
+        .limit(200) // Limit urgent tasks to prevent excessive loading
 
       if (error) {
-        console.error('❌ DashboardPage: Error loading urgent tasks:', error)
         throw error
       }
       
-      console.log('🔍 DashboardPage: Found urgent activities:', activities?.length || 0)
 
       // Get all unique counterparty IDs from all practices
       const allCounterpartyIds = new Set<string>()
@@ -342,7 +330,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       setUrgentTasks(convertedTasks)
     } catch (error) {
-      console.error('Errore nel caricamento delle scadenze urgenti:', error)
       setUrgentTasks([])
     }
   }
@@ -351,9 +338,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const getTodayTasks = () => {
     const today = new Date().toISOString().split('T')[0]
     const todayTasks = tasks.filter(task => task.scadenza === today && !task.evaso)
-    console.log('DashboardPage: Attività di oggi:', todayTasks)
-    console.log('DashboardPage: Data di oggi:', today)
-    console.log('DashboardPage: Totale attività caricate:', tasks.length)
     return todayTasks
   }
 
@@ -374,7 +358,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   const handleTaskUpdate = async (updatedTask: Task) => {
     try {
-      console.log('DashboardPage handleTaskUpdate called with:', updatedTask)
       
       // Update activities table
       const { error } = await supabase
@@ -398,7 +381,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       setSelectedTask(null)
       showSuccess('Successo', 'Attività aggiornata con successo')
     } catch (error) {
-      console.error('Errore nell\'aggiornamento dell\'attività:', error)
       showError('Errore', 'Errore nell\'aggiornamento dell\'attività')
     }
   }
@@ -424,7 +406,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       setTaskToDelete(null)
       showError('Attività Eliminata', `Attività "${taskToDelete.attivita}" eliminata con successo`)
     } catch (error) {
-      console.error('Errore nell\'eliminazione dell\'attività:', error)
       setTasks([])
     }
   }
@@ -482,13 +463,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       await loadTasks()
       showSuccess('Successo', 'Appuntamento aggiunto con successo')
     } catch (error) {
-      console.error('Errore nell\'aggiunta dell\'appuntamento:', error)
-      console.error('Errore nell\'aggiunta dell\'appuntamento:', error)
     }
   }
 
   const handleClientFormSuccess = async () => {
-    console.log('🆕 NEW FORM: handleClientFormSuccess called')
     setIsClientFormOpen(false)
     setSelectedClient(null)
     await loadClients()
@@ -504,7 +482,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     try {
     await supabase.auth.signOut()
     } catch (error) {
-      console.error('Errore durante il logout:', error)
     }
   }
 
@@ -870,12 +847,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         key={isNewActivityWizardOpen ? 'open' : 'closed'}
         open={isNewActivityWizardOpen}
         onOpenChange={(open) => {
-          console.log('DashboardPage: onOpenChange called with:', open)
           setIsNewActivityWizardOpen(open)
         }}
         clients={clients}
         onActivityCreated={async (activity) => {
-          console.log('New activity created:', activity)
           await loadClients()
           await loadTasks()
           showSuccess('Attività Creata', `Attività "${activity.attivita}" creata con successo`)
@@ -1000,7 +975,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onOpenChange={setIsAddActivityModalOpen}
         clients={clients}
         onActivityCreated={async (activity) => {
-          console.log('Activity created from existing practice:', activity)
           await loadClients()
           await loadTasks() // Reload tasks to show the new activity
           showSuccess('Attività Aggiunta', `Attività "${activity.attivita}" aggiunta con successo`)

@@ -43,13 +43,11 @@ export function usePushNotifications() {
         isSubscribed: !!subscription 
       }));
     } catch (error) {
-      console.error('Errore nel controllo subscription:', error);
     }
   };
 
   const requestPermission = async (): Promise<boolean> => {
     if (!state.isSupported) {
-      console.log('Push notifications non supportate');
       return false;
     }
 
@@ -58,21 +56,17 @@ export function usePushNotifications() {
       setState(prev => ({ ...prev, permission }));
       
       if (permission === 'granted') {
-        console.log('Permesso per notifiche concesso');
         return true;
       } else {
-        console.log('Permesso per notifiche negato');
         return false;
       }
     } catch (error) {
-      console.error('Errore nella richiesta permessi:', error);
       return false;
     }
   };
 
   const subscribeToPush = async (): Promise<boolean> => {
     if (!state.isSupported || state.permission !== 'granted') {
-      console.log('Push notifications non supportate o permesso negato');
       return false;
     }
 
@@ -100,10 +94,8 @@ export function usePushNotifications() {
       // Invia subscription al server (implementare endpoint)
       await sendSubscriptionToServer(subscription);
 
-      console.log('Sottoscrizione push completata');
       return true;
     } catch (error) {
-      console.error('Errore durante la sottoscrizione:', error);
       setState(prev => ({ ...prev, isLoading: false }));
       return false;
     }
