@@ -30,6 +30,12 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
   const [selectedPracticeForActivity, setSelectedPracticeForActivity] = useState<Practice | null>(null)
   const [practiceActivities, setPracticeActivities] = useState<any[]>([])
   const [isLoadingActivities, setIsLoadingActivities] = useState(false)
+  const [isEditingJudicialFields, setIsEditingJudicialFields] = useState(false)
+  const [judicialFields, setJudicialFields] = useState({
+    autorita_giudiziaria: '',
+    rg: '',
+    giudice: ''
+  })
 
   // Carica tutti i clienti
   const loadClients = async () => {
@@ -133,6 +139,12 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
   // Gestisce il click su "Visualizza Dettagli"
   const handleViewDetails = async (practice: Practice) => {
     setSelectedPracticeForDetails(practice)
+    setJudicialFields({
+      autorita_giudiziaria: practice.autorita_giudiziaria || '',
+      rg: practice.rg || '',
+      giudice: practice.giudice || ''
+    })
+    setIsEditingJudicialFields(false)
     if (practice.id) {
       await loadPracticeActivities(practice.id)
     }
@@ -141,6 +153,41 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
   // Gestisce il click su "Aggiungi Attività"
   const handleAddActivity = (practice: Practice) => {
     setSelectedPracticeForActivity(practice)
+  }
+
+  // Salva i campi giudiziali
+  const handleSaveJudicialFields = async () => {
+    if (!selectedPracticeForDetails?.id) return
+
+    try {
+      const { error } = await supabase
+        .from('practices')
+        .update({
+          autorita_giudiziaria: judicialFields.autorita_giudiziaria || null,
+          rg: judicialFields.rg || null,
+          giudice: judicialFields.giudice || null
+        })
+        .eq('id', selectedPracticeForDetails.id)
+
+      if (error) throw error
+
+      // Aggiorna la pratica locale
+      setSelectedPracticeForDetails(prev => prev ? {
+        ...prev,
+        autorita_giudiziaria: judicialFields.autorita_giudiziaria,
+        rg: judicialFields.rg,
+        giudice: judicialFields.giudice
+      } : null)
+
+      // Ricarica le pratiche per aggiornare la lista
+      await loadPractices()
+      
+      setIsEditingJudicialFields(false)
+      alert('Campi giudiziali aggiornati con successo!')
+    } catch (error) {
+      console.error('Errore nel salvataggio:', error)
+      alert('Errore nel salvataggio dei campi giudiziali')
+    }
   }
 
 
@@ -314,6 +361,30 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                               <Calendar className="h-4 w-4 text-gray-500" />
                               <span><strong>Creata:</strong> {formatDate(practice.created_at)}</span>
                             </div>
+                            
+                            {/* Campi giudiziali per pratiche GIUDIZIALE */}
+                            {practice.tipo_procedura === 'GIUDIZIALE' && (
+                              <>
+                                {practice.autorita_giudiziaria && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-gray-500">🏛️</span>
+                                    <span><strong>Autorità:</strong> {practice.autorita_giudiziaria}</span>
+                                  </div>
+                                )}
+                                {practice.rg && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-gray-500">📋</span>
+                                    <span><strong>R.G.:</strong> {practice.rg}</span>
+                                  </div>
+                                )}
+                                {practice.giudice && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-gray-500">⚖️</span>
+                                    <span><strong>Giudice:</strong> {practice.giudice}</span>
+                                  </div>
+                                )}
+                              </>
+                            )}
                           </div>
                         </div>
 
@@ -409,6 +480,92 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                   </div>
                 </div>
               </div>
+
+              {/* Sezione Campi Giudiziali per pratiche GIUDIZIALE */}
+              {selectedPracticeForDetails.tipo_procedura === 'GIUDIZIALE' && (
+                <div className="mb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">Informazioni Giudiziali</h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsEditingJudicialFields(!isEditingJudicialFields)}
+                    >
+                      {isEditingJudicialFields ? 'Annulla' : 'Modifica'}
+                    </Button>
+                  </div>
+                  
+                  {isEditingJudicialFields ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Autorità Giudiziaria</label>
+                        <input
+                          type="text"
+                          value={judicialFields.autorita_giudiziaria}
+                          onChange={(e) => setJudicialFields(prev => ({ ...prev, autorita_giudiziaria: e.target.value }))}
+                          placeholder="es. Tribunale di Roma"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">R.G.</label>
+                        <input
+                          type="text"
+                          value={judicialFields.rg}
+                          onChange={(e) => setJudicialFields(prev => ({ ...prev, rg: e.target.value }))}
+                          placeholder="es. 12345/2024"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Giudice</label>
+                        <input
+                          type="text"
+                          value={judicialFields.giudice}
+                          onChange={(e) => setJudicialFields(prev => ({ ...prev, giudice: e.target.value }))}
+                          placeholder="es. Dott. Mario Rossi"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <span className="font-medium">Autorità Giudiziaria:</span> 
+                        <span className="ml-2">{selectedPracticeForDetails.autorita_giudiziaria || 'Non specificata'}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium">R.G.:</span> 
+                        <span className="ml-2">{selectedPracticeForDetails.rg || 'Non specificato'}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium">Giudice:</span> 
+                        <span className="ml-2">{selectedPracticeForDetails.giudice || 'Non specificato'}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {isEditingJudicialFields && (
+                    <div className="flex justify-end gap-2 mt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsEditingJudicialFields(false)}
+                      >
+                        Annulla
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={handleSaveJudicialFields}
+                      >
+                        Salva
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Attività Correlate */}
               <div>
