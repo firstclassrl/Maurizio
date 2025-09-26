@@ -1,6 +1,6 @@
 import React from 'react'
 import { Switch } from '../ui/switch'
-import { useWeekendSettings } from '../../hooks/useWeekendSettings'
+import { useWeekendSettings } from '../../contexts/WeekendSettingsContext'
 
 interface WeekendToggleProps {
   className?: string
