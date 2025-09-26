@@ -465,12 +465,16 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                       </span>
                     </div>
                     <div>
-                      <span className="font-medium">Cliente:</span> {selectedPracticeForDetails.clients?.nome || 'N/A'}
+                      <span className="font-medium">Cliente:</span> {
+                        selectedPracticeForDetails.clients 
+                          ? (selectedPracticeForDetails.clients.ragione || `${selectedPracticeForDetails.clients.nome || ''} ${selectedPracticeForDetails.clients.cognome || ''}`.trim())
+                          : 'N/A'
+                      }
                     </div>
                     <div>
                       <span className="font-medium">Controparti:</span> {
                         selectedPracticeForDetails.counterparties && selectedPracticeForDetails.counterparties.length > 0
-                          ? selectedPracticeForDetails.counterparties.map(c => c.nome).join(', ')
+                          ? selectedPracticeForDetails.counterparties.map(c => c.ragione || `${c.nome || ''} ${c.cognome || ''}`.trim()).join(', ')
                           : 'Nessuna'
                       }
                     </div>
