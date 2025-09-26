@@ -3,6 +3,8 @@ import { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { Task } from '../lib/calendar-utils'
 import { Client } from '../types/client'
+import { useSafeData } from '../lib/supabase-safe'
+import { OptimizationControl } from '../components/admin/OptimizationControl'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog'
@@ -41,6 +43,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const { toasts, removeToast, showSuccess, showError } = useToast()
   const isMobile = useMobile()
 
+  // Sistema di caricamento sicuro con ottimizzazioni
+  const { clients: safeClients, loadData } = useSafeData()
+
   // Function to get category color
   const getCategoryColor = (categoria?: string) => {
     if (!categoria) return 'bg-gray-100 text-gray-800 border-gray-200'
@@ -57,30 +62,33 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [selectedParty, setSelectedParty] = useState<string>('all')
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const [isAppuntamentoDialogOpen, setIsAppuntamentoDialogOpen] = useState(false)
-  const [clients, setClients] = useState<Client[]>([])
   const [isClientFormOpen, setIsClientFormOpen] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
-  // const [isClientLoading, setIsClientLoading] = useState(false) // Rimosso - non più necessario
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isAddActivityModalOpen, setIsAddActivityModalOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
+  const [showOptimizationControl, setShowOptimizationControl] = useState(false)
+
+  // Caricamento sicuro con ottimizzazioni
+  const loadUserData = async () => {
+    try {
+      await loadData(user.id)
+    } catch (error) {
+      console.error('Errore nel caricamento dei dati:', error)
+    }
+  }
 
   useEffect(() => {
-    const loadData = async () => {
-      await loadClients()
-      await loadTasks()
-    }
-    loadData()
+    loadUserData()
   }, [])
 
   // Reload data when page becomes visible (user navigates back to this page)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        loadClients()
-        loadTasks()
+        loadUserData()
       }
     }
 
@@ -90,10 +98,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   // Reload tasks when clients change
   useEffect(() => {
-    if (clients.length > 0) {
+    if (safeClients.length > 0) {
       loadTasks()
     }
-  }, [clients])
+  }, [safeClients])
 
   const loadTasks = async () => {
     try {
@@ -192,58 +200,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
 
 
-  const loadClients = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(500) // Limit to prevent excessive data loading
-
-      if (error) {
-        throw error
-      }
-      
-      // Parsa i campi JSON che potrebbero essere stringhe
-      const parsedClients = (data || []).map(client => {
-        let indirizzi = []
-        let contatti = []
-        
-        try {
-          indirizzi = Array.isArray(client.indirizzi) ? client.indirizzi : 
-                     (typeof client.indirizzi === 'string' ? JSON.parse(client.indirizzi) : [])
-        } catch (e) {
-          indirizzi = []
-        }
-        
-        try {
-          contatti = Array.isArray(client.contatti) ? client.contatti : 
-                    (typeof client.contatti === 'string' ? JSON.parse(client.contatti) : [])
-        } catch (e) {
-          contatti = []
-        }
-        
-        return {
-          ...client,
-          indirizzi,
-          contatti,
-          // Mappa i campi del database ai nomi camelCase del form
-          dataNascita: client.data_nascita,
-          luogoNascita: client.luogo_nascita,
-          partitaIva: client.partita_iva,
-          codiceFiscale: client.codice_fiscale,
-          codiceDestinatario: client.codice_destinatario,
-          codiceDestinatarioPA: client.codice_destinatario_pa
-        }
-      })
-      
-      console.log('Loaded clients:', parsedClients.length, parsedClients)
-      setClients(parsedClients)
-    } catch (error) {
-      console.error('Error loading clients:', error)
-    }
-  }
+  // Funzione loadClients rimossa - ora usa il sistema sicuro
 
   const loadUrgentTasks = async () => {
     try {
@@ -471,7 +428,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const handleClientFormSuccess = async () => {
     setIsClientFormOpen(false)
     setSelectedClient(null)
-    await loadClients()
+    await loadUserData()
     await loadTasks()
   }
 
@@ -529,6 +486,15 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 </Button>
               
               <Button
+                onClick={() => setShowOptimizationControl(!showOptimizationControl)}
+                variant="outline"
+                size="sm"
+                className="border-white text-white hover:bg-white hover:text-slate-900 bg-transparent"
+              >
+                🔧 Ottimizzazioni
+              </Button>
+              
+              <Button
                 onClick={() => setIsOptionsModalOpen(true)}
                 variant="outline"
                 size="sm"
@@ -554,6 +520,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       {/* Main Content */}
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        {/* Pannello di Controllo Ottimizzazioni */}
+        {showOptimizationControl && (
+          <div className="mb-6">
+            <OptimizationControl />
+          </div>
+        )}
 
         {/* Welcome Message and Counters */}
         <div className="flex justify-between items-center mb-6">
@@ -847,13 +820,13 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onOpenChange={(open) => {
           setIsNewActivityWizardOpen(open)
         }}
-        clients={clients}
+        clients={safeClients}
         onPracticeCreated={(practice) => {
           showSuccess('Pratica creata', `La pratica ${practice.numero} è stata creata con successo!`)
-          loadClients()
+          loadUserData()
         }}
         onActivityCreated={async (activity) => {
-          await loadClients()
+          await loadUserData()
           await loadTasks()
           showSuccess('Attività Creata', `Attività "${activity.attivita}" creata con successo`)
         }}
@@ -971,9 +944,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       <AddActivityToExistingPractice
         open={isAddActivityModalOpen}
         onOpenChange={setIsAddActivityModalOpen}
-        clients={clients}
+        clients={safeClients}
         onActivityCreated={async (activity) => {
-          await loadClients()
+          await loadUserData()
           await loadTasks() // Reload tasks to show the new activity
           showSuccess('Attività Aggiunta', `Attività "${activity.attivita}" aggiunta con successo`)
         }}
