@@ -3,7 +3,6 @@ import { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { Task } from '../lib/calendar-utils'
 import { useSafeData } from '../lib/supabase-safe'
-import { OptimizationControl } from '../components/admin/OptimizationControl'
 import { Button } from '../components/ui/button'
 import { MonthlyCalendar } from '../components/dashboard/MonthlyCalendar'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
@@ -27,7 +26,6 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedParty, setSelectedParty] = useState('all')
-  const [showOptimizationControl, setShowOptimizationControl] = useState(false)
 
   // Caricamento sicuro con ottimizzazioni
   const loadUserData = async () => {
@@ -222,14 +220,6 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
             <h1 className="text-xl font-bold text-gray-900">Calendario Mensile</h1>
           </div>
           <div className="flex items-center gap-4">
-            <Button
-              onClick={() => setShowOptimizationControl(!showOptimizationControl)}
-              variant="outline"
-              size="sm"
-              className="border-blue-300 text-blue-700 hover:bg-blue-100 bg-transparent"
-            >
-              🔧 Ottimizzazioni
-            </Button>
             <div className="flex gap-4">
               <CategoryFilter 
                 selectedCategory={selectedCategory}
@@ -248,12 +238,6 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
 
       {/* Main Content */}
       <div className="flex-1">
-        {/* Pannello di Controllo Ottimizzazioni */}
-        {showOptimizationControl && (
-          <div className="p-6">
-            <OptimizationControl />
-          </div>
-        )}
 
         {tasks.length === 0 ? (
           <div className="flex items-center justify-center h-64">

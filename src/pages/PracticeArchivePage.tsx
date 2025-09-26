@@ -12,7 +12,6 @@ import { Footer } from '../components/ui/Footer'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { useSafeData } from '../lib/supabase-safe'
-import { OptimizationControl } from '../components/admin/OptimizationControl'
 
 interface PracticeArchivePageProps {
   onNavigateBack: () => void
@@ -29,7 +28,6 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
   const [isNewPracticeModalOpen, setIsNewPracticeModalOpen] = useState(false)
   const [selectedPracticeForDetails, setSelectedPracticeForDetails] = useState<Practice | null>(null)
   const [selectedPracticeForActivity, setSelectedPracticeForActivity] = useState<Practice | null>(null)
-  const [showOptimizationControl, setShowOptimizationControl] = useState(false)
   const [practiceActivities, setPracticeActivities] = useState<any[]>([])
   const [isLoadingActivities, setIsLoadingActivities] = useState(false)
   const [isEditingJudicialFields, setIsEditingJudicialFields] = useState(false)
@@ -262,14 +260,6 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
           </div>
           <div className="flex gap-2">
             <Button
-              onClick={() => setShowOptimizationControl(!showOptimizationControl)}
-              variant="outline"
-              size="sm"
-              className="border-white text-white hover:bg-white hover:text-slate-900 bg-transparent"
-            >
-              🔧 Ottimizzazioni
-            </Button>
-            <Button
               onClick={() => setIsNewPracticeModalOpen(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white"
               size="sm"
@@ -284,11 +274,6 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-6 py-6">
         {/* Pannello di Controllo Ottimizzazioni */}
-        {showOptimizationControl && (
-          <div className="mb-6">
-            <OptimizationControl />
-          </div>
-        )}
 
         {/* Filtri */}
         <Card className="mb-6">

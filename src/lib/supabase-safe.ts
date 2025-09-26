@@ -1,147 +1,77 @@
 import { useState } from 'react'
 import { supabase } from './supabase'
-import { getOptimizationConfig } from './optimization-toggle'
 
-// Sistema di monitoraggio performance
-let performanceMetrics = {
-  queryTime: 0,
-  cacheHits: 0,
-  cacheMisses: 0,
-  totalQueries: 0,
-  averageQueryTime: 0,
-  lastUpdate: new Date()
-}
-
-// Funzione per registrare performance
-const recordPerformance = (queryTime: number, fromCache: boolean = false) => {
-  performanceMetrics.queryTime += queryTime
-  performanceMetrics.totalQueries += 1
-  performanceMetrics.cacheHits += fromCache ? 1 : 0
-  performanceMetrics.cacheMisses += !fromCache ? 1 : 0
-  performanceMetrics.averageQueryTime = performanceMetrics.queryTime / performanceMetrics.totalQueries
-  performanceMetrics.lastUpdate = new Date()
-  
-  const cacheStatus = fromCache ? 'CACHE HIT' : 'CACHE MISS'
-  console.log(`📊 Query: ${queryTime}ms ${cacheStatus} | Totale: ${performanceMetrics.totalQueries} | Media: ${Math.round(performanceMetrics.averageQueryTime)}ms`)
-}
-
-// Funzione per ottenere statistiche
-export const getPerformanceStats = () => {
-  const cacheHitRate = performanceMetrics.totalQueries > 0 
-    ? Math.round((performanceMetrics.cacheHits / performanceMetrics.totalQueries) * 100) 
-    : 0
-  
-  return {
-    ...performanceMetrics,
-    cacheHitRate,
-    averageQueryTime: Math.round(performanceMetrics.averageQueryTime)
-  }
-}
-
-// Versione SICURA del sistema di ottimizzazione
-// Rispetta sempre i toggle e ha fallback garantito
-
-// Cache sicura con limiti
-const safeCache = {
+// Sistema di cache ottimizzato per performance
+const cache = {
   clients: new Map<string, { data: any[], timestamp: number }>(),
   practices: new Map<string, { data: any[], timestamp: number }>(),
   activities: new Map<string, { data: any[], timestamp: number }>()
 }
 
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minuti
+const MAX_CACHE_SIZE = 50
+
 // Funzione per pulire cache se supera i limiti
-const cleanupCache = (cacheType: keyof typeof safeCache) => {
-  const config = getOptimizationConfig()
-  const cache = safeCache[cacheType]
+const cleanupCache = (cacheType: keyof typeof cache) => {
+  const cacheMap = cache[cacheType]
   
-  if (cache.size > config.maxCacheSize) {
+  if (cacheMap.size > MAX_CACHE_SIZE) {
     // Rimuovi le entry più vecchie
-    const entries = Array.from(cache.entries())
+    const entries = Array.from(cacheMap.entries())
     entries.sort((a, b) => a[1].timestamp - b[1].timestamp)
     
-    const toRemove = entries.slice(0, Math.floor(config.maxCacheSize / 2))
-    toRemove.forEach(([key]) => cache.delete(key))
-    
-    console.log(`🧹 Cache ${cacheType} pulita: rimossi ${toRemove.length} elementi`)
+    const toRemove = entries.slice(0, Math.floor(MAX_CACHE_SIZE / 2))
+    toRemove.forEach(([key]) => cacheMap.delete(key))
   }
 }
 
 // Funzione per verificare se la cache è valida
 const isCacheValid = (timestamp: number): boolean => {
-  const config = getOptimizationConfig()
-  return Date.now() - timestamp < config.cacheDuration
+  return Date.now() - timestamp < CACHE_DURATION
 }
 
-// Funzione per ottenere dati dalla cache (se abilitata)
-const getFromCache = <T>(cacheType: keyof typeof safeCache, key: string): T | null => {
-  const config = getOptimizationConfig()
-  
-  if (!config.useCache) {
-    return null // Cache disabilitata
-  }
-  
-  const cached = safeCache[cacheType].get(key)
+// Funzione per ottenere dati dalla cache
+const getFromCache = <T>(cacheType: keyof typeof cache, key: string): T | null => {
+  const cached = cache[cacheType].get(key)
   if (cached && isCacheValid(cached.timestamp)) {
-    if (config.enableLogging) {
-      console.log(`✅ Cache HIT: ${cacheType}/${key}`)
-    }
     return cached.data as T
-  }
-  
-  if (config.enableLogging) {
-    console.log(`❌ Cache MISS: ${cacheType}/${key}`)
   }
   return null
 }
 
-// Funzione per salvare dati nella cache (se abilitata)
-const saveToCache = <T>(cacheType: keyof typeof safeCache, key: string, data: T): void => {
-  const config = getOptimizationConfig()
-  
-  if (!config.useCache) {
-    return // Cache disabilitata
-  }
-  
-  safeCache[cacheType].set(key, {
+// Funzione per salvare dati nella cache
+const saveToCache = <T>(cacheType: keyof typeof cache, key: string, data: T): void => {
+  cache[cacheType].set(key, {
     data: data as any[],
     timestamp: Date.now()
   })
   
   cleanupCache(cacheType)
-  
-  if (config.enableLogging) {
-    console.log(`💾 Cache SAVED: ${cacheType}/${key}`)
-  }
 }
 
 // Funzione per invalidare cache
-export const invalidateSafeCache = (cacheType?: keyof typeof safeCache) => {
+export const invalidateCache = (cacheType?: keyof typeof cache) => {
   if (cacheType) {
-    safeCache[cacheType].clear()
-    console.log(`🗑️ Cache ${cacheType} invalidata`)
+    cache[cacheType].clear()
   } else {
-    Object.keys(safeCache).forEach(key => {
-      safeCache[key as keyof typeof safeCache].clear()
+    Object.keys(cache).forEach(key => {
+      cache[key as keyof typeof cache].clear()
     })
-    console.log('🗑️ Tutta la cache invalidata')
   }
 }
 
-// Caricamento clienti SICURO
+// Caricamento clienti ottimizzato
 export const loadClientsSafe = async (userId: string): Promise<any[]> => {
-  const config = getOptimizationConfig()
   const cacheKey = `clients_${userId}`
   
-  // Prova cache prima (se abilitata)
+  // Prova cache prima
   const cached = getFromCache<any[]>('clients', cacheKey)
   if (cached) {
-    recordPerformance(0, true) // Cache hit - tempo 0
     return cached
   }
   
   // Fallback: query normale
   try {
-    const startTime = Date.now()
-    
     const { data, error } = await supabase
       .from('clients')
       .select('id, ragione, nome, cognome, created_at')
@@ -153,15 +83,8 @@ export const loadClientsSafe = async (userId: string): Promise<any[]> => {
 
     const clients = data || []
     
-    // Salva in cache (se abilitata)
+    // Salva in cache
     saveToCache('clients', cacheKey, clients)
-    
-    const queryTime = Date.now() - startTime
-    recordPerformance(queryTime, false) // Cache miss
-    
-    if (config.enableLogging) {
-      console.log(`⏱️ Query clienti completata in ${queryTime}ms`)
-    }
     
     return clients
   } catch (error) {
@@ -170,193 +93,162 @@ export const loadClientsSafe = async (userId: string): Promise<any[]> => {
   }
 }
 
-// Caricamento pratiche SICURO
+// Caricamento pratiche ottimizzato
 export const loadPracticesSafe = async (userId: string): Promise<any[]> => {
-  const config = getOptimizationConfig()
   const cacheKey = `practices_${userId}`
   
-  // Prova cache prima (se abilitata)
+  // Prova cache prima
   const cached = getFromCache<any[]>('practices', cacheKey)
   if (cached) {
-    recordPerformance(0, true) // Cache hit - tempo 0
     return cached
   }
   
   try {
-    const startTime = Date.now()
-    
-    if (config.useOptimizedQueries) {
-      // Query ottimizzata (se abilitata)
-      return await loadPracticesOptimizedSafe(userId, cacheKey, startTime)
-    } else {
-      // Query normale (fallback sicuro)
-      return await loadPracticesNormalSafe(userId, cacheKey, startTime)
+    // Query ottimizzata: un solo JOIN
+    const { data: practicesData, error: practicesError } = await supabase
+      .from('practices')
+      .select(`
+        id,
+        numero,
+        cliente_id,
+        controparti_ids,
+        tipo_procedura,
+        autorita_giudiziaria,
+        rg,
+        giudice,
+        created_at,
+        updated_at,
+        clients!practices_cliente_id_fkey(
+          id,
+          ragione,
+          nome,
+          cognome
+        )
+      `)
+      .eq('user_id', userId)
+      .order('numero', { ascending: false })
+
+    if (practicesError) throw practicesError
+
+    // Carica controparti in batch
+    const allCounterpartyIds = new Set<string>()
+    practicesData?.forEach(practice => {
+      if (practice.controparti_ids && practice.controparti_ids.length > 0) {
+        practice.controparti_ids.forEach((id: string) => allCounterpartyIds.add(id))
+      }
+    })
+
+    let counterpartyMap = new Map<string, any>()
+    if (allCounterpartyIds.size > 0) {
+      const { data: counterpartiesData } = await supabase
+        .from('clients')
+        .select('id, ragione, nome, cognome')
+        .in('id', Array.from(allCounterpartyIds))
+
+      counterpartiesData?.forEach((client: any) => {
+        counterpartyMap.set(client.id, client)
+      })
     }
+
+    // Combina pratiche con controparti
+    const practices = practicesData?.map(practice => ({
+      ...practice,
+      counterparties: practice.controparti_ids?.map((id: string) => counterpartyMap.get(id)).filter(Boolean) || []
+    })) || []
+
+    // Salva in cache
+    saveToCache('practices', cacheKey, practices)
+    
+    return practices
   } catch (error) {
     console.error('❌ Errore caricamento pratiche:', error)
     return [] // Fallback sicuro
   }
 }
 
-// Query ottimizzata per pratiche (se abilitata)
-const loadPracticesOptimizedSafe = async (userId: string, cacheKey: string, startTime: number): Promise<any[]> => {
-  const config = getOptimizationConfig()
+// Caricamento attività ottimizzato
+export const loadActivitiesSafe = async (userId: string): Promise<any[]> => {
+  const cacheKey = `activities_${userId}`
   
-  // Query ottimizzata: un solo JOIN
-  const { data: practicesData, error: practicesError } = await supabase
-    .from('practices')
-    .select(`
-      id,
-      numero,
-      cliente_id,
-      controparti_ids,
-      tipo_procedura,
-      autorita_giudiziaria,
-      rg,
-      giudice,
-      created_at,
-      updated_at,
-      clients!practices_cliente_id_fkey(
-        id,
-        ragione,
-        nome,
-        cognome
-      )
-    `)
-    .eq('user_id', userId)
-    .order('numero', { ascending: false })
-    .limit(1000)
-
-  if (practicesError) throw practicesError
-
-  // Carica controparti in batch
-  const allCounterpartyIds = new Set<string>()
-  practicesData?.forEach((practice: any) => {
-    if (practice.controparti_ids) {
-      practice.controparti_ids.forEach((id: string) => allCounterpartyIds.add(id))
-    }
-  })
-
-  let counterpartyMap = new Map<string, any>()
-  if (allCounterpartyIds.size > 0) {
-    const { data: counterpartiesData } = await supabase
-      .from('clients')
-      .select('id, ragione, nome, cognome')
-      .in('id', Array.from(allCounterpartyIds))
-
-    counterpartiesData?.forEach((client: any) => {
-      counterpartyMap.set(client.id, client)
-    })
-  }
-
-  // Costruisci le pratiche con le controparti
-  const practices: any[] = (practicesData || []).map((practice: any) => ({
-    ...practice,
-    counterparties: practice.controparti_ids
-      ?.map((id: string) => counterpartyMap.get(id))
-      .filter(Boolean) || []
-  }))
-
-  // Salva in cache (se abilitata)
-  saveToCache('practices', cacheKey, practices)
-  
-  const queryTime = Date.now() - startTime
-  recordPerformance(queryTime, false) // Cache miss
-  
-  if (config.enableLogging) {
-    console.log(`⏱️ Query pratiche ottimizzata completata in ${queryTime}ms`)
+  // Prova cache prima
+  const cached = getFromCache<any[]>('activities', cacheKey)
+  if (cached) {
+    return cached
   }
   
-  return practices
-}
+  try {
+    const { data, error } = await supabase
+      .from('activities')
+      .select(`
+        *,
+        practices!inner(
+          numero,
+          cliente_id,
+          controparti_ids,
+          clients!practices_cliente_id_fkey(
+            ragione,
+            nome,
+            cognome
+          )
+        )
+      `)
+      .eq('user_id', userId)
+      .order('data', { ascending: true })
+      .limit(1000)
 
-// Query normale per pratiche (fallback sicuro)
-const loadPracticesNormalSafe = async (userId: string, cacheKey: string, startTime: number): Promise<any[]> => {
-  const config = getOptimizationConfig()
-  
-  // Query normale (come prima)
-  const { data: practicesData, error: practicesError } = await supabase
-    .from('practices')
-    .select(`
-      *,
-      clients!practices_cliente_id_fkey(*)
-    `)
-    .eq('user_id', userId)
-    .order('numero', { ascending: false })
+    if (error) throw error
 
-  if (practicesError) throw practicesError
-
-  // Carica controparti per ogni pratica (come prima)
-  const practicesWithCounterparties = await Promise.all(
-    (practicesData || []).map(async (practice: any) => {
-      if (practice.controparti_ids && practice.controparti_ids.length > 0) {
-        const { data: counterpartiesData } = await supabase
-          .from('clients')
-          .select('*')
-          .in('id', practice.controparti_ids)
-        
-        return {
-          ...practice,
-          counterparties: counterpartiesData || []
-        }
-      }
-      return {
-        ...practice,
-        counterparties: []
-      }
-    })
-  )
-
-  // Salva in cache (se abilitata)
-  saveToCache('practices', cacheKey, practicesWithCounterparties)
-  
-  const queryTime = Date.now() - startTime
-  recordPerformance(queryTime, false) // Cache miss
-  
-  if (config.enableLogging) {
-    console.log(`⏱️ Query pratiche normale completata in ${queryTime}ms`)
+    const activities = data || []
+    
+    // Salva in cache
+    saveToCache('activities', cacheKey, activities)
+    
+    return activities
+  } catch (error) {
+    console.error('❌ Errore caricamento attività:', error)
+    return [] // Fallback sicuro
   }
-  
-  return practicesWithCounterparties
 }
 
 // Hook sicuro per i dati
 export const useSafeData = () => {
   const [clients, setClients] = useState<any[]>([])
   const [practices, setPractices] = useState<any[]>([])
+  const [activities, setActivities] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const loadData = async (userId: string) => {
-    setLoading(true)
-    setError(null)
-    
     try {
-      // Carica tutto in parallelo (sempre sicuro)
-      const [clientsData, practicesData] = await Promise.all([
+      setLoading(true)
+      setError(null)
+
+      // Carica tutti i dati in parallelo
+      const [clientsData, practicesData, activitiesData] = await Promise.all([
         loadClientsSafe(userId),
-        loadPracticesSafe(userId)
+        loadPracticesSafe(userId),
+        loadActivitiesSafe(userId)
       ])
-      
+
       setClients(clientsData)
       setPractices(practicesData)
+      setActivities(activitiesData)
     } catch (err) {
-      console.error('❌ Errore caricamento dati:', err)
-      setError(err instanceof Error ? err.message : 'Errore sconosciuto')
+      console.error('❌ Errore nel caricamento dei dati:', err)
+      setError('Errore nel caricamento dei dati')
     } finally {
       setLoading(false)
     }
   }
 
-  const refresh = (userId: string) => {
-    // Invalida cache e ricarica
-    invalidateSafeCache()
-    loadData(userId)
+  const refresh = () => {
+    invalidateCache()
   }
 
   return {
     clients,
     practices,
+    activities,
     loading,
     error,
     loadData,

@@ -4,7 +4,6 @@ import { supabase } from '../lib/supabase'
 import { Task } from '../lib/calendar-utils'
 import { Client } from '../types/client'
 import { useSafeData } from '../lib/supabase-safe'
-import { OptimizationControl } from '../components/admin/OptimizationControl'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog'
@@ -69,7 +68,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
-  const [showOptimizationControl, setShowOptimizationControl] = useState(false)
 
   // Caricamento sicuro con ottimizzazioni
   const loadUserData = async () => {
@@ -486,15 +484,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 </Button>
               
               <Button
-                onClick={() => setShowOptimizationControl(!showOptimizationControl)}
-                variant="outline"
-                size="sm"
-                className="border-white text-white hover:bg-white hover:text-slate-900 bg-transparent"
-              >
-                🔧 Ottimizzazioni
-              </Button>
-              
-              <Button
                 onClick={() => setIsOptionsModalOpen(true)}
                 variant="outline"
                 size="sm"
@@ -520,13 +509,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
       {/* Main Content */}
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-
-        {/* Pannello di Controllo Ottimizzazioni */}
-        {showOptimizationControl && (
-          <div className="mb-6">
-            <OptimizationControl />
-          </div>
-        )}
 
         {/* Welcome Message and Counters */}
         <div className="flex justify-between items-center mb-6">
