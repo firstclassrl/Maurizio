@@ -273,7 +273,6 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-6 py-6">
-        {/* Pannello di Controllo Ottimizzazioni */}
 
         {/* Filtri */}
         <Card className="mb-6">
