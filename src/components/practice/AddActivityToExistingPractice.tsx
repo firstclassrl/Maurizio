@@ -339,13 +339,17 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
                             <div className="space-y-1 text-sm text-gray-600">
                               {practice.clients && (
                                 <div>
-                                  <span className="font-medium">Cliente:</span> {practice.clients.nome}
+                                  <span className="font-medium">Cliente:</span> {
+                                    practice.clients.ragione || `${practice.clients.nome || ''} ${practice.clients.cognome || ''}`.trim()
+                                  }
                                 </div>
                               )}
                               
                               {practice.counterparties && practice.counterparties.length > 0 && (
                                 <div>
-                                  <span className="font-medium">Controparte:</span> {practice.counterparties.map(c => c.nome).join(', ')}
+                                  <span className="font-medium">Controparte:</span> {
+                                    practice.counterparties.map(c => c.ragione || `${c.nome || ''} ${c.cognome || ''}`.trim()).join(', ')
+                                  }
                                 </div>
                               )}
                             </div>
