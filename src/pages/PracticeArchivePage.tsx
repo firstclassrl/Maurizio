@@ -12,22 +12,25 @@ import { Footer } from '../components/ui/Footer'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 import { Client } from '../types/client'
+import { useSafeData } from '../lib/supabase-safe'
+import { OptimizationControl } from '../components/admin/OptimizationControl'
 
 interface PracticeArchivePageProps {
   onNavigateBack: () => void
 }
 
 export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps) {
-  const [practices, setPractices] = useState<Practice[]>([])
+  // Sistema di caricamento sicuro con ottimizzazioni
+  const { practices: safePractices, clients: safeClients, loading: safeLoading, error: safeError, loadData, refresh } = useSafeData()
+  
   const [filteredPractices, setFilteredPractices] = useState<Practice[]>([])
   const [selectedPractice, setSelectedPractice] = useState<string>('all')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedParty, setSelectedParty] = useState<string>('all')
-  const [loading, setLoading] = useState(false)
-  const [clients, setClients] = useState<Client[]>([])
   const [isNewPracticeModalOpen, setIsNewPracticeModalOpen] = useState(false)
   const [selectedPracticeForDetails, setSelectedPracticeForDetails] = useState<Practice | null>(null)
   const [selectedPracticeForActivity, setSelectedPracticeForActivity] = useState<Practice | null>(null)
+  const [showOptimizationControl, setShowOptimizationControl] = useState(false)
   const [practiceActivities, setPracticeActivities] = useState<any[]>([])
   const [isLoadingActivities, setIsLoadingActivities] = useState(false)
   const [isEditingJudicialFields, setIsEditingJudicialFields] = useState(false)
@@ -37,21 +40,15 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
     giudice: ''
   })
 
-  // Carica tutti i clienti
-  const loadClients = async () => {
+  // Caricamento sicuro con ottimizzazioni
+  const loadUserData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      const { data, error } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setClients(data || [])
+      if (user) {
+        await loadData(user.id)
+      }
     } catch (error) {
+      console.error('Errore nel caricamento dei dati:', error)
     }
   }
 
@@ -103,18 +100,18 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         })
       )
 
-      setPractices(practicesWithCounterparties)
-      setFilteredPractices(practicesWithCounterparties)
+      // Non più necessario - gestito dal sistema sicuro
     } catch (error) {
+      console.error('Errore nel caricamento delle pratiche:', error)
     } finally {
-      setLoading(false)
+      // Non più necessario - gestito dal sistema sicuro
     }
   }
 
   // Gestisce la creazione di una nuova attività
   const handleActivityCreated = () => {
-    // Ricarica le pratiche per mostrare eventuali aggiornamenti
-    loadPractices()
+    // Ricarica i dati usando il sistema sicuro
+    loadUserData()
   }
 
   // Carica le attività di una pratica specifica
@@ -193,7 +190,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
 
   // Filtra le pratiche
   const getFilteredPractices = () => {
-    let filtered = practices
+    let filtered = safePractices
 
     // Filtro per pratica
     if (selectedPractice !== 'all') {
@@ -235,13 +232,19 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
   }
 
   useEffect(() => {
-    loadClients()
-    loadPractices()
+    loadUserData()
   }, [])
 
   useEffect(() => {
     setFilteredPractices(getFilteredPractices())
-  }, [selectedPractice, selectedCategory, selectedParty, practices])
+  }, [selectedPractice, selectedCategory, selectedParty, safePractices])
+
+  // Aggiorna filteredPractices quando cambiano i dati sicuri
+  useEffect(() => {
+    if (safePractices.length > 0) {
+      setFilteredPractices(safePractices)
+    }
+  }, [safePractices])
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -260,19 +263,36 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
             </Button>
             <h1 className="text-xl font-semibold">Pratiche</h1>
           </div>
-          <Button
-            onClick={() => setIsNewPracticeModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            size="sm"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Nuova Pratica
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowOptimizationControl(!showOptimizationControl)}
+              variant="outline"
+              size="sm"
+              className="border-white text-white hover:bg-white hover:text-slate-900 bg-transparent"
+            >
+              🔧 Ottimizzazioni
+            </Button>
+            <Button
+              onClick={() => setIsNewPracticeModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              size="sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Nuova Pratica
+            </Button>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-6 py-6">
+        {/* Pannello di Controllo Ottimizzazioni */}
+        {showOptimizationControl && (
+          <div className="mb-6">
+            <OptimizationControl />
+          </div>
+        )}
+
         {/* Filtri */}
         <Card className="mb-6">
           <CardContent className="p-6">
@@ -309,7 +329,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
               </span>
             </div>
 
-            {loading ? (
+            {safeLoading ? (
               <div className="flex justify-center py-8">
                 <div className="text-gray-500">Caricamento pratiche...</div>
               </div>
@@ -423,7 +443,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       <NewActivityWizard
         open={isNewPracticeModalOpen}
         onOpenChange={setIsNewPracticeModalOpen}
-        clients={clients}
+        clients={safeClients}
         onActivityCreated={handleActivityCreated}
       />
 
@@ -686,7 +706,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         onOpenChange={(open) => {
           if (!open) setSelectedPracticeForActivity(null)
         }}
-        clients={clients}
+        clients={safeClients}
         preselectedPractice={selectedPracticeForActivity}
         onActivityCreated={() => {
           setSelectedPracticeForActivity(null)

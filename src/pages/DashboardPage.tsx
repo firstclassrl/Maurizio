@@ -503,7 +503,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             <div className="flex items-center space-x-2">
               <Button
                 onClick={onNavigateToWeek}
-                className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                className="bg-cyan-500 hover:bg-cyan-600 text-white border-0"
                 size="sm"
               >
                 <CalendarDays className="h-4 w-4 mr-2" />
@@ -521,7 +521,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               
               <Button
                 onClick={onNavigateToCalcolatore}
-                className="bg-purple-600 hover:bg-purple-700 text-white border-0"
+                className="bg-amber-200 hover:bg-amber-300 text-amber-900 border-0"
                 size="sm"
               >
                 <Calculator className="h-4 w-4 mr-2" />
@@ -668,7 +668,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             
                 <Button
                   onClick={handleAddActivityClick}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
                   size="sm"
                 >
                   <FileText className="h-4 w-4 mr-2" />
