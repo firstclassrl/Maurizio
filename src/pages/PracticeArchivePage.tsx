@@ -294,15 +294,21 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div className="flex items-center gap-2">
                               <User className="h-4 w-4 text-gray-500" />
-                              <span><strong>Cliente:</strong> {practice.clients?.nome || 'N/A'}</span>
+                              <span><strong>Cliente:</strong> {
+                                practice.clients 
+                                  ? (practice.clients.ragione || `${practice.clients.nome || ''} ${practice.clients.cognome || ''}`.trim())
+                                  : 'N/A'
+                              }</span>
                             </div>
                             
-                            {practice.counterparties && practice.counterparties.length > 0 && (
-                              <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4 text-gray-500" />
-                                <span><strong>Controparti:</strong> {practice.counterparties.map(c => c.nome).join(', ')}</span>
-                              </div>
-                            )}
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4 text-gray-500" />
+                              <span><strong>Controparti:</strong> {
+                                practice.counterparties && practice.counterparties.length > 0
+                                  ? practice.counterparties.map(c => c.ragione || `${c.nome || ''} ${c.cognome || ''}`.trim()).join(', ')
+                                  : 'N/A'
+                              }</span>
+                            </div>
                             
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-gray-500" />
