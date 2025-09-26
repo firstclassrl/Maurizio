@@ -1,6 +1,6 @@
 v3.2.2-beta - Nuovo layout card pratiche e aggiornamenti UX
 Timestamp: 2025-01-25 21:00:00
-Commit: [da aggiornare dopo push]
+Commit: 008c81f (nuovo layout card pratiche)
 
 🎨 NUOVO LAYOUT CARD PRATICHE:
 - ✅ RIGA 1: Pratica - Cliente - Controparte
