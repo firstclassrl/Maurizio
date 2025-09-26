@@ -7,7 +7,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautif
 import { format } from 'date-fns'
 import { PracticeFilter } from '../ui/PracticeFilter'
 import { formatTimeWithoutSeconds } from '../../lib/time-utils'
-import { useWeekendSettings } from '../../hooks/useWeekendSettings'
+import { useWeekendSettings } from '../../contexts/WeekendSettingsContext'
 import { useActivityTooltip } from '../../hooks/useActivityTooltip'
 import { ActivityTooltip } from '../ui/ActivityTooltip'
 import { WeekendToggleCompact } from '../settings/WeekendToggleCompact'
@@ -25,7 +25,6 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
   const { showWeekend } = useWeekendSettings()
   const { tooltip, handleMouseEnter, handleMouseLeave } = useActivityTooltip(2000)
 
-  console.log('🔧 WeeklyCalendar: showWeekend value:', showWeekend)
 
   // Generate colors based on category
   const getTaskColor = (task: Task) => {

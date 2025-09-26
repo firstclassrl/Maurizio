@@ -11,6 +11,7 @@ import { ClientsPage } from './pages/ClientsPage'
 import { StoragePage } from './pages/StoragePage'
 import { PracticeArchivePage } from './pages/PracticeArchivePage'
 import { Loader2 } from 'lucide-react'
+import { WeekendSettingsProvider } from './contexts/WeekendSettingsContext'
 
 type AppView = 'dashboard' | 'month' | 'week' | 'overdue' | 'calcolatore-termini' | 'clients' | 'storage' | 'practice-archive'
 
@@ -133,7 +134,11 @@ function App() {
     }
   }
 
-  return renderCurrentView()
+  return (
+    <WeekendSettingsProvider>
+      {renderCurrentView()}
+    </WeekendSettingsProvider>
+  )
 }
 
 export default App
