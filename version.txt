@@ -1,4 +1,17 @@
-v3.0.1 - Fix salvataggio clienti con debug esteso
-Timestamp: 2025-01-25 15:45:00
-Commit: 7eb2a52
-Fix: Aggiunto debug per cleanData creation
+v3.1.0 - Fix filtri e miglioramenti UI
+Timestamp: 2025-01-25 16:30:00
+Commit: [da aggiornare]
+
+Nuove funzionalità e correzioni:
+- ✅ Fix filtro ricerca parte/controparte nella DashboardPage
+- ✅ Fix navigazione contatore attività scadute (OverdueCounter)
+- ✅ Migliorato posizionamento toggle "Visualizza weekend" nei calendari
+- ✅ Creato WeekendToggleCompact per header più pulito
+- ✅ Corretti errori di linting e tipizzazione TypeScript
+- ✅ Migliorata logica di filtraggio per compatibilità con valori specifici
+
+Correzioni tecniche:
+- Aggiornata logica getFilteredTasks per gestire filtri cliente-* e controparte-*
+- Aggiunta prop onNavigateToOverdue alla DashboardPage
+- Spostato WeekendToggle al centro dell'header in MonthPage e WeekPage
+- Risolti problemi di tipizzazione con Boolean() per valori nullable

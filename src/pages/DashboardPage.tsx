@@ -30,13 +30,14 @@ interface DashboardPageProps {
   user: User
   onNavigateToMonth: () => void
   onNavigateToWeek: () => void
+  onNavigateToOverdue: () => void
   onNavigateToCalcolatore: () => void
   onNavigateToClients: () => void
   onNavigateToStorage: () => void
   onNavigateToPracticeArchive: () => void
 }
 
-export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage, onNavigateToPracticeArchive }: DashboardPageProps) {
+export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToOverdue, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage, onNavigateToPracticeArchive }: DashboardPageProps) {
   const { toasts, removeToast, showSuccess, showError } = useToast()
   const isMobile = useMobile()
 
@@ -431,9 +432,22 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const getFilteredTasks = () => {
     return tasks.filter(task => {
       const matchesCategory = selectedCategory === 'all' || task.categoria === selectedCategory
-      const matchesParty = selectedParty === 'all' || 
-        (selectedParty === 'cliente' && task.cliente) ||
-        (selectedParty === 'controparte' && task.controparte)
+      
+      let matchesParty = true
+      if (selectedParty !== 'all') {
+        if (selectedParty.startsWith('cliente-')) {
+          const clienteName = selectedParty.replace('cliente-', '')
+          matchesParty = task.cliente === clienteName
+        } else if (selectedParty.startsWith('controparte-')) {
+          const controparteName = selectedParty.replace('controparte-', '')
+          matchesParty = task.controparte === controparteName
+        } else {
+          // Fallback per compatibilità con vecchi valori
+          matchesParty = Boolean((selectedParty === 'cliente' && task.cliente) ||
+                        (selectedParty === 'controparte' && task.controparte))
+        }
+      }
+      
       const matchesPractice = selectedPractice === 'all' || task.pratica === selectedPractice
       
       return matchesCategory && matchesParty && matchesPractice
@@ -579,7 +593,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             </div>
                 <div className="flex items-center gap-4">
             <UrgentCounter userId={user.id} onClick={handleUrgentCounterClick} />
-            <OverdueCounter userId={user.id} />
+            <OverdueCounter userId={user.id} onClick={onNavigateToOverdue} />
             </div>
           </div>
 

@@ -61,6 +61,7 @@ function App() {
             user={user} 
             onNavigateToMonth={() => setCurrentView('month')}
             onNavigateToWeek={() => setCurrentView('week')}
+            onNavigateToOverdue={() => setCurrentView('overdue')}
             onNavigateToCalcolatore={() => setCurrentView('calcolatore-termini')}
             onNavigateToClients={() => setCurrentView('clients')}
             onNavigateToStorage={() => setCurrentView('storage')}
@@ -122,6 +123,7 @@ function App() {
             user={user} 
             onNavigateToMonth={() => setCurrentView('month')}
             onNavigateToWeek={() => setCurrentView('week')}
+            onNavigateToOverdue={() => setCurrentView('overdue')}
             onNavigateToCalcolatore={() => setCurrentView('calcolatore-termini')}
             onNavigateToClients={() => setCurrentView('clients')}
             onNavigateToStorage={() => setCurrentView('storage')}
