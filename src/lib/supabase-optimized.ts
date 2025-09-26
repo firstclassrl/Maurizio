@@ -1,12 +1,27 @@
 import { useState } from 'react'
 import { supabase } from './supabase'
-import { Practice, Activity, Client } from '../types'
+
+// Tipo per i dati di Supabase con relazioni
+interface SupabaseActivityData {
+  id: any
+  pratica_id: any
+  categoria: any
+  attivita: any
+  data: any
+  ora: any
+  note: any
+  stato: any
+  urgent: any
+  created_at: any
+  updated_at: any
+  practices: any
+}
 
 // Cache per evitare ricaricamenti
 const cache = {
-  clients: new Map<string, { data: Client[], timestamp: number }>(),
-  practices: new Map<string, { data: Practice[], timestamp: number }>(),
-  activities: new Map<string, { data: Activity[], timestamp: number }>()
+  clients: new Map<string, { data: any[], timestamp: number }>(),
+  practices: new Map<string, { data: any[], timestamp: number }>(),
+  activities: new Map<string, { data: any[], timestamp: number }>()
 }
 
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minuti
@@ -32,7 +47,7 @@ export const getCurrentUser = async () => {
 }
 
 // Ottimizzazione 1: Caricamento clienti ottimizzato
-export const loadClientsOptimized = async (userId: string): Promise<Client[]> => {
+export const loadClientsOptimized = async (userId: string): Promise<any[]> => {
   const cacheKey = `clients_${userId}`
   const cached = cache.clients.get(cacheKey)
   
@@ -56,7 +71,7 @@ export const loadClientsOptimized = async (userId: string): Promise<Client[]> =>
 }
 
 // Ottimizzazione 2: Caricamento pratiche con JOIN ottimizzato
-export const loadPracticesOptimized = async (userId: string): Promise<Practice[]> => {
+export const loadPracticesOptimized = async (userId: string): Promise<any[]> => {
   const cacheKey = `practices_${userId}`
   const cached = cache.practices.get(cacheKey)
   
@@ -99,24 +114,24 @@ export const loadPracticesOptimized = async (userId: string): Promise<Practice[]
     }
   })
 
-  let counterpartyMap = new Map<string, Client>()
+  let counterpartyMap = new Map<string, any>()
   if (allCounterpartyIds.size > 0) {
     const { data: counterpartiesData } = await supabase
       .from('clients')
       .select('id, ragione, nome, cognome')
       .in('id', Array.from(allCounterpartyIds))
 
-    counterpartiesData?.forEach(client => {
+    counterpartiesData?.forEach((client: any) => {
       counterpartyMap.set(client.id, client)
     })
   }
 
   // Costruisci le pratiche con le controparti
-  const practices: Practice[] = (practicesData || []).map(practice => ({
+  const practices: any[] = (practicesData || []).map((practice: any) => ({
     ...practice,
     counterparties: practice.controparti_ids
-      ?.map(id => counterpartyMap.get(id))
-      .filter(Boolean) as Client[] || []
+      ?.map((id: string) => counterpartyMap.get(id))
+      .filter(Boolean) || []
   }))
 
   cache.practices.set(cacheKey, { data: practices, timestamp: Date.now() })
@@ -129,7 +144,7 @@ export const loadActivitiesOptimized = async (userId: string, filters?: {
   stato?: 'todo' | 'done'
   limit?: number
   orderBy?: string
-}): Promise<Activity[]> => {
+}): Promise<any[]> => {
   const cacheKey = `activities_${userId}_${JSON.stringify(filters || {})}`
   const cached = cache.activities.get(cacheKey)
   
@@ -180,8 +195,9 @@ export const loadActivitiesOptimized = async (userId: string, filters?: {
 
   // Carica controparti in batch
   const allCounterpartyIds = new Set<string>()
-  activitiesData?.forEach(activity => {
-    const counterparties = activity.practices?.controparti_ids || []
+  activitiesData?.forEach((activity: SupabaseActivityData) => {
+    const practice = Array.isArray(activity.practices) ? activity.practices[0] : activity.practices
+    const counterparties = practice?.controparti_ids || []
     counterparties.forEach((id: string) => allCounterpartyIds.add(id))
   })
 
@@ -198,32 +214,22 @@ export const loadActivitiesOptimized = async (userId: string, filters?: {
     })
   }
 
-  // Converti in formato Task per compatibilità
-  const activities: Activity[] = (activitiesData || []).map(activity => {
-    const cliente = activity.practices?.clients
-    const clienteName = cliente ? (cliente.ragione || `${cliente.nome || ''} ${cliente.cognome || ''}`.trim()) : null
-    
-    const controparti = activity.practices?.controparti_ids
-      ?.map((id: string) => counterpartyNames[id])
-      .filter(Boolean)
-      .join(', ') || null
-
+  // Converti in formato Activity
+  const activities: any[] = (activitiesData || []).map((activity: SupabaseActivityData) => {
     return {
       id: activity.id,
       user_id: userId,
-      pratica: activity.practices?.numero || '',
+      pratica_id: activity.pratica_id,
       attivita: activity.attivita,
-      scadenza: activity.data,
+      data: activity.data,
       ora: activity.ora,
       categoria: activity.categoria,
       note: activity.note,
       stato: activity.stato,
       urgent: activity.urgent,
-      cliente: clienteName,
-      controparte: controparti,
       created_at: activity.created_at,
       updated_at: activity.updated_at
-    } as any
+    }
   })
 
   cache.activities.set(cacheKey, { data: activities, timestamp: Date.now() })
@@ -232,7 +238,7 @@ export const loadActivitiesOptimized = async (userId: string, filters?: {
 }
 
 // Ottimizzazione 4: Caricamento attività di una pratica specifica
-export const loadPracticeActivitiesOptimized = async (practiceId: string): Promise<Activity[]> => {
+export const loadPracticeActivitiesOptimized = async (practiceId: string): Promise<any[]> => {
   const cacheKey = `practice_activities_${practiceId}`
   const cached = cache.activities.get(cacheKey)
   

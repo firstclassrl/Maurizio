@@ -7,12 +7,11 @@ import {
   invalidateCache,
   getCurrentUser
 } from '../lib/supabase-optimized'
-import { Practice, Activity, Client } from '../types'
 
 interface UseOptimizedDataReturn {
-  clients: Client[]
-  practices: Practice[]
-  activities: Activity[]
+  clients: any[]
+  practices: any[]
+  activities: any[]
   loading: boolean
   error: string | null
   refreshClients: () => Promise<void>
@@ -23,9 +22,9 @@ interface UseOptimizedDataReturn {
 }
 
 export const useOptimizedData = (): UseOptimizedDataReturn => {
-  const [clients, setClients] = useState<Client[]>([])
-  const [practices, setPractices] = useState<Practice[]>([])
-  const [activities, setActivities] = useState<Activity[]>([])
+  const [clients, setClients] = useState<any[]>([])
+  const [practices, setPractices] = useState<any[]>([])
+  const [activities, setActivities] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -116,7 +115,7 @@ export const useOptimizedData = (): UseOptimizedDataReturn => {
 
 // Hook specifico per le pratiche con cache intelligente
 export const useOptimizedPractices = () => {
-  const [practices, setPractices] = useState<Practice[]>([])
+  const [practices, setPractices] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
