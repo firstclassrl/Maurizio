@@ -198,7 +198,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         .from('clients')
         .select('*')
         .eq('user_id', user.id)
-        .order('ragione', { ascending: true })
+        .order('created_at', { ascending: false })
         .limit(500) // Limit to prevent excessive data loading
 
       if (error) {
@@ -238,8 +238,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         }
       })
       
+      console.log('Loaded clients:', parsedClients.length, parsedClients)
       setClients(parsedClients)
     } catch (error) {
+      console.error('Error loading clients:', error)
     }
   }
 
@@ -740,7 +742,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-3 text-xs">
                         <span className="text-gray-600">
-                          Numero pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
+                          Pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
                         </span>
                         <span className="text-gray-600">
                           Attività: <span className="font-bold text-gray-900">{task.attivita}</span>
@@ -850,6 +852,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           setIsNewActivityWizardOpen(open)
         }}
         clients={clients}
+        onPracticeCreated={(practice) => {
+          showSuccess('Pratica creata', `La pratica ${practice.numero} è stata creata con successo!`)
+          loadClients()
+        }}
         onActivityCreated={async (activity) => {
           await loadClients()
           await loadTasks()
@@ -894,7 +900,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-3 text-xs">
                         <span className="text-gray-600">
-                          Numero pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
+                          Pratica: <span className="font-semibold text-gray-900">{task.pratica}</span>
                         </span>
                         <span className="text-gray-600">
                           Attività: <span className="font-bold text-gray-900">{task.attivita}</span>

@@ -14,10 +14,16 @@ interface NewActivityWizardProps {
   onOpenChange: (open: boolean) => void
   clients: Client[]
   onActivityCreated: (activity: Activity) => void
+  onPracticeCreated?: (practice: Practice) => void
 }
 
-export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreated }: NewActivityWizardProps) {
+export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreated, onPracticeCreated }: NewActivityWizardProps) {
   const isMobile = useMobile()
+  
+  // Debug: log clients when they change
+  useEffect(() => {
+    console.log('NewActivityWizard received clients:', clients.length, clients)
+  }, [clients])
   const [step, setStep] = useState<'practice' | 'activity'>('practice')
   const [currentPractice, setCurrentPractice] = useState<Practice | null>(null)
   const [isCreatingPractice, setIsCreatingPractice] = useState(false)
@@ -28,7 +34,10 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     numero: '',
     cliente_id: '',
     controparti_ids: [] as string[],
-    tipo_procedura: 'STRAGIUDIZIALE' as 'STRAGIUDIZIALE' | 'GIUDIZIALE'
+    tipo_procedura: 'STRAGIUDIZIALE' as 'STRAGIUDIZIALE' | 'GIUDIZIALE',
+    autorita_giudiziaria: '',
+    rg: '',
+    giudice: ''
   })
 
   // Form data for activity
@@ -37,9 +46,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     attivita: '',
     data: '',
     ora: '',
-    autorita_giudiziaria: '',
-    rg: '',
-    giudice: '',
     note: ''
   })
 
@@ -52,16 +58,16 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         numero: '',
         cliente_id: '',
         controparti_ids: [],
-        tipo_procedura: 'STRAGIUDIZIALE'
+        tipo_procedura: 'STRAGIUDIZIALE',
+        autorita_giudiziaria: '',
+        rg: '',
+        giudice: ''
       })
       setActivityData({
         categoria: 'Appuntamento',
         attivita: '',
         data: '',
         ora: '',
-        autorita_giudiziaria: '',
-        rg: '',
-        giudice: '',
         note: ''
       })
     }
@@ -190,7 +196,10 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         numero: practiceNumber,
         cliente_id: practiceData.cliente_id,
         controparti_ids: practiceData.controparti_ids,
-        tipo_procedura: practiceData.tipo_procedura
+        tipo_procedura: practiceData.tipo_procedura,
+        autorita_giudiziaria: practiceData.autorita_giudiziaria || null,
+        rg: practiceData.rg || null,
+        giudice: practiceData.giudice || null
       }
 
       console.log('Saving practice to database:', practiceDataToSave)
@@ -215,12 +224,23 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         cliente_id: savedPractice.cliente_id,
         controparti_ids: savedPractice.controparti_ids,
         tipo_procedura: savedPractice.tipo_procedura,
+        autorita_giudiziaria: savedPractice.autorita_giudiziaria,
+        rg: savedPractice.rg,
+        giudice: savedPractice.giudice,
         created_at: savedPractice.created_at,
         updated_at: savedPractice.updated_at
       }
 
       setCurrentPractice(newPractice)
-      setStep('activity')
+      
+      // Se è stata fornita una callback per la creazione della pratica, chiamala e chiudi il modal
+      if (onPracticeCreated) {
+        onPracticeCreated(newPractice)
+        onOpenChange(false)
+      } else {
+        // Comportamento originale: procedi al passo attività
+        setStep('activity')
+      }
     } catch (error) {
       console.error('Error creating practice:', error)
       alert('Errore nella creazione della pratica')
@@ -260,9 +280,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         attivita: activityData.attivita,
         data: activityData.data,
         ora: activityData.ora || null,
-        autorita_giudiziaria: activityData.autorita_giudiziaria || null,
-        rg: activityData.rg || null,
-        giudice: activityData.giudice || null,
         note: activityData.note || null,
         stato: 'todo' as const
       }
@@ -295,9 +312,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         attivita: savedActivity.attivita,
         data: savedActivity.data,
         ora: savedActivity.ora,
-        autorita_giudiziaria: savedActivity.autorita_giudiziaria,
-        rg: savedActivity.rg,
-        giudice: savedActivity.giudice,
         note: savedActivity.note,
         stato: 'todo',
         urgent: false,
@@ -433,6 +447,50 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
                     </select>
                   </div>
                 </div>
+
+                {/* Campi specifici per pratiche giudiziali */}
+                {practiceData.tipo_procedura === 'GIUDIZIALE' && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <h4 className="text-sm font-medium mb-3 text-gray-700">Informazioni Giudiziali</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Autorità Giudiziaria *</label>
+                        <input
+                          type="text"
+                          value={practiceData.autorita_giudiziaria}
+                          onChange={(e) => setPracticeData(prev => ({ ...prev, autorita_giudiziaria: e.target.value }))}
+                          placeholder="es. Tribunale di Roma"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">R.G. *</label>
+                        <input
+                          type="text"
+                          value={practiceData.rg}
+                          onChange={(e) => setPracticeData(prev => ({ ...prev, rg: e.target.value }))}
+                          placeholder="es. 12345/2024"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Giudice *</label>
+                        <input
+                          type="text"
+                          value={practiceData.giudice}
+                          onChange={(e) => setPracticeData(prev => ({ ...prev, giudice: e.target.value }))}
+                          placeholder="es. Dott. Mario Rossi"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </Card>
 
               <Card className="p-3">
@@ -533,40 +591,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
                   </div>
                 </div>
 
-                {practiceData.tipo_procedura === 'GIUDIZIALE' && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Autorità Giudiziaria</label>
-                      <input 
-                        type="text"
-                        value={activityData.autorita_giudiziaria} 
-                        onChange={(e) => setActivityData(prev => ({ ...prev, autorita_giudiziaria: e.target.value }))}
-                        placeholder="es. Tribunale di Roma"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">RG</label>
-                      <input 
-                        type="text"
-                        value={activityData.rg} 
-                        onChange={(e) => setActivityData(prev => ({ ...prev, rg: e.target.value }))}
-                        placeholder="es. 12345/2024"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Giudice</label>
-                      <input 
-                        type="text"
-                        value={activityData.giudice} 
-                        onChange={(e) => setActivityData(prev => ({ ...prev, giudice: e.target.value }))}
-                        placeholder="es. Dott. Rossi"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>

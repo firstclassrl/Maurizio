@@ -31,9 +31,6 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
     attivita: '',
     data: '',
     ora: '',
-    autorita_giudiziaria: '',
-    rg: '',
-    giudice: '',
     note: '',
     urgent: false
   })
@@ -46,9 +43,6 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
         attivita: activity.attivita,
         data: activity.data,
         ora: activity.ora || '',
-        autorita_giudiziaria: activity.autorita_giudiziaria || '',
-        rg: activity.rg || '',
-        giudice: activity.giudice || '',
         note: activity.note || '',
         urgent: activity.urgent
       })
@@ -60,9 +54,6 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
         attivita: '',
         data: '',
         ora: '',
-        autorita_giudiziaria: '',
-        rg: '',
-        giudice: '',
         note: '',
         urgent: false
       })
@@ -196,43 +187,6 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
             </div>
           </Card>
 
-          {/* Campi specifici per GIUDIZIALE */}
-          {isGiudiziale && (
-            <Card className="p-4">
-              <h3 className="text-lg font-semibold mb-4">Informazioni Giudiziali</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="autorita_giudiziaria">Autorità Giudiziaria</Label>
-                  <Input
-                    id="autorita_giudiziaria"
-                    value={formData.autorita_giudiziaria}
-                    onChange={(e) => handleInputChange('autorita_giudiziaria', e.target.value)}
-                    placeholder="es. Tribunale di Roma"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="rg">RG</Label>
-                  <Input
-                    id="rg"
-                    value={formData.rg}
-                    onChange={(e) => handleInputChange('rg', e.target.value)}
-                    placeholder="es. RG 12345/2024"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="giudice">Giudice</Label>
-                  <Input
-                    id="giudice"
-                    value={formData.giudice}
-                    onChange={(e) => handleInputChange('giudice', e.target.value)}
-                    placeholder="Nome del giudice"
-                  />
-                </div>
-              </div>
-            </Card>
-          )}
 
           {/* Note e Priorità */}
           <Card className="p-4">

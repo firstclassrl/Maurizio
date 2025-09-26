@@ -27,6 +27,9 @@ export interface Practice {
   cliente_id: string
   controparti_ids: string[]
   tipo_procedura: ProcedureType
+  autorita_giudiziaria?: string // Solo per GIUDIZIALE
+  rg?: string // Solo per GIUDIZIALE
+  giudice?: string // Solo per GIUDIZIALE
   created_at?: string
   updated_at?: string
   // Campi aggiuntivi per le relazioni
@@ -43,9 +46,6 @@ export interface Activity {
   attivita: string
   data: string
   ora?: string
-  autorita_giudiziaria?: string // Solo per GIUDIZIALE
-  rg?: string // Solo per GIUDIZIALE
-  giudice?: string // Solo per GIUDIZIALE
   note?: string
   stato: 'todo' | 'done'
   urgent: boolean // Simplified: urgent or not urgent
@@ -59,6 +59,9 @@ export interface PracticeFormData {
   cliente_id: string
   controparti_ids: string[]
   tipo_procedura: ProcedureType
+  autorita_giudiziaria?: string // Solo per GIUDIZIALE
+  rg?: string // Solo per GIUDIZIALE
+  giudice?: string // Solo per GIUDIZIALE
 }
 
 // Interfaccia per il form di creazione attività
@@ -68,9 +71,6 @@ export interface ActivityFormData {
   attivita: string
   data: string
   ora: string
-  autorita_giudiziaria: string
-  rg: string
-  giudice: string
   note: string
   urgent: boolean // Simplified: urgent or not urgent
 }

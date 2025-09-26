@@ -32,7 +32,10 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
     numero: '',
     cliente_id: '',
     controparti_ids: [],
-    tipo_procedura: 'STRAGIUDIZIALE'
+    tipo_procedura: 'STRAGIUDIZIALE',
+    autorita_giudiziaria: '',
+    rg: '',
+    giudice: ''
   })
 
   // Function to generate next practice number
@@ -80,7 +83,10 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
         numero: practice.numero,
         cliente_id: practice.cliente_id,
         controparti_ids: practice.controparti_ids,
-        tipo_procedura: practice.tipo_procedura
+        tipo_procedura: practice.tipo_procedura,
+        autorita_giudiziaria: practice.autorita_giudiziaria || '',
+        rg: practice.rg || '',
+        giudice: practice.giudice || ''
       })
     } else {
       // Reset form for new practice
@@ -88,7 +94,10 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
         numero: '',
         cliente_id: '',
         controparti_ids: [],
-        tipo_procedura: 'STRAGIUDIZIALE'
+        tipo_procedura: 'STRAGIUDIZIALE',
+        autorita_giudiziaria: '',
+        rg: '',
+        giudice: ''
       })
     }
   }, [practice, open])
@@ -186,6 +195,47 @@ export function PracticeForm({ open, onOpenChange, practice, onSave, clients, is
             </Select>
           </div>
         </div>
+
+        {/* Campi specifici per pratiche giudiziali */}
+        {formData.tipo_procedura === 'GIUDIZIALE' && (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <h4 className="text-md font-medium mb-3 text-gray-700">Informazioni Giudiziali</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="autorita_giudiziaria">Autorità Giudiziaria *</Label>
+                <Input
+                  id="autorita_giudiziaria"
+                  value={formData.autorita_giudiziaria}
+                  onChange={(e) => handleInputChange('autorita_giudiziaria', e.target.value)}
+                  placeholder="es. Tribunale di Roma"
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="rg">R.G. *</Label>
+                <Input
+                  id="rg"
+                  value={formData.rg}
+                  onChange={(e) => handleInputChange('rg', e.target.value)}
+                  placeholder="es. 12345/2024"
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="giudice">Giudice *</Label>
+                <Input
+                  id="giudice"
+                  value={formData.giudice}
+                  onChange={(e) => handleInputChange('giudice', e.target.value)}
+                  placeholder="es. Dott. Mario Rossi"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Cliente */}

@@ -31,9 +31,6 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
     attivita: '',
     data: '',
     ora: '',
-    autorita_giudiziaria: '',
-    rg: '',
-    giudice: '',
     note: '',
     urgent: false
   })
@@ -56,9 +53,6 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         attivita: '',
         data: '',
         ora: '',
-        autorita_giudiziaria: '',
-        rg: '',
-        giudice: '',
         note: '',
         urgent: false
       })
@@ -74,10 +68,13 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         throw new Error('User not authenticated')
       }
 
-      // Load practices from the practices table
+      // Load practices from the practices table with client and counterparties data
       const { data: practices, error } = await supabase
         .from('practices')
-        .select('*')
+        .select(`
+          *,
+          clients!practices_cliente_id_fkey(*)
+        `)
         .eq('user_id', user.id)
         .order('numero', { ascending: true })
 
@@ -86,8 +83,29 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         throw error
       }
 
-      console.log('Loaded practices:', practices)
-      setPractices(practices || [])
+      // Load counterparties for each practice
+      const practicesWithCounterparties = await Promise.all(
+        (practices || []).map(async (practice) => {
+          if (practice.controparti_ids && practice.controparti_ids.length > 0) {
+            const { data: counterpartiesData } = await supabase
+              .from('clients')
+              .select('*')
+              .in('id', practice.controparti_ids)
+            
+            return {
+              ...practice,
+              counterparties: counterpartiesData || []
+            }
+          }
+          return {
+            ...practice,
+            counterparties: []
+          }
+        })
+      )
+
+      console.log('Loaded practices with counterparties:', practicesWithCounterparties)
+      setPractices(practicesWithCounterparties)
     } catch (error) {
       console.error('Error loading practices:', error)
       setPractices([])
@@ -157,9 +175,6 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
           attivita: activityData.attivita,
           data: activityData.data,
           ora: activityData.ora || null,
-          autorita_giudiziaria: activityData.autorita_giudiziaria || null,
-          rg: activityData.rg || null,
-          giudice: activityData.giudice || null,
           note: activityData.note || null,
           stato: 'todo' as const,
           urgent: activityData.urgent
@@ -196,9 +211,6 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
         attivita: activityData.attivita,
         data: activityData.data,
         ora: activityData.ora,
-        autorita_giudiziaria: activityData.autorita_giudiziaria,
-        rg: activityData.rg,
-        giudice: activityData.giudice,
         note: activityData.note,
         stato: 'todo',
         urgent: activityData.urgent,
@@ -315,14 +327,31 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
                         className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
                         onClick={() => handlePracticeSelect(practice)}
                       >
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h4 className="font-medium text-gray-900">{practice.numero}</h4>
-                            <p className="text-sm text-gray-600">
-                              Tipo: {practice.tipo_procedura}
-                            </p>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="font-medium text-gray-900">Pratica: {practice.numero}</h4>
+                              <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-800 border border-gray-300">
+                                {practice.tipo_procedura}
+                              </span>
+                            </div>
+                            
+                            <div className="space-y-1 text-sm text-gray-600">
+                              {practice.clients && (
+                                <div>
+                                  <span className="font-medium">Cliente:</span> {practice.clients.nome}
+                                </div>
+                              )}
+                              
+                              {practice.counterparties && practice.counterparties.length > 0 && (
+                                <div>
+                                  <span className="font-medium">Controparte:</span> {practice.counterparties.map(c => c.nome).join(', ')}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div className="text-blue-600">
+                          
+                          <div className="text-blue-600 ml-4">
                             <Plus className="w-5 h-5" />
                           </div>
                         </div>
@@ -368,40 +397,6 @@ export function AddActivityToExistingPractice({ open, onOpenChange, clients, onA
                   </div>
                 </div>
 
-                {selectedPractice?.tipo_procedura === 'GIUDIZIALE' && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Autorità Giudiziaria</label>
-                      <input 
-                        type="text"
-                        value={activityData.autorita_giudiziaria} 
-                        onChange={(e) => setActivityData(prev => ({ ...prev, autorita_giudiziaria: e.target.value }))}
-                        placeholder="es. Tribunale di Roma"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">RG</label>
-                      <input 
-                        type="text"
-                        value={activityData.rg} 
-                        onChange={(e) => setActivityData(prev => ({ ...prev, rg: e.target.value }))}
-                        placeholder="es. 12345/2024"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Giudice</label>
-                      <input 
-                        type="text"
-                        value={activityData.giudice} 
-                        onChange={(e) => setActivityData(prev => ({ ...prev, giudice: e.target.value }))}
-                        placeholder="es. Dott. Rossi"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>

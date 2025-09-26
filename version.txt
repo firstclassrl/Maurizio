@@ -1,38 +1,58 @@
-v3.2.0-beta - Ottimizzazione completa per performance e pulizia
-Timestamp: 2025-01-25 18:45:00
-Commit: b607450 (ottimizzazione completa)
+v3.2.1-beta - Ristrutturazione campi giudiziali e miglioramenti UX
+Timestamp: 2025-01-25 20:30:00
+Commit: [da aggiornare dopo push]
 
-🚀 OTTIMIZZAZIONI MAJOR:
+🏛️ RISTRUTTURAZIONE CAMPI GIUDIZIALI:
+- ✅ Spostati campi giudiziali dalle attività alle pratiche
+- ✅ Autorità giudiziaria, RG e Giudice ora a livello pratica
+- ✅ Form pratiche giudiziali con campi dedicati
+- ✅ Rimossi campi giudiziali dai form attività
+- ✅ Aggiornati tipi TypeScript per nuova struttura
+- ✅ Creata migrazione database per spostamento campi
+
+🎯 MIGLIORAMENTI UX:
+- ✅ "Numero pratica" → "Pratica:" nelle card
+- ✅ Card pratiche con tutti i dettagli (cliente, controparte)
+- ✅ Creazione pratica con notifica di successo
+- ✅ Modal si chiude dopo creazione pratica
+- ✅ Debug logging per risoluzione problemi clienti
+
+🔧 MODIFICHE TECNICHE:
+- ✅ Aggiornati PracticeForm, NewActivityWizard, ActivityForm
+- ✅ Aggiornato AddActivityToExistingPractice
+- ✅ Nuova migrazione SQL: 20241220_move_judicial_fields_to_practices.sql
+- ✅ Interfacce TypeScript aggiornate
+- ✅ Logica di salvataggio ristrutturata
+
+📊 COMPONENTI AGGIORNATI:
+- PracticeForm.tsx: campi giudiziali condizionali
+- NewActivityWizard.tsx: form pratica con campi giudiziali
+- ActivityForm.tsx: rimossi campi giudiziali
+- AddActivityToExistingPractice.tsx: rimossi campi giudiziali
+- DashboardPage.tsx: debug logging e notifiche
+
+🎨 MIGLIORAMENTI INTERFACCIA:
+- ✅ Sezione "Informazioni Giudiziali" per pratiche GIUDIZIALE
+- ✅ Campi obbligatori per pratiche giudiziali
+- ✅ Layout migliorato per card pratiche
+- ✅ Notifiche toast per feedback utente
+
+🔍 DEBUG E DIAGNOSTICA:
+- ✅ Log di debug per caricamento clienti
+- ✅ Log di debug per passaggio dati componenti
+- ✅ Gestione errori migliorata
+- ✅ Console logging per troubleshooting
+
+📋 MIGRAZIONE DATABASE:
+- Aggiunge campi autorita_giudiziaria, rg, giudice a practices
+- Copia dati esistenti dalle attività alle pratiche
+- Rimuove campi giudiziali dalla tabella activities
+- Mantiene compatibilità con dati esistenti
+
+🚀 OTTIMIZZAZIONI PRECEDENTI (v3.2.0):
 - ✅ Rimossi 300+ log di debug e console.log
 - ✅ Eliminati 33 file inutili e obsoleti
 - ✅ Ottimizzate query database con limiti intelligenti
 - ✅ Rimosso codice morto e sistemi non utilizzati
 - ✅ Puliti tutti gli import non utilizzati
 - ✅ Corretti errori TypeScript
-
-📊 RISULTATI:
-- Build più veloce: 5.21s
-- Bundle più piccolo: 728KB
-- 7,554 righe di codice rimosse
-- Performance database migliorate
-- Codice più pulito e manutenibile
-
-🔧 CORREZIONI PRECEDENTI:
-- ✅ Fix filtro ricerca parte/controparte
-- ✅ Fix tasto contatore attività scadute
-- ✅ Toggle weekend funzionante con React Context
-- ✅ Footer aggiornato
-
-📁 FILE RIMOSSI:
-- File backup e debug (DashboardPage.tsx.backup, etc.)
-- Documentazione obsoleta (migrazioni, istruzioni)
-- Sistemi non implementati (email-service.ts, google-calendar-sync.py)
-- Componenti non utilizzati (DeadlineCounters, NotificationCenter)
-- Hook obsoleti (useMessage, useNotifications)
-- File SQL obsoleti (CREATE_TASKS_TABLE.sql, etc.)
-
-⚡ OTTIMIZZAZIONI DATABASE:
-- Attività: limite 1000 record
-- Clienti: limite 500 record
-- Attività urgenti: limite 200 record
-- Contatori: limite 100 record
