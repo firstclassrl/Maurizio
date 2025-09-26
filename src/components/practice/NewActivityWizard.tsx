@@ -377,7 +377,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-base font-semibold flex items-center gap-2">
             <Plus className="w-4 h-4" />
-            Nuova Attività
+            Nuova Pratica
           </h2>
           <button
             onClick={handleClose}
