@@ -1,53 +1,45 @@
-v3.2.1-beta - Ristrutturazione campi giudiziali e miglioramenti UX
-Timestamp: 2025-01-25 20:30:00
-Commit: d0c81cc (ristrutturazione campi giudiziali)
+v3.2.2-beta - Nuovo layout card pratiche e aggiornamenti UX
+Timestamp: 2025-01-25 21:00:00
+Commit: [da aggiornare dopo push]
 
-🏛️ RISTRUTTURAZIONE CAMPI GIUDIZIALI:
-- ✅ Spostati campi giudiziali dalle attività alle pratiche
+🎨 NUOVO LAYOUT CARD PRATICHE:
+- ✅ RIGA 1: Pratica - Cliente - Controparte
+- ✅ RIGA 2: Data - Ora - Attività - Note
+- ✅ Layout più organizzato e leggibile
+- ✅ Informazioni disposte in modo logico
+- ✅ Migliorata usabilità delle card
+
+🔧 MODIFICHE TECNICHE:
+- ✅ Aggiornato DashboardPage.tsx con nuovo layout
+- ✅ Aggiornato Calendar.tsx con nuovo layout
+- ✅ Footer aggiornato a versione 3.2.2-beta
+- ✅ Layout responsive con flex-wrap
+- ✅ Mantenuta compatibilità con design esistente
+
+📊 COMPONENTI AGGIORNATI:
+- DashboardPage.tsx: nuovo layout card urgenti e normali
+- Calendar.tsx: nuovo layout card calendario
+- Footer.tsx: versione aggiornata a 3.2.2-beta
+
+🎯 MIGLIORAMENTI UX:
+- ✅ Informazioni più facilmente scannabili
+- ✅ Ordine logico delle informazioni
+- ✅ Layout più pulito e organizzato
+- ✅ Migliore leggibilità su dispositivi mobili
+
+🚀 OTTIMIZZAZIONI PRECEDENTI (v3.2.1):
+- ✅ Ristrutturazione campi giudiziali dalle attività alle pratiche
 - ✅ Autorità giudiziaria, RG e Giudice ora a livello pratica
 - ✅ Form pratiche giudiziali con campi dedicati
 - ✅ Rimossi campi giudiziali dai form attività
 - ✅ Aggiornati tipi TypeScript per nuova struttura
 - ✅ Creata migrazione database per spostamento campi
 
-🎯 MIGLIORAMENTI UX:
-- ✅ "Numero pratica" → "Pratica:" nelle card
-- ✅ Card pratiche con tutti i dettagli (cliente, controparte)
-- ✅ Creazione pratica con notifica di successo
-- ✅ Modal si chiude dopo creazione pratica
-- ✅ Debug logging per risoluzione problemi clienti
-
-🔧 MODIFICHE TECNICHE:
-- ✅ Aggiornati PracticeForm, NewActivityWizard, ActivityForm
-- ✅ Aggiornato AddActivityToExistingPractice
-- ✅ Nuova migrazione SQL: 20241220_move_judicial_fields_to_practices.sql
-- ✅ Interfacce TypeScript aggiornate
-- ✅ Logica di salvataggio ristrutturata
-
-📊 COMPONENTI AGGIORNATI:
-- PracticeForm.tsx: campi giudiziali condizionali
-- NewActivityWizard.tsx: form pratica con campi giudiziali
-- ActivityForm.tsx: rimossi campi giudiziali
-- AddActivityToExistingPractice.tsx: rimossi campi giudiziali
-- DashboardPage.tsx: debug logging e notifiche
-
-🎨 MIGLIORAMENTI INTERFACCIA:
-- ✅ Sezione "Informazioni Giudiziali" per pratiche GIUDIZIALE
-- ✅ Campi obbligatori per pratiche giudiziali
-- ✅ Layout migliorato per card pratiche
-- ✅ Notifiche toast per feedback utente
-
-🔍 DEBUG E DIAGNOSTICA:
-- ✅ Log di debug per caricamento clienti
-- ✅ Log di debug per passaggio dati componenti
-- ✅ Gestione errori migliorata
-- ✅ Console logging per troubleshooting
-
-📋 MIGRAZIONE DATABASE:
-- Aggiunge campi autorita_giudiziaria, rg, giudice a practices
-- Copia dati esistenti dalle attività alle pratiche
-- Rimuove campi giudiziali dalla tabella activities
-- Mantiene compatibilità con dati esistenti
+🔧 CORREZIONI PRECEDENTI (v3.2.1):
+- ✅ Fix TypeScript errors in build
+- ✅ Remove unused isGiudiziale variable in ActivityForm.tsx
+- ✅ Fix missing judicial fields in practiceData reset in NewActivityWizard.tsx
+- ✅ Build now passes successfully
 
 🚀 OTTIMIZZAZIONI PRECEDENTI (v3.2.0):
 - ✅ Rimossi 300+ log di debug e console.log
