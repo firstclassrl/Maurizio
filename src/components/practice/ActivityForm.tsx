@@ -94,7 +94,6 @@ export function ActivityForm({ open, onOpenChange, activity, practice, onSave, i
     return found?.color || 'bg-gray-100 text-gray-800 border-gray-200'
   }
 
-  const isGiudiziale = practice.tipo_procedura === 'GIUDIZIALE'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

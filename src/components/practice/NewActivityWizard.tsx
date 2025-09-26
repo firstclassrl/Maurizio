@@ -137,7 +137,10 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
       numero: '',
       cliente_id: '',
       controparti_ids: [],
-      tipo_procedura: 'STRAGIUDIZIALE'
+      tipo_procedura: 'STRAGIUDIZIALE',
+      autorita_giudiziaria: '',
+      rg: '',
+      giudice: ''
     })
     
     setActivityData({
@@ -145,9 +148,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
       attivita: '',
       data: '',
       ora: '',
-      autorita_giudiziaria: '',
-      rg: '',
-      giudice: '',
       note: ''
     })
     
