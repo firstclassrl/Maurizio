@@ -33,8 +33,8 @@ export interface Practice {
   created_at?: string
   updated_at?: string
   // Campi aggiuntivi per le relazioni
-  clients?: { nome: string }
-  counterparties?: { nome: string }[]
+  clients?: { nome: string; cognome?: string; ragione?: string }
+  counterparties?: { nome: string; cognome?: string; ragione?: string }[]
 }
 
 // Interfaccia per un'attività
