@@ -1,6 +1,6 @@
 v3.2.1-beta - Ristrutturazione campi giudiziali e miglioramenti UX
 Timestamp: 2025-01-25 20:30:00
-Commit: [da aggiornare dopo push]
+Commit: d0c81cc (ristrutturazione campi giudiziali)
 
 🏛️ RISTRUTTURAZIONE CAMPI GIUDIZIALI:
 - ✅ Spostati campi giudiziali dalle attività alle pratiche
