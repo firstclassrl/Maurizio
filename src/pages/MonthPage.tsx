@@ -8,7 +8,6 @@ import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
 import { Footer } from '../components/ui/Footer'
-import { WeekendToggleCompact } from '../components/settings/WeekendToggleCompact'
 import { ArrowLeft, CalendarDays } from 'lucide-react'
 
 interface MonthPageProps {
@@ -210,9 +209,8 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
               Settimana
             </Button>
           </div>
-          <div className="flex-1 flex justify-center items-center gap-4">
+          <div className="flex-1 flex justify-center">
             <h1 className="text-xl font-bold text-gray-900">Calendario Mensile</h1>
-            <WeekendToggleCompact />
           </div>
           <div className="flex items-center gap-4">
             <div className="flex gap-4">

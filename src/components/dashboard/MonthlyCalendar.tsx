@@ -10,6 +10,7 @@ import { formatTimeWithoutSeconds } from '../../lib/time-utils'
 import { useWeekendSettings } from '../../hooks/useWeekendSettings'
 import { useActivityTooltip } from '../../hooks/useActivityTooltip'
 import { ActivityTooltip } from '../ui/ActivityTooltip'
+import { WeekendToggleCompact } from '../settings/WeekendToggleCompact'
 
 interface MonthlyCalendarProps {
   tasks: Task[]
@@ -67,22 +68,24 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
     
     const days = []
     const currentDate = new Date(startDate)
-    const totalDays = showWeekend ? 42 : 35 // 6 weeks or 5 weeks
     
-    // Generate days to fill the calendar
-    for (let i = 0; i < totalDays; i++) {
-      const day = new Date(currentDate)
-      // Include days based on weekend setting
-      if (showWeekend) {
-        // Include all days (Monday to Sunday)
+    if (showWeekend) {
+      // Show full weeks (6 weeks = 42 days)
+      for (let i = 0; i < 42; i++) {
+        const day = new Date(currentDate)
         days.push(day)
-      } else {
+        currentDate.setDate(currentDate.getDate() + 1)
+      }
+    } else {
+      // Show only weekdays (5 weeks = 35 days, Monday to Friday)
+      for (let i = 0; i < 35; i++) {
+        const day = new Date(currentDate)
         // Only include Monday to Friday (1-5)
         if (day.getDay() >= 1 && day.getDay() <= 5) {
           days.push(day)
         }
+        currentDate.setDate(currentDate.getDate() + 1)
       }
-      currentDate.setDate(currentDate.getDate() + 1)
     }
     
     return days
@@ -204,7 +207,8 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            <WeekendToggleCompact />
             <PracticeFilter 
               selectedPractice={selectedPractice}
               onPracticeChange={setSelectedPractice}

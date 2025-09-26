@@ -10,6 +10,7 @@ import { formatTimeWithoutSeconds } from '../../lib/time-utils'
 import { useWeekendSettings } from '../../hooks/useWeekendSettings'
 import { useActivityTooltip } from '../../hooks/useActivityTooltip'
 import { ActivityTooltip } from '../ui/ActivityTooltip'
+import { WeekendToggleCompact } from '../settings/WeekendToggleCompact'
 
 interface WeeklyCalendarProps {
   tasks: Task[]
@@ -139,7 +140,8 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            <WeekendToggleCompact />
             <PracticeFilter 
               selectedPractice={selectedPractice}
               onPracticeChange={setSelectedPractice}
