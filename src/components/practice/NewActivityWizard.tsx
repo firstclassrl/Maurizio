@@ -166,21 +166,6 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
       return
     }
 
-    // Validazione campi giudiziali per pratiche GIUDIZIALE
-    if (practiceData.tipo_procedura === 'GIUDIZIALE') {
-      if (!practiceData.autorita_giudiziaria.trim()) {
-        alert('Inserisci l\'Autorità Giudiziaria')
-        return
-      }
-      if (!practiceData.rg.trim()) {
-        alert('Inserisci il R.G.')
-        return
-      }
-      if (!practiceData.giudice.trim()) {
-        alert('Inserisci il Giudice')
-        return
-      }
-    }
 
     // Prevenzione doppi click
     if (isCreatingPractice) {
@@ -451,38 +436,35 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
                     <h4 className="text-sm font-medium mb-3 text-gray-700">Informazioni Giudiziali</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Autorità Giudiziaria *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Autorità Giudiziaria</label>
                         <input
                           type="text"
                           value={practiceData.autorita_giudiziaria}
                           onChange={(e) => setPracticeData(prev => ({ ...prev, autorita_giudiziaria: e.target.value }))}
                           placeholder="es. Tribunale di Roma"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          required
                         />
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">R.G. *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">R.G.</label>
                         <input
                           type="text"
                           value={practiceData.rg}
                           onChange={(e) => setPracticeData(prev => ({ ...prev, rg: e.target.value }))}
                           placeholder="es. 12345/2024"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          required
                         />
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Giudice *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Giudice</label>
                         <input
                           type="text"
                           value={practiceData.giudice}
                           onChange={(e) => setPracticeData(prev => ({ ...prev, giudice: e.target.value }))}
                           placeholder="es. Dott. Mario Rossi"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          required
                         />
                       </div>
                     </div>
@@ -654,17 +636,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
               <Button
                 type="button"
                 onClick={handlePracticeSubmit}
-                disabled={
-                  isCreatingPractice || 
-                  !practiceData.cliente_id || 
-                  !practiceData.controparti_ids || 
-                  practiceData.controparti_ids.length === 0 ||
-                  (practiceData.tipo_procedura === 'GIUDIZIALE' && (
-                    !practiceData.autorita_giudiziaria.trim() ||
-                    !practiceData.rg.trim() ||
-                    !practiceData.giudice.trim()
-                  ))
-                }
+                disabled={isCreatingPractice || !practiceData.cliente_id || !practiceData.controparti_ids || practiceData.controparti_ids.length === 0}
                 className="flex items-center gap-2"
               >
                 {isCreatingPractice ? 'Creazione...' : 'Avanti'}
