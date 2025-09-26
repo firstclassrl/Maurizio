@@ -9,6 +9,13 @@ interface WeekendToggleCompactProps {
 export const WeekendToggleCompact: React.FC<WeekendToggleCompactProps> = ({ className = '' }) => {
   const { showWeekend, toggleWeekend } = useWeekendSettings()
 
+  const handleToggle = (checked: boolean) => {
+    console.log('🔧 WeekendToggleCompact: Toggle clicked, new value:', checked)
+    toggleWeekend()
+  }
+
+  console.log('🔧 WeekendToggleCompact: Current showWeekend value:', showWeekend)
+
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <span className="text-sm font-medium text-gray-700">
@@ -16,7 +23,7 @@ export const WeekendToggleCompact: React.FC<WeekendToggleCompactProps> = ({ clas
       </span>
       <Switch
         checked={showWeekend}
-        onCheckedChange={toggleWeekend}
+        onCheckedChange={handleToggle}
       />
     </div>
   )

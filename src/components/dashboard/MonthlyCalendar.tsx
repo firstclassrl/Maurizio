@@ -26,6 +26,8 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
   const { showWeekend } = useWeekendSettings()
   const { tooltip, handleMouseEnter, handleMouseLeave } = useActivityTooltip(2000)
 
+  console.log('🔧 MonthlyCalendar: showWeekend value:', showWeekend)
+
   // Generate colors based on category
   const getTaskColor = (task: Task) => {
     switch (task.categoria) {
