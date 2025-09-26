@@ -1,10 +1,10 @@
 // Service Worker per Push Notifications - LexAgenda
-const CACHE_NAME = 'lexagenda-v1.5.2';
+const CACHE_NAME = 'lexagenda-v3.2.2';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/favicon.png'
+  '/favicon.png',
+  '/logo studio legale maurizio.png',
+  '/Marchio AbruzzoAI.png'
 ];
 
 // Installazione Service Worker
@@ -14,10 +14,22 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Service Worker: Cache aperto');
-        return cache.addAll(urlsToCache);
+        // Cache solo i file che esistono realmente
+        return Promise.allSettled(
+          urlsToCache.map(url => 
+            cache.add(url).catch(error => {
+              console.warn(`Service Worker: Impossibile cacheare ${url}:`, error);
+              return null;
+            })
+          )
+        );
       })
       .then(() => {
         console.log('Service Worker: Installazione completata');
+        return self.skipWaiting();
+      })
+      .catch((error) => {
+        console.error('Service Worker: Errore durante installazione:', error);
         return self.skipWaiting();
       })
   );

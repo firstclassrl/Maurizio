@@ -2,6 +2,42 @@ import { useState } from 'react'
 import { supabase } from './supabase'
 import { getOptimizationConfig } from './optimization-toggle'
 
+// Sistema di monitoraggio performance
+let performanceMetrics = {
+  queryTime: 0,
+  cacheHits: 0,
+  cacheMisses: 0,
+  totalQueries: 0,
+  averageQueryTime: 0,
+  lastUpdate: new Date()
+}
+
+// Funzione per registrare performance
+const recordPerformance = (queryTime: number, fromCache: boolean = false) => {
+  performanceMetrics.queryTime += queryTime
+  performanceMetrics.totalQueries += 1
+  performanceMetrics.cacheHits += fromCache ? 1 : 0
+  performanceMetrics.cacheMisses += !fromCache ? 1 : 0
+  performanceMetrics.averageQueryTime = performanceMetrics.queryTime / performanceMetrics.totalQueries
+  performanceMetrics.lastUpdate = new Date()
+  
+  const cacheStatus = fromCache ? 'CACHE HIT' : 'CACHE MISS'
+  console.log(`📊 Query: ${queryTime}ms ${cacheStatus} | Totale: ${performanceMetrics.totalQueries} | Media: ${Math.round(performanceMetrics.averageQueryTime)}ms`)
+}
+
+// Funzione per ottenere statistiche
+export const getPerformanceStats = () => {
+  const cacheHitRate = performanceMetrics.totalQueries > 0 
+    ? Math.round((performanceMetrics.cacheHits / performanceMetrics.totalQueries) * 100) 
+    : 0
+  
+  return {
+    ...performanceMetrics,
+    cacheHitRate,
+    averageQueryTime: Math.round(performanceMetrics.averageQueryTime)
+  }
+}
+
 // Versione SICURA del sistema di ottimizzazione
 // Rispetta sempre i toggle e ha fallback garantito
 
@@ -98,6 +134,7 @@ export const loadClientsSafe = async (userId: string): Promise<any[]> => {
   // Prova cache prima (se abilitata)
   const cached = getFromCache<any[]>('clients', cacheKey)
   if (cached) {
+    recordPerformance(0, true) // Cache hit - tempo 0
     return cached
   }
   
@@ -120,6 +157,8 @@ export const loadClientsSafe = async (userId: string): Promise<any[]> => {
     saveToCache('clients', cacheKey, clients)
     
     const queryTime = Date.now() - startTime
+    recordPerformance(queryTime, false) // Cache miss
+    
     if (config.enableLogging) {
       console.log(`⏱️ Query clienti completata in ${queryTime}ms`)
     }
@@ -139,6 +178,7 @@ export const loadPracticesSafe = async (userId: string): Promise<any[]> => {
   // Prova cache prima (se abilitata)
   const cached = getFromCache<any[]>('practices', cacheKey)
   if (cached) {
+    recordPerformance(0, true) // Cache hit - tempo 0
     return cached
   }
   
@@ -221,6 +261,8 @@ const loadPracticesOptimizedSafe = async (userId: string, cacheKey: string, star
   saveToCache('practices', cacheKey, practices)
   
   const queryTime = Date.now() - startTime
+  recordPerformance(queryTime, false) // Cache miss
+  
   if (config.enableLogging) {
     console.log(`⏱️ Query pratiche ottimizzata completata in ${queryTime}ms`)
   }
@@ -269,6 +311,8 @@ const loadPracticesNormalSafe = async (userId: string, cacheKey: string, startTi
   saveToCache('practices', cacheKey, practicesWithCounterparties)
   
   const queryTime = Date.now() - startTime
+  recordPerformance(queryTime, false) // Cache miss
+  
   if (config.enableLogging) {
     console.log(`⏱️ Query pratiche normale completata in ${queryTime}ms`)
   }

@@ -9,6 +9,7 @@ import {
   enableOptimizationsGradually,
   emergencyDisable
 } from '../../lib/optimization-toggle'
+import { PerformanceMonitor } from './PerformanceMonitor'
 
 export function OptimizationControl() {
   const [config, setConfig] = useState(getOptimizationConfig())
@@ -65,7 +66,8 @@ export function OptimizationControl() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <div className="space-y-4">
+      <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           🔧 Controllo Ottimizzazioni
@@ -192,6 +194,10 @@ export function OptimizationControl() {
         </div>
 
       </CardContent>
-    </Card>
+      </Card>
+
+      {/* Monitoraggio Performance */}
+      <PerformanceMonitor />
+    </div>
   )
 }
