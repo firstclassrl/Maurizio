@@ -1,6 +1,6 @@
 v3.1.0 - Fix filtri e miglioramenti UI
 Timestamp: 2025-01-25 16:30:00
-Commit: [da aggiornare]
+Commit: b1588b3 (aggiornato footer)
 
 Nuove funzionalità e correzioni:
 - ✅ Fix filtro ricerca parte/controparte nella DashboardPage
