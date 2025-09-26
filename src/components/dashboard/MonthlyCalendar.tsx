@@ -77,12 +77,14 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
         currentDate.setDate(currentDate.getDate() + 1)
       }
     } else {
-      // Show only weekdays (5 weeks = 35 days, Monday to Friday)
-      for (let i = 0; i < 35; i++) {
+      // Show only weekdays - generate exactly 5 weeks of weekdays (25 days)
+      let weekdaysAdded = 0
+      while (weekdaysAdded < 25) { // 5 weeks * 5 weekdays = 25 days
         const day = new Date(currentDate)
         // Only include Monday to Friday (1-5)
         if (day.getDay() >= 1 && day.getDay() <= 5) {
           days.push(day)
+          weekdaysAdded++
         }
         currentDate.setDate(currentDate.getDate() + 1)
       }

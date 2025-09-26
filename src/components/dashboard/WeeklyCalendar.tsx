@@ -60,11 +60,20 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
   // Get all days of the current week (weekdays or full week based on settings)
   const getWeekDays = (startDate: Date) => {
     const days = []
-    const dayCount = showWeekend ? 7 : 5 // Monday to Friday or Monday to Sunday
-    for (let i = 0; i < dayCount; i++) {
-      const day = new Date(startDate)
-      day.setDate(startDate.getDate() + i)
-      days.push(day)
+    if (showWeekend) {
+      // Show full week (Monday to Sunday)
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(startDate)
+        day.setDate(startDate.getDate() + i)
+        days.push(day)
+      }
+    } else {
+      // Show only weekdays (Monday to Friday)
+      for (let i = 0; i < 5; i++) {
+        const day = new Date(startDate)
+        day.setDate(startDate.getDate() + i)
+        days.push(day)
+      }
     }
     return days
   }
