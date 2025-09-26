@@ -34,7 +34,10 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     numero: '',
     cliente_id: '',
     controparti_ids: [] as string[],
-    tipo_procedura: 'STRAGIUDIZIALE' as 'STRAGIUDIZIALE' | 'GIUDIZIALE'
+    tipo_procedura: 'STRAGIUDIZIALE' as 'STRAGIUDIZIALE' | 'GIUDIZIALE',
+    autorita_giudiziaria: '',
+    rg: '',
+    giudice: ''
   })
 
   // Form data for activity
@@ -55,7 +58,10 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         numero: '',
         cliente_id: '',
         controparti_ids: [],
-        tipo_procedura: 'STRAGIUDIZIALE'
+        tipo_procedura: 'STRAGIUDIZIALE',
+        autorita_giudiziaria: '',
+        rg: '',
+        giudice: ''
       })
       setActivityData({
         categoria: 'Appuntamento',
@@ -131,7 +137,10 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
       numero: '',
       cliente_id: '',
       controparti_ids: [],
-      tipo_procedura: 'STRAGIUDIZIALE'
+      tipo_procedura: 'STRAGIUDIZIALE',
+      autorita_giudiziaria: '',
+      rg: '',
+      giudice: ''
     })
     
     setActivityData({
@@ -155,6 +164,22 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
     if (!practiceData.controparti_ids || practiceData.controparti_ids.length === 0) {
       alert('Aggiungi almeno una controparte')
       return
+    }
+
+    // Validazione campi giudiziali per pratiche GIUDIZIALE
+    if (practiceData.tipo_procedura === 'GIUDIZIALE') {
+      if (!practiceData.autorita_giudiziaria.trim()) {
+        alert('Inserisci l\'Autorità Giudiziaria')
+        return
+      }
+      if (!practiceData.rg.trim()) {
+        alert('Inserisci il R.G.')
+        return
+      }
+      if (!practiceData.giudice.trim()) {
+        alert('Inserisci il Giudice')
+        return
+      }
     }
 
     // Prevenzione doppi click
@@ -192,7 +217,10 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         numero: practiceNumber,
         cliente_id: practiceData.cliente_id,
         controparti_ids: practiceData.controparti_ids,
-        tipo_procedura: practiceData.tipo_procedura
+        tipo_procedura: practiceData.tipo_procedura,
+        autorita_giudiziaria: practiceData.autorita_giudiziaria || null,
+        rg: practiceData.rg || null,
+        giudice: practiceData.giudice || null
       }
 
       console.log('Saving practice to database:', practiceDataToSave)
@@ -217,6 +245,9 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
         cliente_id: savedPractice.cliente_id,
         controparti_ids: savedPractice.controparti_ids,
         tipo_procedura: savedPractice.tipo_procedura,
+        autorita_giudiziaria: savedPractice.autorita_giudiziaria,
+        rg: savedPractice.rg,
+        giudice: savedPractice.giudice,
         created_at: savedPractice.created_at,
         updated_at: savedPractice.updated_at
       }
@@ -414,6 +445,50 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
                   </div>
                 </div>
 
+                {/* Campi specifici per pratiche giudiziali */}
+                {practiceData.tipo_procedura === 'GIUDIZIALE' && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <h4 className="text-sm font-medium mb-3 text-gray-700">Informazioni Giudiziali</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Autorità Giudiziaria *</label>
+                        <input
+                          type="text"
+                          value={practiceData.autorita_giudiziaria}
+                          onChange={(e) => setPracticeData(prev => ({ ...prev, autorita_giudiziaria: e.target.value }))}
+                          placeholder="es. Tribunale di Roma"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">R.G. *</label>
+                        <input
+                          type="text"
+                          value={practiceData.rg}
+                          onChange={(e) => setPracticeData(prev => ({ ...prev, rg: e.target.value }))}
+                          placeholder="es. 12345/2024"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Giudice *</label>
+                        <input
+                          type="text"
+                          value={practiceData.giudice}
+                          onChange={(e) => setPracticeData(prev => ({ ...prev, giudice: e.target.value }))}
+                          placeholder="es. Dott. Mario Rossi"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
               </Card>
 
               <Card className="p-3">
@@ -579,7 +654,17 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
               <Button
                 type="button"
                 onClick={handlePracticeSubmit}
-                disabled={isCreatingPractice || !practiceData.cliente_id || !practiceData.controparti_ids || practiceData.controparti_ids.length === 0}
+                disabled={
+                  isCreatingPractice || 
+                  !practiceData.cliente_id || 
+                  !practiceData.controparti_ids || 
+                  practiceData.controparti_ids.length === 0 ||
+                  (practiceData.tipo_procedura === 'GIUDIZIALE' && (
+                    !practiceData.autorita_giudiziaria.trim() ||
+                    !practiceData.rg.trim() ||
+                    !practiceData.giudice.trim()
+                  ))
+                }
                 className="flex items-center gap-2"
               >
                 {isCreatingPractice ? 'Creazione...' : 'Avanti'}
