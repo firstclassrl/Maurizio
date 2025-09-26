@@ -23,7 +23,7 @@ SELECT
   tipo_procedura,
   created_at
 FROM practices 
-WHERE cliente_id IS NULL OR cliente_id = ''
+WHERE cliente_id IS NULL
 ORDER BY numero DESC;
 
 -- 3. Per correggere le pratiche, sostituisci 'CLIENTE_ID_QUI' con l'ID del cliente che vuoi assegnare

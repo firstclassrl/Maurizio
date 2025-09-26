@@ -3,7 +3,7 @@ import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { DateInput } from '../ui/DateInput'
 import { TimeInput } from '../ui/TimeInput'
-import { Plus, ArrowLeft } from 'lucide-react'
+import { Plus, ArrowLeft, ArrowRight } from 'lucide-react'
 import { Practice, Activity } from '../../types/practice'
 import { Client } from '../../types/client'
 import { useMobile } from '../../hooks/useMobile'
@@ -149,6 +149,11 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
   const handlePracticeSubmit = async () => {
     if (!practiceData.cliente_id) {
       alert('Seleziona un cliente')
+      return
+    }
+
+    if (!practiceData.controparti_ids || practiceData.controparti_ids.length === 0) {
+      alert('Aggiungi almeno una controparte')
       return
     }
 
@@ -574,7 +579,7 @@ export function NewActivityWizard({ open, onOpenChange, clients, onActivityCreat
               <Button
                 type="button"
                 onClick={handlePracticeSubmit}
-                disabled={isCreatingPractice || !practiceData.cliente_id}
+                disabled={isCreatingPractice || !practiceData.cliente_id || !practiceData.controparti_ids || practiceData.controparti_ids.length === 0}
                 className="flex items-center gap-2"
               >
                 {isCreatingPractice ? 'Creazione...' : 'Avanti'}
