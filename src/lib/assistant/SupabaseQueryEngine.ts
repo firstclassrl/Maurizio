@@ -26,6 +26,8 @@ export class SupabaseQueryEngine {
           return await this.queryAppointments(question, userId)
         case 'ricorso':
           return await this.queryRicorsi(question, userId)
+        case 'pagamenti':
+          return await this.queryPagamenti(question, userId)
         case 'generale':
           return await this.queryGeneral(question, userId)
         default:
@@ -349,6 +351,43 @@ export class SupabaseQueryEngine {
       `)
       .eq('user_id', userId)
       .ilike('attivita', '%ricorso%')
+
+    if (cliente) {
+      // Try multiple search strategies for client name
+      query = query.or(`
+        practices.clients.ragione.ilike.%${cliente}%,
+        practices.clients.nome.ilike.%${cliente}%,
+        practices.clients.cognome.ilike.%${cliente}%
+      `)
+    }
+
+    const { data, error } = await query
+      .order('data', { ascending: true })
+      .limit(10)
+
+    if (error) throw error
+
+    return {
+      type: 'success',
+      data: data || [],
+      count: data?.length || 0
+    }
+  }
+
+  private async queryPagamenti(question: ParsedQuestion, userId: string): Promise<QueryResult> {
+    const { cliente } = question.entities
+
+    let query = supabase
+      .from('activities')
+      .select(`
+        *,
+        practices!inner(
+          *,
+          clients!inner(*)
+        )
+      `)
+      .eq('user_id', userId)
+      .ilike('attivita', '%pagamenti%')
 
     if (cliente) {
       // Try multiple search strategies for client name

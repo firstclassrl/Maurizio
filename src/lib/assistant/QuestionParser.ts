@@ -1,5 +1,5 @@
 export interface ParsedQuestion {
-  type: 'udienza' | 'scadenza' | 'cliente' | 'pratica' | 'attivita' | 'appuntamento' | 'ricorso' | 'generale'
+  type: 'udienza' | 'scadenza' | 'cliente' | 'pratica' | 'attivita' | 'appuntamento' | 'ricorso' | 'pagamenti' | 'generale'
   entities: {
     cliente?: string
     pratica?: string
@@ -46,10 +46,17 @@ export class QuestionParser {
       /incontro\s+(?:con|di)\s+(.+)/i
     ],
     ricorso: [
+      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricorso\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
       /quando\s+(?:devo|faccio|fare)\s+(?:fare\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /quando\s+(?:scade|è in scadenza)\s+(?:il\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /scadenza\s+(?:del\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i
+    ],
+    pagamenti: [
+      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?pagamenti?\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
+      /scadenza\s+(?:dei\s+)?pagamenti?\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
+      /quando\s+(?:scadono|sono in scadenza)\s+(?:i\s+)?pagamenti?\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
+      /pagamenti?\s+(?:di|per|del\s+cliente\s+)?(.+)/i
     ]
   }
 

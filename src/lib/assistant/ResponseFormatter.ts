@@ -25,6 +25,8 @@ export class ResponseFormatter {
         return this.formatAppointments(result.data || [])
       case 'ricorso':
         return this.formatRicorsi(result.data || [])
+      case 'pagamenti':
+        return this.formatPagamenti(result.data || [])
       case 'generale':
         return this.formatGeneral(result.data || [])
       default:
@@ -193,6 +195,34 @@ export class ResponseFormatter {
       
       if (ricorso.note) {
         response += '   📝 Note: ' + ricorso.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatPagamenti(pagamenti: any[]): string {
+    if (pagamenti.length === 0) {
+      return '💰 Nessun pagamento trovato.'
+    }
+
+    let response = `💰 **Pagamenti (${pagamenti.length} trovati):**\n\n`
+    
+    pagamenti.forEach((pagamento, index) => {
+      const practice = pagamento.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(pagamento.data).toLocaleDateString('it-IT')
+      const time = pagamento.ora || 'Orario non specificato'
+      
+      response += (index + 1) + '. **' + (pagamento.attivita || 'Pagamenti') + '**\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      
+      if (pagamento.note) {
+        response += '   📝 Note: ' + pagamento.note + '\n'
       }
       response += '\n'
     })
