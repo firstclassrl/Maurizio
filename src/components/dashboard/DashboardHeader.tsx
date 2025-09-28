@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
-import { Settings, Sparkles, Calendar, CalendarDays, Calculator } from 'lucide-react'
+import { Settings, Sparkles, Calendar, CalendarDays, Calculator, LogOut } from 'lucide-react'
 import { Logo } from '../ui/Logo'
+import { supabase } from '../../lib/supabase'
 
 interface DashboardHeaderProps {
   onAssistantOpen: (query?: string) => void
@@ -20,6 +21,14 @@ export function DashboardHeader({
   onNavigateToCalcolatore,
 }: DashboardHeaderProps) {
   const [assistantQuery, setAssistantQuery] = useState('')
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.error('Errore durante il logout:', error)
+    }
+  }
 
   return (
     <div className="bg-slate-900 border-b border-slate-700 shadow-lg relative">
@@ -86,6 +95,11 @@ export function DashboardHeader({
             {/* Pulsante Opzioni - solo rotella */}
             <Button variant="outline" size="sm" onClick={onOptionsOpen} className="bg-slate-800 border-slate-600 text-white hover:bg-slate-700">
               <Settings className="h-4 w-4" />
+            </Button>
+            
+            {/* Pulsante Logout */}
+            <Button variant="outline" size="sm" onClick={handleLogout} className="bg-red-600 border-red-500 text-white hover:bg-red-700">
+              <LogOut className="h-4 w-4" />
             </Button>
           </div>
         </div>
