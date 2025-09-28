@@ -65,7 +65,12 @@ export class QuestionParser {
       /quando\s+(?:scade|è in scadenza)\s+(?:il\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /scadenza\s+(?:del\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricorso\s+(?:della|dello)\s+(.+)/i,
-      /ricorso\s+(?:della|dello)\s+(.+)/i
+      /ricorso\s+(?:della|dello)\s+(.+)/i,
+      // Pattern per "ricordo" (errore di digitazione comune)
+      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricordo\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
+      /ricordo\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
+      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricordo\s+(?:della|dello)\s+(.+)/i,
+      /ricordo\s+(?:della|dello)\s+(.+)/i
     ],
     pagamenti: [
       /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?pagamenti?\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
@@ -576,7 +581,7 @@ export class QuestionParser {
           }
 
           // Extract specific activity type if mentioned
-          if (type === 'ricorso' || lowerText.includes('ricorso')) {
+          if (type === 'ricorso' || lowerText.includes('ricorso') || lowerText.includes('ricordo')) {
             entities.attivita = 'ricorso'
           } else if (lowerText.includes('pagamenti')) {
             entities.attivita = 'pagamenti'

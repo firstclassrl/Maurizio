@@ -421,7 +421,7 @@ export class SupabaseQueryEngine {
         )
       `)
       .eq('user_id', userId)
-      .ilike('attivita', '%ricorso%')
+      .or('attivita.ilike.%ricorso%,attivita.ilike.%ricordo%')
 
     if (cliente) {
       // Try multiple search strategies for client name
@@ -436,7 +436,12 @@ export class SupabaseQueryEngine {
       .order('data', { ascending: true })
       .limit(10)
 
-    if (error) throw error
+    if (error) {
+      console.error('Query error in queryRicorsi:', error)
+      throw error
+    }
+
+    console.log('Query ricorsi result:', { data, count: data?.length || 0, cliente })
 
     return {
       type: 'success',
@@ -1014,7 +1019,7 @@ export class SupabaseQueryEngine {
         )
       `)
       .eq('user_id', userId)
-      .ilike('attivita', '%ricorso%')
+      .or('attivita.ilike.%ricorso%,attivita.ilike.%ricordo%')
 
     if (tipo_ricorso) {
       query = query.or(`
