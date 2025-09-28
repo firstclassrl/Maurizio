@@ -28,7 +28,10 @@ export class QuestionParser {
     udienza: [
       /quando\s+(?:è|ha)\s+(?:l'|la\s+)?udienza\s+(?:di|per)\s+(.+)/i,
       /udienza\s+(?:di|per)\s+(.+)/i,
-      /quando\s+(?:vado|devo andare)\s+(?:in\s+)?tribunale\s+(?:per|per\s+)?(.+)/i
+      /quando\s+(?:vado|devo andare)\s+(?:in\s+)?tribunale\s+(?:per|per\s+)?(.+)/i,
+      // Pattern per "quando ricorso farmap?" - interpretato come udienza
+      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricorso\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
+      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricorso\s+(?:della|dello)\s+(.+)/i
     ],
     scadenza: [
       /quali\s+pratiche\s+(?:scadono|sono in scadenza)\s+(?:questa|la\s+)?(.+)/i,
@@ -59,17 +62,17 @@ export class QuestionParser {
       /incontro\s+(?:con|di)\s+(.+)/i
     ],
     ricorso: [
-      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricorso\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
+      // Pattern più specifici per ricorsi (non udienze)
       /quando\s+(?:devo|faccio|fare)\s+(?:fare\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /quando\s+(?:scade|è in scadenza)\s+(?:il\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /scadenza\s+(?:del\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
-      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricorso\s+(?:della|dello)\s+(.+)/i,
+      /quando\s+(?:devo|faccio|fare)\s+(?:fare\s+)?ricorso\s+(?:della|dello)\s+(.+)/i,
       /ricorso\s+(?:della|dello)\s+(.+)/i,
       // Pattern per "ricordo" (errore di digitazione comune)
-      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricordo\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
+      /quando\s+(?:devo|faccio|fare)\s+(?:fare\s+)?ricordo\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /ricordo\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
-      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricordo\s+(?:della|dello)\s+(.+)/i,
+      /quando\s+(?:devo|faccio|fare)\s+(?:fare\s+)?ricordo\s+(?:della|dello)\s+(.+)/i,
       /ricordo\s+(?:della|dello)\s+(.+)/i
     ],
     pagamenti: [
