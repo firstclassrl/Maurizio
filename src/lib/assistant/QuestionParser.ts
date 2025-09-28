@@ -1,11 +1,14 @@
 export interface ParsedQuestion {
-  type: 'udienza' | 'scadenza' | 'cliente' | 'pratica' | 'attivita' | 'appuntamento' | 'ricorso' | 'pagamenti' | 'generale'
+  type: 'udienza' | 'scadenza' | 'cliente' | 'pratica' | 'attivita' | 'appuntamento' | 'ricorso' | 'pagamenti' | 'scadenze_imminenti' | 'udienze_appuntamenti' | 'calcoli_termini' | 'clienti_info' | 'ricerca_clienti' | 'pratiche_info' | 'attivita_pratica' | 'filtri_temporali' | 'filtri_stato' | 'filtri_categoria' | 'contatori' | 'analisi' | 'cosa_fare' | 'pianificazione' | 'emergenze' | 'controlli' | 'generale'
   entities: {
     cliente?: string
     pratica?: string
     data?: string
     periodo?: 'oggi' | 'domani' | 'settimana' | 'mese'
     attivita?: string
+    numero?: string
+    tipo?: string
+    filtro?: string
   }
   originalText: string
 }
@@ -57,6 +60,216 @@ export class QuestionParser {
       /scadenza\s+(?:dei\s+)?pagamenti?\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
       /quando\s+(?:scadono|sono in scadenza)\s+(?:i\s+)?pagamenti?\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
       /pagamenti?\s+(?:di|per|del\s+cliente\s+)?(.+)/i
+    ],
+    
+    // NUOVI PATTERN FASE 1 - TEMPORALI
+    scadenze_imminenti: [
+      /quando\s+scade\s+(?:la\s+)?prossima\s+(?:pratica|scadenza)/i,
+      /quali\s+scadenze\s+(?:ho\s+)?(?:questa\s+settimana|oggi|domani)/i,
+      /cosa\s+scade\s+(?:oggi|domani|questa\s+settimana)/i,
+      /mostrami\s+(?:le\s+)?scadenze\s+(?:urgenti|imminenti)/i,
+      /quali\s+pratiche\s+scadono\s+(?:entro\s+)?(\d+\s+giorni?|questa\s+settimana)/i,
+      /ho\s+scadenze\s+(?:oggi|domani)/i,
+      /quando\s+è\s+(?:la\s+)?prossima\s+scadenza\s+(?:critica|importante)/i,
+      /mostrami\s+le\s+scadenze\s+(?:di\s+)?questa\s+settimana/i,
+      /quali\s+sono\s+le\s+scadenze\s+più\s+urgenti/i,
+      /cosa\s+devo\s+fare\s+entro\s+fine\s+mese/i
+    ],
+    
+    udienze_appuntamenti: [
+      /quando\s+è\s+(?:la\s+)?prossima\s+udienza/i,
+      /quali\s+udienze\s+(?:ho\s+)?(?:questa\s+settimana|oggi|domani)/i,
+      /quando\s+devo\s+andare\s+in\s+tribunale/i,
+      /mostrami\s+(?:tutti\s+gli\s+)?appuntamenti\s+(?:di\s+oggi|questa\s+settimana)/i,
+      /quando\s+è\s+l'udienza\s+(?:di|per)\s+(.+)/i,
+      /mostrami\s+il\s+calendario\s+delle\s+udienze/i,
+      /quali\s+appuntamenti\s+ho\s+con\s+i\s+clienti/i,
+      /quando\s+è\s+(?:la\s+)?prossima\s+conciliazione/i,
+      /mostrami\s+le\s+udienze\s+(?:del\s+mese|di\s+(.+))/i,
+      /quando\s+è\s+l'udienza\s+in\s+(.+)/i
+    ],
+    
+    calcoli_termini: [
+      /calcola\s+(\d+)\s+giorni?\s+(?:da\s+oggi|dal\s+(\d{1,2}\/\d{1,2}\/\d{4}))/i,
+      /quando\s+scade\s+(?:la\s+)?comparsa\s+conclusionale/i,
+      /calcola\s+il\s+termine\s+(?:per\s+l'|per\s+il\s+)?(appello|ricorso|opposizione)/i,
+      /quanto\s+tempo\s+ho\s+per\s+(?:il\s+)?(ricorso|appello|comparsa)/i,
+      /calcola\s+(\d+)\s+giorni?\s+dal\s+(\d{1,2}\/\d{1,2}\/\d{4})/i,
+      /quando\s+devo\s+depositare\s+(?:la\s+)?(comparsa|ricorso|appello)/i,
+      /calcola\s+(\d+)\s+giorni?\s+per\s+(?:la\s+)?(cassazione|notifica)/i,
+      /quando\s+scade\s+(?:la\s+)?prescrizione/i,
+      /calcola\s+(?:il\s+)?termine\s+(?:per\s+)?(.+)/i,
+      /quanto\s+tempo\s+ho\s+per\s+(.+)/i
+    ],
+    
+    // NUOVI PATTERN FASE 1 - CLIENTI
+    clienti_info: [
+      /mostrami\s+(?:tutti\s+i\s+)?clienti/i,
+      /chi\s+è\s+(?:il\s+)?cliente\s+(?:della\s+)?(?:pratica\s+)?(.+)/i,
+      /quali\s+sono\s+i\s+miei\s+clienti/i,
+      /mostrami\s+i\s+dati\s+del\s+cliente\s+(.+)/i,
+      /chi\s+è\s+(.+)/i,
+      /mostrami\s+la\s+lista\s+completa\s+dei\s+clienti/i,
+      /quali\s+clienti\s+ho/i,
+      /dammi\s+informazioni\s+su\s+(.+)/i,
+      /mostrami\s+i\s+clienti\s+con\s+partita\s+iva/i,
+      /chi\s+sono\s+i\s+miei\s+clienti\s+principali/i
+    ],
+    
+    ricerca_clienti: [
+      /cerca\s+(?:il\s+)?cliente\s+(.+)/i,
+      /trovami\s+(?:il\s+)?cliente\s+con\s+p\.iva\s+(.+)/i,
+      /cerca\s+(.+)/i,
+      /trovami\s+tutti\s+i\s+clienti\s+(.+)/i,
+      /mostrami\s+i\s+clienti\s+(?:persona\s+fisica|società|ditta)/i,
+      /cerca\s+il\s+cliente\s+di\s+(.+)/i,
+      /mostrami\s+i\s+clienti\s+con\s+nome\s+(.+)/i,
+      /trovami\s+(.+)/i,
+      /cerca\s+clienti\s+con\s+(.+)/i,
+      /filtra\s+i\s+clienti\s+per\s+(.+)/i
+    ],
+    
+    // NUOVI PATTERN FASE 1 - PRATICHE
+    pratiche_info: [
+      /mostrami\s+(?:tutte\s+le\s+)?pratiche/i,
+      /quali\s+pratiche\s+ho\s+in\s+corso/i,
+      /dammi\s+dettagli\s+della\s+pratica\s+(.+)/i,
+      /mostrami\s+le\s+pratiche\s+di\s+(.+)/i,
+      /quali\s+sono\s+le\s+mie\s+pratiche\s+attive/i,
+      /mostrami\s+la\s+pratica\s+(.+)/i,
+      /dammi\s+informazioni\s+sulla\s+pratica\s+(.+)/i,
+      /mostrami\s+(?:tutte\s+le\s+)?pratiche\s+(?:giudiziali|stragiudiziali)/i,
+      /quali\s+pratiche\s+(?:giudiziali|stragiudiziali)\s+ho/i,
+      /mostrami\s+le\s+pratiche\s+con\s+(.+)/i
+    ],
+    
+    attivita_pratica: [
+      /quali\s+attività\s+ha\s+la\s+pratica\s+(.+)/i,
+      /mostrami\s+le\s+attività\s+di\s+(.+)/i,
+      /cosa\s+devo\s+fare\s+per\s+(.+)/i,
+      /mostrami\s+il\s+piano\s+attività\s+di\s+(.+)/i,
+      /quali\s+sono\s+le\s+prossime\s+attività\s+di\s+(.+)/i,
+      /mostrami\s+lo\s+stato\s+della\s+pratica\s+(.+)/i,
+      /cosa\s+c'è\s+da\s+fare\s+per\s+(.+)/i,
+      /mostrami\s+le\s+attività\s+pendenti/i,
+      /quali\s+attività\s+sono\s+in\s+ritardo/i,
+      /mostrami\s+le\s+attività\s+(?:di\s+oggi|questa\s+settimana)/i
+    ],
+    
+    // NUOVI PATTERN FASE 1 - FILTRI
+    filtri_temporali: [
+      /mostrami\s+le\s+attività\s+(?:di\s+oggi|domani|questa\s+settimana)/i,
+      /quali\s+attività\s+ho\s+(?:oggi|domani|il\s+(.+))/i,
+      /mostrami\s+le\s+attività\s+(?:del\s+mese|di\s+(.+))/i,
+      /quali\s+attività\s+ho\s+(?:in\s+(.+)|nel\s+periodo\s+(.+))/i,
+      /mostrami\s+le\s+attività\s+(?:passate|in\s+futuro)/i,
+      /quali\s+attività\s+ho\s+(?:questa\s+settimana|questo\s+mese)/i,
+      /mostrami\s+le\s+attività\s+del\s+(\d{1,2}\/\d{1,2}\/\d{4})/i,
+      /quali\s+attività\s+ho\s+(?:dopo|prima)\s+(?:di|del)\s+(.+)/i
+    ],
+    
+    filtri_stato: [
+      /mostrami\s+le\s+attività\s+(?:da\s+fare|completate|urgenti|in\s+ritardo)/i,
+      /quali\s+attività\s+(?:sono\s+completate|hanno\s+priorità\s+alta|sono\s+bloccate)/i,
+      /mostrami\s+le\s+attività\s+(?:pendenti|in\s+corso|sospese)/i,
+      /quali\s+attività\s+richiedono\s+attenzione/i,
+      /mostrami\s+(?:le\s+)?attività\s+(?:urgenti|critiche|importanti)/i,
+      /quali\s+attività\s+(?:ho\s+completato|sono\s+finite)/i,
+      /mostrami\s+le\s+attività\s+(?:da\s+iniziare|da\s+completare)/i
+    ],
+    
+    filtri_categoria: [
+      /mostrami\s+(?:solo\s+)?(?:le\s+udienze|scadenze\s+processuali|attività\s+stragiudiziali)/i,
+      /quali\s+(?:appuntamenti|attività\s+giudiziali|scadenze)\s+ho/i,
+      /mostrami\s+(?:solo\s+)?(?:i\s+ricorsi|notifiche|conciliazioni|perizie)/i,
+      /quali\s+(?:udienze|scadenze|appuntamenti)\s+ho/i,
+      /mostrami\s+(?:solo\s+)?(?:le\s+attività\s+processuali|le\s+attività\s+da\s+svolgere)/i,
+      /filtra\s+(?:per\s+)?(?:categoria|tipo)\s+(.+)/i
+    ],
+    
+    // NUOVI PATTERN FASE 1 - STATISTICHE
+    contatori: [
+      /quante\s+(?:pratiche|clienti|attività|udienze|ricorsi|scadenze)\s+ho/i,
+      /mostrami\s+(?:le\s+statistiche|il\s+riepilogo\s+del\s+mese)/i,
+      /quali\s+sono\s+i\s+numeri\s+(?:di\s+oggi|del\s+mese)/i,
+      /mostrami\s+il\s+dashboard/i,
+      /quanti\s+(?:clienti|pratiche|attività)\s+ho\s+(?:in\s+totale|oggi)/i,
+      /mostrami\s+(?:il\s+)?conteggio\s+(?:delle\s+)?(.+)/i
+    ],
+    
+    analisi: [
+      /qual\s+è\s+(?:la\s+mia\s+)?attività\s+più\s+frequente/i,
+      /quale\s+cliente\s+ha\s+più\s+pratiche/i,
+      /quali\s+sono\s+(?:le\s+mie\s+)?pratiche\s+(?:più\s+vecchie|più\s+urgenti)/i,
+      /qual\s+è\s+(?:il\s+mio\s+)?carico\s+di\s+lavoro/i,
+      /mostrami\s+(?:le\s+statistiche\s+mensili|l'analisi\s+delle\s+attività)/i,
+      /quali\s+pratiche\s+sono\s+in\s+ritardo/i,
+      /qual\s+è\s+(?:la\s+mia\s+)?produttività/i,
+      /mostrami\s+i\s+trend\s+delle\s+scadenze/i,
+      /quale\s+(?:cliente|pratica)\s+richiede\s+più\s+attenzione/i,
+      /mostrami\s+(?:l'|gli\s+)?analisi\s+(?:dei\s+)?(.+)/i
+    ],
+    
+    // NUOVI PATTERN FASE 1 - OPERATIVE
+    cosa_fare: [
+      /cosa\s+devo\s+fare\s+(?:oggi|ora)/i,
+      /qual\s+è\s+(?:la\s+mia\s+)?prossima\s+attività/i,
+      /quali\s+sono\s+(?:le\s+mie\s+)?priorità/i,
+      /cosa\s+è\s+più\s+urgente/i,
+      /quale\s+attività\s+devo\s+fare\s+prima/i,
+      /mostrami\s+(?:la\s+mia\s+)?agenda/i,
+      /qual\s+è\s+(?:il\s+mio\s+)?piano\s+per\s+oggi/i,
+      /cosa\s+devo\s+preparare/i,
+      /quali\s+documenti\s+devo\s+preparare/i,
+      /mostrami\s+(?:la\s+mia\s+)?to-do\s+list/i,
+      /qual\s+è\s+(?:la\s+mia\s+)?prossima\s+priorità/i,
+      /cosa\s+non\s+posso\s+dimenticare/i
+    ],
+    
+    pianificazione: [
+      /come\s+organizzo\s+(?:la\s+settimana|il\s+calendario)/i,
+      /qual\s+è\s+(?:il\s+mio\s+)?calendario/i,
+      /come\s+distribuisco\s+(?:il\s+)?carico\s+di\s+lavoro/i,
+      /quali\s+appuntamenti\s+posso\s+spostare/i,
+      /come\s+ottimizzo\s+il\s+tempo/i,
+      /mostrami\s+(?:la\s+)?pianificazione/i,
+      /qual\s+è\s+(?:il\s+mio\s+)?schedule/i,
+      /come\s+organizzo\s+le\s+priorità/i,
+      /mostrami\s+(?:il\s+)?piano\s+settimanale/i,
+      /come\s+gestisco\s+le\s+scadenze/i,
+      /come\s+pianifico\s+(?:la\s+)?settimana/i,
+      /mostrami\s+(?:la\s+)?strategia\s+(?:per\s+)?(.+)/i
+    ],
+    
+    // NUOVI PATTERN FASE 1 - EMERGENZE
+    emergenze: [
+      /cosa\s+è\s+(?:scaduto\s+oggi|scaduto)/i,
+      /quali\s+sono\s+(?:le\s+)?emergenze/i,
+      /cosa\s+devo\s+fare\s+subito/i,
+      /quali\s+scadenze\s+ho\s+perso/i,
+      /mostrami\s+le\s+attività\s+critiche/i,
+      /cosa\s+richiede\s+attenzione\s+immediata/i,
+      /quali\s+sono\s+(?:le\s+)?priorità\s+assolute/i,
+      /mostrami\s+(?:le\s+)?situazioni\s+urgenti/i,
+      /cosa\s+non\s+posso\s+rimandare/i,
+      /quali\s+sono\s+i\s+rischi\s+imminenti/i,
+      /cosa\s+è\s+(?:critico|urgente|importante)/i,
+      /mostrami\s+(?:le\s+)?emergenze\s+(?:di\s+oggi|questa\s+settimana)/i
+    ],
+    
+    controlli: [
+      /ho\s+dimenticato\s+qualcosa/i,
+      /cosa\s+devo\s+controllare/i,
+      /quali\s+verifiche\s+devo\s+fare/i,
+      /mostrami\s+(?:i\s+)?controlli\s+da\s+fare/i,
+      /ho\s+tutto\s+sotto\s+controllo/i,
+      /quali\s+sono\s+(?:i\s+)?punti\s+critici/i,
+      /mostrami\s+(?:le\s+)?verifiche\s+urgenti/i,
+      /cosa\s+devo\s+monitorare/i,
+      /quali\s+sono\s+(?:i\s+)?rischi/i,
+      /mostrami\s+(?:lo\s+)?stato\s+generale/i,
+      /cosa\s+devo\s+verificare/i,
+      /mostrami\s+(?:i\s+)?controlli\s+(?:di\s+)?(.+)/i
     ]
   }
 

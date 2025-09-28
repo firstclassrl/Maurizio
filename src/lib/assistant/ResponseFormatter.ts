@@ -27,6 +27,38 @@ export class ResponseFormatter {
         return this.formatRicorsi(result.data || [])
       case 'pagamenti':
         return this.formatPagamenti(result.data || [])
+      case 'scadenze_imminenti':
+        return this.formatScadenzeImminenti(result.data || [])
+      case 'udienze_appuntamenti':
+        return this.formatUdienzeAppuntamenti(result.data || [])
+      case 'calcoli_termini':
+        return this.formatCalcoliTermini(result.data)
+      case 'clienti_info':
+        return this.formatClientiInfo(result.data || [])
+      case 'ricerca_clienti':
+        return this.formatRicercaClienti(result.data || [])
+      case 'pratiche_info':
+        return this.formatPraticheInfo(result.data || [])
+      case 'attivita_pratica':
+        return this.formatAttivitaPratica(result.data || [])
+      case 'filtri_temporali':
+        return this.formatFiltriTemporali(result.data || [])
+      case 'filtri_stato':
+        return this.formatFiltriStato(result.data || [])
+      case 'filtri_categoria':
+        return this.formatFiltriCategoria(result.data || [])
+      case 'contatori':
+        return this.formatContatori(result.data)
+      case 'analisi':
+        return this.formatAnalisi(result.data || [])
+      case 'cosa_fare':
+        return this.formatCosaFare(result.data || [])
+      case 'pianificazione':
+        return this.formatPianificazione(result.data || [])
+      case 'emergenze':
+        return this.formatEmergenze(result.data || [])
+      case 'controlli':
+        return this.formatControlli(result.data || [])
       case 'generale':
         return this.formatGeneral(result.data || [])
       default:
@@ -223,6 +255,395 @@ export class ResponseFormatter {
       
       if (pagamento.note) {
         response += '   📝 Note: ' + pagamento.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  // NUOVI FORMATTER FASE 1 - TEMPORALI
+  private formatScadenzeImminenti(scadenze: any[]): string {
+    if (scadenze.length === 0) {
+      return '📅 Nessuna scadenza imminente trovata.'
+    }
+
+    let response = `📅 **Scadenze Imminenti (${scadenze.length} trovate):**\n\n`
+    
+    scadenze.forEach((scadenza, index) => {
+      const practice = scadenza.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(scadenza.data).toLocaleDateString('it-IT')
+      const time = scadenza.ora || 'Orario non specificato'
+      const isUrgent = new Date(scadenza.data) <= new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 giorni
+      
+      response += (index + 1) + '. **' + (scadenza.attivita || 'Attività') + '**'
+      if (isUrgent) response += ' 🚨'
+      response += '\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (scadenza.note) {
+        response += '   📝 Note: ' + scadenza.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatUdienzeAppuntamenti(udienze: any[]): string {
+    if (udienze.length === 0) {
+      return '⚖️ Nessuna udienza o appuntamento trovato.'
+    }
+
+    let response = `⚖️ **Udienze e Appuntamenti (${udienze.length} trovati):**\n\n`
+    
+    udienze.forEach((udienza, index) => {
+      const practice = udienza.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(udienza.data).toLocaleDateString('it-IT')
+      const time = udienza.ora || 'Orario non specificato'
+      
+      response += (index + 1) + '. **' + (udienza.attivita || 'Appuntamento') + '**\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (udienza.note) {
+        response += '   📝 Note: ' + udienza.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatCalcoliTermini(data: any): string {
+    if (data?.message) {
+      return '🧮 ' + data.message
+    }
+    return '🧮 Calcolo termini non disponibile al momento.'
+  }
+
+  // NUOVI FORMATTER FASE 1 - CLIENTI
+  private formatClientiInfo(clienti: any[]): string {
+    if (clienti.length === 0) {
+      return '👥 Nessun cliente trovato.'
+    }
+
+    let response = `👥 **Lista Clienti (${clienti.length} trovati):**\n\n`
+    
+    clienti.forEach((cliente, index) => {
+      const name = cliente.ragione || (cliente.nome || '') + ' ' + (cliente.cognome || '')
+      const piva = cliente.partita_iva ? ` (P.IVA: ${cliente.partita_iva})` : ''
+      const tipo = cliente.tipologia ? ` - ${cliente.tipologia}` : ''
+      
+      response += (index + 1) + '. **' + name + '**' + piva + tipo + '\n'
+      if (cliente.note) {
+        response += '   📝 ' + cliente.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatRicercaClienti(clienti: any[]): string {
+    if (clienti.length === 0) {
+      return '🔍 Nessun cliente trovato con i criteri di ricerca.'
+    }
+
+    let response = `🔍 **Risultati Ricerca (${clienti.length} trovati):**\n\n`
+    
+    clienti.forEach((cliente, index) => {
+      const name = cliente.ragione || (cliente.nome || '') + ' ' + (cliente.cognome || '')
+      const piva = cliente.partita_iva ? ` (P.IVA: ${cliente.partita_iva})` : ''
+      const tipo = cliente.tipologia ? ` - ${cliente.tipologia}` : ''
+      
+      response += (index + 1) + '. **' + name + '**' + piva + tipo + '\n'
+      if (cliente.note) {
+        response += '   📝 ' + cliente.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  // NUOVI FORMATTER FASE 1 - PRATICHE
+  private formatPraticheInfo(pratiche: any[]): string {
+    if (pratiche.length === 0) {
+      return '📋 Nessuna pratica trovata.'
+    }
+
+    let response = `📋 **Pratiche (${pratiche.length} trovate):**\n\n`
+    
+    pratiche.forEach((pratica, index) => {
+      const client = pratica.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const tipo = pratica.tipo_procedura || 'N/A'
+      
+      response += (index + 1) + '. **Pratica ' + (pratica.numero || 'N/A') + '**\n'
+      response += '   👤 Cliente: ' + clientName + '\n'
+      response += '   ⚖️ Tipo: ' + tipo + '\n'
+      if (pratica.descrizione) {
+        response += '   📝 ' + pratica.descrizione + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatAttivitaPratica(attivita: any[]): string {
+    if (attivita.length === 0) {
+      return '📝 Nessuna attività trovata per questa pratica.'
+    }
+
+    let response = `📝 **Attività Pratica (${attivita.length} trovate):**\n\n`
+    
+    attivita.forEach((att, index) => {
+      const practice = att.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(att.data).toLocaleDateString('it-IT')
+      const time = att.ora || 'Orario non specificato'
+      
+      response += (index + 1) + '. **' + (att.attivita || 'Attività') + '**\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (att.note) {
+        response += '   📝 Note: ' + att.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  // NUOVI FORMATTER FASE 1 - FILTRI
+  private formatFiltriTemporali(attivita: any[]): string {
+    if (attivita.length === 0) {
+      return '📅 Nessuna attività trovata per il periodo richiesto.'
+    }
+
+    let response = `📅 **Attività Filtro Temporale (${attivita.length} trovate):**\n\n`
+    
+    attivita.forEach((att, index) => {
+      const practice = att.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(att.data).toLocaleDateString('it-IT')
+      const time = att.ora || 'Orario non specificato'
+      
+      response += (index + 1) + '. **' + (att.attivita || 'Attività') + '**\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (att.note) {
+        response += '   📝 Note: ' + att.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatFiltriStato(attivita: any[]): string {
+    if (attivita.length === 0) {
+      return '📊 Nessuna attività trovata per lo stato richiesto.'
+    }
+
+    let response = `📊 **Attività Filtro Stato (${attivita.length} trovate):**\n\n`
+    
+    attivita.forEach((att, index) => {
+      const practice = att.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(att.data).toLocaleDateString('it-IT')
+      const stato = att.stato === 'done' ? '✅ Completata' : '⏳ Da fare'
+      
+      response += (index + 1) + '. **' + (att.attivita || 'Attività') + '** ' + stato + '\n'
+      response += '   📅 ' + date + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (att.note) {
+        response += '   📝 Note: ' + att.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatFiltriCategoria(attivita: any[]): string {
+    if (attivita.length === 0) {
+      return '🏷️ Nessuna attività trovata per la categoria richiesta.'
+    }
+
+    let response = `🏷️ **Attività Filtro Categoria (${attivita.length} trovate):**\n\n`
+    
+    attivita.forEach((att, index) => {
+      const practice = att.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(att.data).toLocaleDateString('it-IT')
+      const categoria = att.categoria || 'N/A'
+      
+      response += (index + 1) + '. **' + (att.attivita || 'Attività') + '**\n'
+      response += '   🏷️ Categoria: ' + categoria + '\n'
+      response += '   📅 ' + date + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (att.note) {
+        response += '   📝 Note: ' + att.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  // NUOVI FORMATTER FASE 1 - STATISTICHE
+  private formatContatori(stats: any): string {
+    if (!stats) {
+      return '📊 Statistiche non disponibili.'
+    }
+
+    return `📊 **Statistiche Generali:**\n\n` +
+           `📋 **Pratiche:** ${stats.pratiche}\n` +
+           `👥 **Clienti:** ${stats.clienti}\n` +
+           `📝 **Attività:** ${stats.attivita}\n` +
+           `🚨 **Urgenti:** ${stats.urgenti}\n\n` +
+           `💡 **Consiglio:** ${stats.urgenti > 0 ? 'Hai attività urgenti da completare!' : 'Tutto sotto controllo!'}`
+  }
+
+  private formatAnalisi(attivita: any[]): string {
+    if (attivita.length === 0) {
+      return '📈 Nessuna attività recente per l\'analisi.'
+    }
+
+    let response = `📈 **Analisi Attività Recenti:**\n\n`
+    
+    attivita.slice(0, 5).forEach((att, index) => {
+      const practice = att.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(att.data).toLocaleDateString('it-IT')
+      
+      response += (index + 1) + '. **' + (att.attivita || 'Attività') + '**\n'
+      response += '   📅 ' + date + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      response += '\n'
+    })
+
+    return response
+  }
+
+  // NUOVI FORMATTER FASE 1 - OPERATIVE
+  private formatCosaFare(attivita: any[]): string {
+    if (attivita.length === 0) {
+      return '✅ Non hai attività urgenti da fare oggi!'
+    }
+
+    let response = `📋 **Cosa Devi Fare Oggi:**\n\n`
+    
+    attivita.forEach((att, index) => {
+      const practice = att.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const time = att.ora || 'Orario non specificato'
+      const priority = att.priorita > 7 ? '🔴' : att.priorita > 4 ? '🟡' : '🟢'
+      
+      response += (index + 1) + '. ' + priority + ' **' + (att.attivita || 'Attività') + '**\n'
+      response += '   🕐 ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      if (att.note) {
+        response += '   📝 ' + att.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatPianificazione(attivita: any[]): string {
+    if (attivita.length === 0) {
+      return '📅 Non hai attività pianificate per questa settimana.'
+    }
+
+    let response = `📅 **Pianificazione Settimanale (${attivita.length} attività):**\n\n`
+    
+    attivita.forEach((att, index) => {
+      const practice = att.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(att.data).toLocaleDateString('it-IT')
+      const time = att.ora || 'Orario non specificato'
+      
+      response += (index + 1) + '. **' + (att.attivita || 'Attività') + '**\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (att.note) {
+        response += '   📝 Note: ' + att.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatEmergenze(attivita: any[]): string {
+    if (attivita.length === 0) {
+      return '✅ Nessuna emergenza al momento!'
+    }
+
+    let response = `🚨 **Emergenze (${attivita.length} trovate):**\n\n`
+    
+    attivita.forEach((att, index) => {
+      const practice = att.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(att.data).toLocaleDateString('it-IT')
+      const time = att.ora || 'Orario non specificato'
+      
+      response += (index + 1) + '. 🚨 **' + (att.attivita || 'Attività') + '**\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (att.note) {
+        response += '   📝 Note: ' + att.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatControlli(attivita: any[]): string {
+    if (attivita.length === 0) {
+      return '✅ Tutto sotto controllo! Nessuna attività in ritardo.'
+    }
+
+    let response = `⚠️ **Controlli - Attività in Ritardo (${attivita.length} trovate):**\n\n`
+    
+    attivita.forEach((att, index) => {
+      const practice = att.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(att.data).toLocaleDateString('it-IT')
+      
+      response += (index + 1) + '. ⚠️ **' + (att.attivita || 'Attività') + '**\n'
+      response += '   📅 Scadenza: ' + date + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (att.note) {
+        response += '   📝 Note: ' + att.note + '\n'
       }
       response += '\n'
     })
