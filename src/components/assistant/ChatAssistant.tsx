@@ -140,22 +140,22 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
   }
 
   return (
-    <Card className="w-full h-full max-w-4xl mx-auto flex flex-col">
+    <Card className="w-full h-full max-w-4xl mx-auto flex flex-col bg-slate-900 border-slate-700">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-800">
         <div className="flex items-center gap-2">
-          <Bot className="h-6 w-6 text-blue-600" />
-          <h2 className="text-lg font-semibold">Assistente Legale</h2>
+          <Bot className="h-6 w-6 text-blue-400" />
+          <h2 className="text-lg font-semibold text-white">Assistente Legale AI</h2>
         </div>
         {onClose && (
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={onClose} className="text-slate-300 hover:text-white hover:bg-slate-700">
             ✕
           </Button>
         )}
       </div>
 
       {/* Messages */}
-      <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+      <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -165,12 +165,12 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
               className={`max-w-[80%] rounded-lg px-4 py-2 ${
                 message.type === 'user'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-900'
+                  : 'bg-slate-700 text-slate-200 border border-slate-600'
               }`}
             >
               <div className="flex items-start gap-2">
                 {message.type === 'assistant' && (
-                  <Bot className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <Bot className="h-4 w-4 mt-0.5 flex-shrink-0 text-blue-400" />
                 )}
                 {message.type === 'user' && (
                   <User className="h-4 w-4 mt-0.5 flex-shrink-0" />
@@ -181,7 +181,7 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
               </div>
               <div
                 className={`text-xs mt-1 ${
-                  message.type === 'user' ? 'text-blue-100' : 'text-gray-500'
+                  message.type === 'user' ? 'text-blue-100' : 'text-slate-400'
                 }`}
               >
                 {message.timestamp.toLocaleTimeString('it-IT', {
@@ -195,11 +195,11 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
         
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-lg px-4 py-2">
+            <div className="bg-slate-700 rounded-lg px-4 py-2 border border-slate-600">
               <div className="flex items-center gap-2">
-                <Bot className="h-4 w-4" />
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm text-gray-600">Sto cercando...</span>
+                <Bot className="h-4 w-4 text-blue-400" />
+                <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
+                <span className="text-sm text-slate-300">🤖 Sta pensando...</span>
               </div>
             </div>
           </div>
@@ -209,7 +209,7 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
       </CardContent>
 
       {/* Input */}
-      <div className="p-4 border-t">
+      <div className="p-4 border-t border-slate-700 bg-slate-800">
         <div className="flex gap-2">
           <div className="flex-1 relative">
             <Input
@@ -217,7 +217,7 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Chiedi informazioni su pratiche, udienze, clienti..."
-              className="pr-20"
+              className="pr-20 bg-slate-700 border-slate-600 text-slate-200 placeholder-slate-400 focus:bg-slate-600 focus:border-blue-500"
               disabled={isLoading}
             />
             {isSpeechSupported && (
@@ -227,7 +227,7 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
                 onClick={handleVoiceInput}
                 disabled={isLoading}
                 className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 ${
-                  isListening ? 'text-red-600' : 'text-gray-400'
+                  isListening ? 'text-red-400 hover:text-red-300' : 'text-slate-400 hover:text-slate-300'
                 }`}
               >
                 {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
@@ -237,7 +237,7 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
           <Button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || isLoading}
-            className="px-4"
+            className="px-4 bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Send className="h-4 w-4" />
           </Button>
@@ -249,7 +249,7 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
             variant="outline"
             size="sm"
             onClick={() => setInputValue('Quando è l\'udienza di Alfa Srl?')}
-            className="text-xs"
+            className="text-xs bg-slate-700 border-slate-600 text-slate-200 hover:bg-slate-600"
           >
             📅 Udienze
           </Button>
@@ -257,7 +257,7 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
             variant="outline"
             size="sm"
             onClick={() => setInputValue('Quali pratiche scadono questa settimana?')}
-            className="text-xs"
+            className="text-xs bg-slate-700 border-slate-600 text-slate-200 hover:bg-slate-600"
           >
             ⏰ Scadenze
           </Button>
@@ -265,7 +265,7 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
             variant="outline"
             size="sm"
             onClick={() => setInputValue('Mostrami tutti i clienti')}
-            className="text-xs"
+            className="text-xs bg-slate-700 border-slate-600 text-slate-200 hover:bg-slate-600"
           >
             👥 Clienti
           </Button>

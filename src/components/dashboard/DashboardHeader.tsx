@@ -13,7 +13,9 @@ import {
   Plus, 
   LogOut,
   Scale,
-  Search
+  Search,
+  Settings,
+  Sparkles
 } from 'lucide-react'
 
 interface DashboardHeaderProps {
@@ -28,6 +30,7 @@ interface DashboardHeaderProps {
   onNewTask: () => void
   onLogout: () => void
   tasks: Task[]
+  onAssistantOpen: () => void
 }
 
 export function DashboardHeader({
@@ -41,6 +44,7 @@ export function DashboardHeader({
   onSearchQueryChange,
   onNewTask,
   onLogout,
+  onAssistantOpen,
 }: DashboardHeaderProps) {
   const handlePrevious = () => {
     if (viewMode === 'month') {
@@ -154,16 +158,37 @@ export function DashboardHeader({
             />
           </div>
           
-          <Select value={statusFilter} onValueChange={(value: 'all' | 'todo' | 'done') => onStatusFilterChange(value)}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Filtra per stato" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tutti gli stati</SelectItem>
-              <SelectItem value="todo">Da fare</SelectItem>
-              <SelectItem value="done">Completati</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* Assistente AI */}
+          <div className="relative">
+            <Sparkles className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
+            <Input
+              placeholder="Chiedi al tuo assistente AI..."
+              className="pl-10 bg-blue-50 border-blue-200 text-blue-700 placeholder-blue-400 focus:bg-blue-100 focus:border-blue-300"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  onAssistantOpen()
+                }
+              }}
+            />
+          </div>
+          
+          <div className="flex gap-2">
+            <Select value={statusFilter} onValueChange={(value: 'all' | 'todo' | 'done') => onStatusFilterChange(value)}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Filtra per stato" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tutti gli stati</SelectItem>
+                <SelectItem value="todo">Da fare</SelectItem>
+                <SelectItem value="done">Completati</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            {/* Pulsante Opzioni - solo rotella */}
+            <Button variant="outline" size="sm">
+              <Settings className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

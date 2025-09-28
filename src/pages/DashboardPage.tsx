@@ -8,7 +8,6 @@ import { Card, CardContent } from '../components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog'
 import { TaskDialog } from '../components/dashboard/TaskDialog'
 import { AppuntamentoDialog } from '../components/dashboard/AppuntamentoDialog'
-import { Logo } from '../components/ui/Logo'
 import { Footer } from '../components/ui/Footer'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useToast, ToastContainer } from '../components/ui/Toast'
@@ -24,7 +23,8 @@ import { AddActivityToExistingPractice } from '../components/practice/AddActivit
 import { ChatAssistant } from '../components/assistant/ChatAssistant'
 import { OptionsModal } from '../components/ui/OptionsModal'
 import { SimpleClientForm } from '../components/clients/SimpleClientForm'
-import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText, FolderOpen, MessageCircle } from 'lucide-react'
+import { DashboardHeader } from '../components/dashboard/DashboardHeader'
+import { Plus, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText, FolderOpen } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
 interface DashboardPageProps {
@@ -68,6 +68,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [isAssistantOpen, setIsAssistantOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
+  
+  // Stati per DashboardHeader
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [viewMode, setViewMode] = useState<'month' | 'week'>('month')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'todo' | 'done'>('all')
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const loadData = async () => {
@@ -491,75 +497,62 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-slate-900 shadow-sm border-b">
+      <DashboardHeader
+        currentDate={currentDate}
+        onDateChange={setCurrentDate}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        onNewTask={() => setIsNewActivityWizardOpen(true)}
+        onLogout={handleLogout}
+        tasks={tasks}
+        onAssistantOpen={() => setIsAssistantOpen(true)}
+      />
+      
+      {/* Quick Actions Bar */}
+      <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Logo className="h-8 w-auto" />
-              <h1 className="ml-3 text-xl font-semibold text-white">
-                LexAgenda
-              </h1>
-                </div>
+          <div className="flex items-center space-x-2 py-3">
+            <Button
+              onClick={onNavigateToWeek}
+              className="bg-cyan-500 hover:bg-cyan-600 text-white border-0"
+              size="sm"
+            >
+              <CalendarDays className="h-4 w-4 mr-2" />
+              Settimana
+            </Button>
             
-            <div className="flex items-center space-x-2">
-              <Button
-                onClick={onNavigateToWeek}
-                className="bg-cyan-500 hover:bg-cyan-600 text-white border-0"
-                size="sm"
-              >
-                <CalendarDays className="h-4 w-4 mr-2" />
-                Settimana
-              </Button>
-              
-              <Button
-                onClick={onNavigateToMonth}
-                className="bg-green-600 hover:bg-green-700 text-white border-0"
-                size="sm"
-              >
-                  <Calendar className="h-4 w-4 mr-2" />
-                Mese
-                </Button>
-              
-              <Button
-                onClick={onNavigateToCalcolatore}
-                className="bg-amber-200 hover:bg-amber-300 text-amber-900 border-0"
-                size="sm"
-              >
-                <Calculator className="h-4 w-4 mr-2" />
-                CALCOLATORE
-                </Button>
-              
-              <Button
-                onClick={() => setIsAssistantOpen(true)}
-                variant="outline"
-                size="sm"
-                className="border-blue-300 text-blue-700 hover:bg-blue-50"
-              >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Assistente
-              </Button>
-              
-              <Button
-                onClick={() => setIsOptionsModalOpen(true)}
-                variant="outline"
-                size="sm"
-                className="border-gray-300 text-gray-700 hover:bg-gray-50"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Opzioni
-                </Button>
-              
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                size="sm"
-                className="border-white text-red-400 hover:bg-white hover:text-red-600"
-              >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </Button>
-              </div>
-            </div>
+            <Button
+              onClick={onNavigateToMonth}
+              className="bg-green-600 hover:bg-green-700 text-white border-0"
+              size="sm"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Mese
+            </Button>
+            
+            <Button
+              onClick={onNavigateToCalcolatore}
+              className="bg-amber-200 hover:bg-amber-300 text-amber-900 border-0"
+              size="sm"
+            >
+              <Calculator className="h-4 w-4 mr-2" />
+              CALCOLATORE
+            </Button>
+            
+            <Button
+              onClick={() => setIsOptionsModalOpen(true)}
+              variant="outline"
+              size="sm"
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Opzioni
+            </Button>
+          </div>
         </div>
       </div>
 
