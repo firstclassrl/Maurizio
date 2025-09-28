@@ -61,6 +61,18 @@ export class SupabaseQueryEngine {
           return await this.queryEmergenze(question, userId)
         case 'controlli':
           return await this.queryControlli(question, userId)
+        case 'ricorsi_specializzati':
+          return await this.queryRicorsiSpecializzati(question, userId)
+        case 'pagamenti_specializzati':
+          return await this.queryPagamentiSpecializzati(question, userId)
+        case 'calcoli_avanzati':
+          return await this.queryCalcoliAvanzati(question, userId)
+        case 'termini_processuali':
+          return await this.queryTerminiProcessuali(question, userId)
+        case 'prescrizioni':
+          return await this.queryPrescrizioni(question, userId)
+        case 'decadenze':
+          return await this.queryDecadenze(question, userId)
         case 'generale':
           return await this.queryGeneral(question, userId)
         default:
@@ -952,6 +964,228 @@ export class SupabaseQueryEngine {
       .eq('stato', 'todo')
       .lt('data', format(yesterday, 'yyyy-MM-dd'))
       .order('data', { ascending: true })
+
+    if (error) throw error
+
+    return {
+      type: 'success',
+      data: data || [],
+      count: data?.length || 0
+    }
+  }
+
+  // NUOVI METODI FASE 2 - SPECIALIZZAZIONE
+  private async queryRicorsiSpecializzati(question: ParsedQuestion, userId: string): Promise<QueryResult> {
+    const { cliente, tipo_ricorso } = question.entities
+
+    let query = supabase
+      .from('activities')
+      .select(`
+        *,
+        practices!inner(
+          *,
+          clients!inner(*)
+        )
+      `)
+      .eq('user_id', userId)
+      .ilike('attivita', '%ricorso%')
+
+    if (tipo_ricorso) {
+      query = query.or(`
+        attivita.ilike.%${tipo_ricorso}%,
+        attivita.ilike.%ricorso%
+      `)
+    }
+
+    if (cliente) {
+      query = query.or(`
+        practices.clients.ragione.ilike.%${cliente}%,
+        practices.clients.nome.ilike.%${cliente}%,
+        practices.clients.cognome.ilike.%${cliente}%
+      `)
+    }
+
+    const { data, error } = await query
+      .order('data', { ascending: true })
+      .limit(10)
+
+    if (error) throw error
+
+    return {
+      type: 'success',
+      data: data || [],
+      count: data?.length || 0
+    }
+  }
+
+  private async queryPagamentiSpecializzati(question: ParsedQuestion, userId: string): Promise<QueryResult> {
+    const { cliente, tipo_pagamento, importo } = question.entities
+
+    let query = supabase
+      .from('activities')
+      .select(`
+        *,
+        practices!inner(
+          *,
+          clients!inner(*)
+        )
+      `)
+      .eq('user_id', userId)
+      .ilike('attivita', '%pagamento%')
+
+    if (tipo_pagamento) {
+      query = query.ilike('attivita', `%${tipo_pagamento}%`)
+    }
+
+    if (importo) {
+      query = query.ilike('attivita', `%${importo}%`)
+    }
+
+    if (cliente) {
+      query = query.or(`
+        practices.clients.ragione.ilike.%${cliente}%,
+        practices.clients.nome.ilike.%${cliente}%,
+        practices.clients.cognome.ilike.%${cliente}%
+      `)
+    }
+
+    const { data, error } = await query
+      .order('data', { ascending: true })
+      .limit(10)
+
+    if (error) throw error
+
+    return {
+      type: 'success',
+      data: data || [],
+      count: data?.length || 0
+    }
+  }
+
+  private async queryCalcoliAvanzati(question: ParsedQuestion, _userId: string): Promise<QueryResult> {
+    const { giorni, data_riferimento } = question.entities
+    
+    // Per ora restituiamo un messaggio generico
+    // In futuro integreremo il calcolatore termini avanzato
+    const result = {
+      message: 'Calcolo avanzato non ancora implementato',
+      giorni: giorni || 0,
+      data_riferimento: data_riferimento || format(new Date(), 'dd/MM/yyyy')
+    }
+
+    return {
+      type: 'success',
+      data: result,
+      count: 1
+    }
+  }
+
+  private async queryTerminiProcessuali(question: ParsedQuestion, userId: string): Promise<QueryResult> {
+    const { termine } = question.entities
+    
+    // Query per attività processuali specifiche
+    let query = supabase
+      .from('activities')
+      .select(`
+        *,
+        practices!inner(
+          *,
+          clients!inner(*)
+        )
+      `)
+      .eq('user_id', userId)
+
+    if (termine) {
+      const terminiProcessuali = [
+        'comparsa', 'notifica', 'prova', 'memoria', 'proposta'
+      ]
+      
+      const matchingTermini = terminiProcessuali.filter(t => 
+        termine.toLowerCase().includes(t)
+      )
+      
+      if (matchingTermini.length > 0) {
+        query = query.or(
+          matchingTermini.map(t => `attivita.ilike.%${t}%`).join(',')
+        )
+      }
+    }
+
+    const { data, error } = await query
+      .order('data', { ascending: true })
+      .limit(10)
+
+    if (error) throw error
+
+    return {
+      type: 'success',
+      data: data || [],
+      count: data?.length || 0
+    }
+  }
+
+  private async queryPrescrizioni(question: ParsedQuestion, userId: string): Promise<QueryResult> {
+    const { cliente } = question.entities
+
+    let query = supabase
+      .from('activities')
+      .select(`
+        *,
+        practices!inner(
+          *,
+          clients!inner(*)
+        )
+      `)
+      .eq('user_id', userId)
+      .ilike('attivita', '%prescrizione%')
+
+    if (cliente) {
+      query = query.or(`
+        practices.clients.ragione.ilike.%${cliente}%,
+        practices.clients.nome.ilike.%${cliente}%,
+        practices.clients.cognome.ilike.%${cliente}%
+      `)
+    }
+
+    const { data, error } = await query
+      .order('data', { ascending: true })
+      .limit(10)
+
+    if (error) throw error
+
+    return {
+      type: 'success',
+      data: data || [],
+      count: data?.length || 0
+    }
+  }
+
+  private async queryDecadenze(question: ParsedQuestion, userId: string): Promise<QueryResult> {
+    const { cliente } = question.entities
+
+    let query = supabase
+      .from('activities')
+      .select(`
+        *,
+        practices!inner(
+          *,
+          clients!inner(*)
+        )
+      `)
+      .eq('user_id', userId)
+      .ilike('attivita', '%decadenza%')
+
+    if (cliente) {
+      query = query.or(`
+        practices.clients.ragione.ilike.%${cliente}%,
+        practices.clients.nome.ilike.%${cliente}%,
+        practices.clients.cognome.ilike.%${cliente}%
+      `)
+    }
+
+    const { data, error } = await query
+      .order('data', { ascending: true })
+      .limit(10)
 
     if (error) throw error
 

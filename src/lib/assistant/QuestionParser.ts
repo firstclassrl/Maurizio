@@ -1,5 +1,5 @@
 export interface ParsedQuestion {
-  type: 'udienza' | 'scadenza' | 'cliente' | 'pratica' | 'attivita' | 'appuntamento' | 'ricorso' | 'pagamenti' | 'scadenze_imminenti' | 'udienze_appuntamenti' | 'calcoli_termini' | 'clienti_info' | 'ricerca_clienti' | 'pratiche_info' | 'attivita_pratica' | 'filtri_temporali' | 'filtri_stato' | 'filtri_categoria' | 'contatori' | 'analisi' | 'cosa_fare' | 'pianificazione' | 'emergenze' | 'controlli' | 'generale'
+  type: 'udienza' | 'scadenza' | 'cliente' | 'pratica' | 'attivita' | 'appuntamento' | 'ricorso' | 'pagamenti' | 'scadenze_imminenti' | 'udienze_appuntamenti' | 'calcoli_termini' | 'clienti_info' | 'ricerca_clienti' | 'pratiche_info' | 'attivita_pratica' | 'filtri_temporali' | 'filtri_stato' | 'filtri_categoria' | 'contatori' | 'analisi' | 'cosa_fare' | 'pianificazione' | 'emergenze' | 'controlli' | 'ricorsi_specializzati' | 'pagamenti_specializzati' | 'calcoli_avanzati' | 'termini_processuali' | 'prescrizioni' | 'decadenze' | 'generale'
   entities: {
     cliente?: string
     pratica?: string
@@ -9,6 +9,12 @@ export interface ParsedQuestion {
     numero?: string
     tipo?: string
     filtro?: string
+    termine?: string
+    giorni?: number
+    data_riferimento?: string
+    tipo_ricorso?: string
+    tipo_pagamento?: string
+    importo?: string
   }
   originalText: string
 }
@@ -270,6 +276,89 @@ export class QuestionParser {
       /mostrami\s+(?:lo\s+)?stato\s+generale/i,
       /cosa\s+devo\s+verificare/i,
       /mostrami\s+(?:i\s+)?controlli\s+(?:di\s+)?(.+)/i
+    ],
+
+    // NUOVI PATTERN FASE 2 - SPECIALIZZAZIONE RICORSI
+    ricorsi_specializzati: [
+      /quando\s+(?:devo|faccio|fare)\s+(?:il\s+)?ricorso\s+(?:per\s+l'|per\s+il\s+)?(appello|opposizione|cassazione)\s+(?:di|per)\s+(.+)/i,
+      /ricorso\s+(?:per\s+l'|per\s+il\s+)?(appello|opposizione|cassazione)\s+(?:di|per)\s+(.+)/i,
+      /quando\s+scade\s+(?:il\s+)?ricorso\s+(?:per\s+l'|per\s+il\s+)?(appello|opposizione|cassazione)\s+(?:di|per)\s+(.+)/i,
+      /termine\s+(?:per\s+)?(?:il\s+)?ricorso\s+(?:per\s+l'|per\s+il\s+)?(appello|opposizione|cassazione)/i,
+      /quanto\s+tempo\s+ho\s+per\s+(?:il\s+)?ricorso\s+(?:per\s+l'|per\s+il\s+)?(appello|opposizione|cassazione)/i,
+      /quando\s+devo\s+depositare\s+(?:il\s+)?ricorso\s+(?:per\s+l'|per\s+il\s+)?(appello|opposizione|cassazione)/i,
+      /scadenza\s+(?:del\s+)?ricorso\s+(?:per\s+l'|per\s+il\s+)?(appello|opposizione|cassazione)/i,
+      /ricorso\s+(?:in\s+)?(appello|opposizione|cassazione)\s+(?:di|per)\s+(.+)/i,
+      /quando\s+(?:è|ha)\s+(?:il\s+)?ricorso\s+(?:per\s+l'|per\s+il\s+)?(appello|opposizione|cassazione)\s+(?:di|per)\s+(.+)/i,
+      /mostrami\s+(?:i\s+)?ricorsi\s+(?:in\s+)?(appello|opposizione|cassazione)/i
+    ],
+
+    // NUOVI PATTERN FASE 2 - SPECIALIZZAZIONE PAGAMENTI
+    pagamenti_specializzati: [
+      /quando\s+(?:devo|faccio)\s+(?:il\s+)?pagamento\s+(?:di|per)\s+(.+)/i,
+      /scadenza\s+(?:del\s+)?pagamento\s+(?:di|per)\s+(.+)/i,
+      /quanto\s+(?:devo|faccio)\s+pagare\s+(?:per|di)\s+(.+)/i,
+      /importo\s+(?:del\s+)?pagamento\s+(?:di|per)\s+(.+)/i,
+      /quando\s+scade\s+(?:il\s+)?pagamento\s+(?:di|per)\s+(.+)/i,
+      /pagamento\s+(?:di|per)\s+(.+)/i,
+      /quando\s+(?:è|ha)\s+(?:il\s+)?pagamento\s+(?:di|per)\s+(.+)/i,
+      /mostrami\s+(?:i\s+)?pagamenti\s+(?:di|per)\s+(.+)/i,
+      /quale\s+è\s+(?:l'|il\s+)?importo\s+(?:del\s+)?pagamento\s+(?:di|per)\s+(.+)/i,
+      /quando\s+devo\s+pagare\s+(?:per|di)\s+(.+)/i
+    ],
+
+    // NUOVI PATTERN FASE 2 - CALCOLI AVANZATI
+    calcoli_avanzati: [
+      /calcola\s+(\d+)\s+giorni?\s+(?:da\s+oggi|dal\s+(\d{1,2}\/\d{1,2}\/\d{4}))/i,
+      /calcola\s+(\d+)\s+mesi?\s+(?:da\s+oggi|dal\s+(\d{1,2}\/\d{1,2}\/\d{4}))/i,
+      /calcola\s+(\d+)\s+anni?\s+(?:da\s+oggi|dal\s+(\d{1,2}\/\d{1,2}\/\d{4}))/i,
+      /quando\s+scade\s+(?:tra\s+)?(\d+)\s+(?:giorni?|mesi?|anni?)/i,
+      /data\s+(?:di\s+)?scadenza\s+(?:tra\s+)?(\d+)\s+(?:giorni?|mesi?|anni?)/i,
+      /quando\s+è\s+(?:il\s+)?(\d{1,2}\/\d{1,2}\/\d{4})\s+\+\s+(\d+)\s+(?:giorni?|mesi?|anni?)/i,
+      /calcola\s+(?:la\s+)?data\s+(?:di\s+)?scadenza\s+(?:tra\s+)?(\d+)\s+(?:giorni?|mesi?|anni?)/i,
+      /quando\s+scade\s+(?:il\s+)?(\d{1,2}\/\d{1,2}\/\d{4})\s+\+\s+(\d+)\s+(?:giorni?|mesi?|anni?)/i,
+      /calcola\s+(?:la\s+)?data\s+(?:di\s+)?scadenza\s+(?:dal\s+)?(\d{1,2}\/\d{1,2}\/\d{4})\s+\+\s+(\d+)\s+(?:giorni?|mesi?|anni?)/i,
+      /quando\s+è\s+(?:il\s+)?(\d{1,2}\/\d{1,2}\/\d{4})\s+\+\s+(\d+)\s+(?:giorni?|mesi?|anni?)/i
+    ],
+
+    // NUOVI PATTERN FASE 2 - TERMINI PROCESSUALI
+    termini_processuali: [
+      /termine\s+(?:per\s+)?(?:la\s+)?comparsa\s+(?:conclusionale|di\s+risposta)/i,
+      /quando\s+scade\s+(?:la\s+)?comparsa\s+(?:conclusionale|di\s+risposta)/i,
+      /termine\s+(?:per\s+)?(?:la\s+)?notifica\s+(?:di\s+)?(?:atto|sentenza)/i,
+      /quando\s+devo\s+notificare\s+(?:l'|la\s+)?(?:atto|sentenza)/i,
+      /termine\s+(?:per\s+)?(?:l'|la\s+)?prova\s+(?:testimoniale|peritale|documentale)/i,
+      /quando\s+scade\s+(?:la\s+)?prova\s+(?:testimoniale|peritale|documentale)/i,
+      /termine\s+(?:per\s+)?(?:l'|la\s+)?memoria\s+(?:di\s+)?(?:replica|trittico)/i,
+      /quando\s+devo\s+depositare\s+(?:la\s+)?memoria\s+(?:di\s+)?(?:replica|trittico)/i,
+      /termine\s+(?:per\s+)?(?:l'|la\s+)?proposta\s+(?:di\s+)?(?:concordato|composizione)/i,
+      /quando\s+scade\s+(?:la\s+)?proposta\s+(?:di\s+)?(?:concordato|composizione)/i
+    ],
+
+    // NUOVI PATTERN FASE 2 - PRESCRIZIONI E DECADENZE
+    prescrizioni: [
+      /quando\s+scade\s+(?:la\s+)?prescrizione\s+(?:di|per)\s+(.+)/i,
+      /termine\s+(?:di\s+)?prescrizione\s+(?:di|per)\s+(.+)/i,
+      /quando\s+è\s+(?:la\s+)?prescrizione\s+(?:di|per)\s+(.+)/i,
+      /prescrizione\s+(?:di|per)\s+(.+)/i,
+      /quanto\s+tempo\s+ho\s+per\s+(?:la\s+)?prescrizione\s+(?:di|per)\s+(.+)/i,
+      /scadenza\s+(?:della\s+)?prescrizione\s+(?:di|per)\s+(.+)/i,
+      /quando\s+devo\s+fare\s+(?:la\s+)?prescrizione\s+(?:di|per)\s+(.+)/i,
+      /mostrami\s+(?:le\s+)?prescrizioni\s+(?:di|per)\s+(.+)/i,
+      /quale\s+è\s+(?:il\s+)?termine\s+(?:di\s+)?prescrizione\s+(?:di|per)\s+(.+)/i,
+      /quando\s+scade\s+(?:la\s+)?prescrizione\s+(?:breve|ordinaria|lunga)/i
+    ],
+
+    decadenze: [
+      /quando\s+scade\s+(?:la\s+)?decadenza\s+(?:di|per)\s+(.+)/i,
+      /termine\s+(?:di\s+)?decadenza\s+(?:di|per)\s+(.+)/i,
+      /quando\s+è\s+(?:la\s+)?decadenza\s+(?:di|per)\s+(.+)/i,
+      /decadenza\s+(?:di|per)\s+(.+)/i,
+      /quanto\s+tempo\s+ho\s+per\s+(?:la\s+)?decadenza\s+(?:di|per)\s+(.+)/i,
+      /scadenza\s+(?:della\s+)?decadenza\s+(?:di|per)\s+(.+)/i,
+      /quando\s+devo\s+fare\s+(?:la\s+)?decadenza\s+(?:di|per)\s+(.+)/i,
+      /mostrami\s+(?:le\s+)?decadenze\s+(?:di|per)\s+(.+)/i,
+      /quale\s+è\s+(?:il\s+)?termine\s+(?:di\s+)?decadenza\s+(?:di|per)\s+(.+)/i,
+      /quando\s+scade\s+(?:la\s+)?decadenza\s+(?:breve|ordinaria|lunga)/i
     ]
   }
 

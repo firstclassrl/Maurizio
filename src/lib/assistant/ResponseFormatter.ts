@@ -57,10 +57,22 @@ export class ResponseFormatter {
         return this.formatPianificazione(result.data || [])
       case 'emergenze':
         return this.formatEmergenze(result.data || [])
-      case 'controlli':
-        return this.formatControlli(result.data || [])
-      case 'generale':
-        return this.formatGeneral(result.data || [])
+        case 'controlli':
+          return this.formatControlli(result.data || [])
+        case 'ricorsi_specializzati':
+          return this.formatRicorsiSpecializzati(result.data || [])
+        case 'pagamenti_specializzati':
+          return this.formatPagamentiSpecializzati(result.data || [])
+        case 'calcoli_avanzati':
+          return this.formatCalcoliAvanzati(result.data)
+        case 'termini_processuali':
+          return this.formatTerminiProcessuali(result.data || [])
+        case 'prescrizioni':
+          return this.formatPrescrizioni(result.data || [])
+        case 'decadenze':
+          return this.formatDecadenze(result.data || [])
+        case 'generale':
+          return this.formatGeneral(result.data || [])
       default:
         return this.formatGeneral(result.data || [])
     }
@@ -668,6 +680,168 @@ export class ResponseFormatter {
       response += (index + 1) + '. ' + (item.attivita || 'Attività') + '\n'
       response += '   📅 ' + activityDate + ' alle ' + time + '\n'
       response += '   👤 ' + clientName + ' (Pratica: ' + (practice?.numero || 'N/A') + ')\n\n'
+    })
+
+    return response
+  }
+
+  // NUOVI FORMATTER FASE 2 - SPECIALIZZAZIONE
+  private formatRicorsiSpecializzati(ricorsi: any[]): string {
+    if (ricorsi.length === 0) {
+      return '⚖️ Nessun ricorso specializzato trovato.'
+    }
+
+    let response = `⚖️ **Ricorsi Specializzati (${ricorsi.length} trovati):**\n\n`
+    
+    ricorsi.forEach((ricorso, index) => {
+      const practice = ricorso.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(ricorso.data).toLocaleDateString('it-IT')
+      const time = ricorso.ora || 'Orario non specificato'
+      const isUrgent = new Date(ricorso.data) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 giorni
+      
+      response += (index + 1) + '. **' + (ricorso.attivita || 'Ricorso') + '**'
+      if (isUrgent) response += ' 🚨'
+      response += '\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (ricorso.note) {
+        response += '   📝 Note: ' + ricorso.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatPagamentiSpecializzati(pagamenti: any[]): string {
+    if (pagamenti.length === 0) {
+      return '💰 Nessun pagamento specializzato trovato.'
+    }
+
+    let response = `💰 **Pagamenti Specializzati (${pagamenti.length} trovati):**\n\n`
+    
+    pagamenti.forEach((pagamento, index) => {
+      const practice = pagamento.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(pagamento.data).toLocaleDateString('it-IT')
+      const time = pagamento.ora || 'Orario non specificato'
+      const isUrgent = new Date(pagamento.data) <= new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 giorni
+      
+      response += (index + 1) + '. **' + (pagamento.attivita || 'Pagamento') + '**'
+      if (isUrgent) response += ' 🚨'
+      response += '\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (pagamento.note) {
+        response += '   📝 Note: ' + pagamento.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatCalcoliAvanzati(data: any): string {
+    if (data?.message) {
+      return '🧮 **Calcolo Avanzato:**\n\n' + 
+             '📊 ' + data.message + '\n' +
+             '📅 Data riferimento: ' + data.data_riferimento + '\n' +
+             '📈 Giorni: ' + data.giorni + '\n\n' +
+             '💡 **Nota:** Il calcolatore termini avanzato sarà implementato nella prossima versione!'
+    }
+    return '🧮 Calcolo avanzato non disponibile al momento.'
+  }
+
+  private formatTerminiProcessuali(termini: any[]): string {
+    if (termini.length === 0) {
+      return '⚖️ Nessun termine processuale trovato.'
+    }
+
+    let response = `⚖️ **Termini Processuali (${termini.length} trovati):**\n\n`
+    
+    termini.forEach((termine, index) => {
+      const practice = termine.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(termine.data).toLocaleDateString('it-IT')
+      const time = termine.ora || 'Orario non specificato'
+      const isCritical = new Date(termine.data) <= new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) // 2 giorni
+      
+      response += (index + 1) + '. **' + (termine.attivita || 'Termine Processuale') + '**'
+      if (isCritical) response += ' ⚠️'
+      response += '\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (termine.note) {
+        response += '   📝 Note: ' + termine.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatPrescrizioni(prescrizioni: any[]): string {
+    if (prescrizioni.length === 0) {
+      return '⏰ Nessuna prescrizione trovata.'
+    }
+
+    let response = `⏰ **Prescrizioni (${prescrizioni.length} trovate):**\n\n`
+    
+    prescrizioni.forEach((prescrizione, index) => {
+      const practice = prescrizione.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(prescrizione.data).toLocaleDateString('it-IT')
+      const time = prescrizione.ora || 'Orario non specificato'
+      const isUrgent = new Date(prescrizione.data) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 giorni
+      
+      response += (index + 1) + '. **' + (prescrizione.attivita || 'Prescrizione') + '**'
+      if (isUrgent) response += ' ⚠️'
+      response += '\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (prescrizione.note) {
+        response += '   📝 Note: ' + prescrizione.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
+  }
+
+  private formatDecadenze(decadenze: any[]): string {
+    if (decadenze.length === 0) {
+      return '⏳ Nessuna decadenza trovata.'
+    }
+
+    let response = `⏳ **Decadenze (${decadenze.length} trovate):**\n\n`
+    
+    decadenze.forEach((decadenza, index) => {
+      const practice = decadenza.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(decadenza.data).toLocaleDateString('it-IT')
+      const time = decadenza.ora || 'Orario non specificato'
+      const isCritical = new Date(decadenza.data) <= new Date(Date.now() + 5 * 24 * 60 * 60 * 1000) // 5 giorni
+      
+      response += (index + 1) + '. **' + (decadenza.attivita || 'Decadenza') + '**'
+      if (isCritical) response += ' 🚨'
+      response += '\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      if (decadenza.note) {
+        response += '   📝 Note: ' + decadenza.note + '\n'
+      }
+      response += '\n'
     })
 
     return response
