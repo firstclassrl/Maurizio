@@ -70,11 +70,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
   
-  // Stati per DashboardHeader
-  const [currentDate, setCurrentDate] = useState(new Date())
-  const [viewMode, setViewMode] = useState<'month' | 'week'>('month')
-  const [statusFilter, setStatusFilter] = useState<'all' | 'todo' | 'done'>('all')
-  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const loadData = async () => {
@@ -488,28 +483,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     setIsClientFormOpen(true)
   }
 
-  const handleLogout = async () => {
-    try {
-    await supabase.auth.signOut()
-    } catch (error) {
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <DashboardHeader
-        currentDate={currentDate}
-        onDateChange={setCurrentDate}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
-        searchQuery={searchQuery}
-        onSearchQueryChange={setSearchQuery}
-        onNewTask={() => setIsNewActivityWizardOpen(true)}
-        onLogout={handleLogout}
-        tasks={tasks}
         onAssistantOpen={(query) => {
           if (query) {
             setInitialAssistantQuery(query)
