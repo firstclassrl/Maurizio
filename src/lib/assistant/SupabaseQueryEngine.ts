@@ -425,11 +425,7 @@ export class SupabaseQueryEngine {
 
     if (cliente) {
       // Try multiple search strategies for client name
-      query = query.or(`
-        practices.clients.ragione.ilike.%${cliente}%,
-        practices.clients.nome.ilike.%${cliente}%,
-        practices.clients.cognome.ilike.%${cliente}%
-      `)
+      query = query.or(`practices.clients.ragione.ilike.%${cliente}%,practices.clients.nome.ilike.%${cliente}%,practices.clients.cognome.ilike.%${cliente}%`)
     }
 
     const { data, error } = await query
@@ -1022,25 +1018,23 @@ export class SupabaseQueryEngine {
       .or('attivita.ilike.%ricorso%,attivita.ilike.%ricordo%')
 
     if (tipo_ricorso) {
-      query = query.or(`
-        attivita.ilike.%${tipo_ricorso}%,
-        attivita.ilike.%ricorso%
-      `)
+      query = query.or(`attivita.ilike.%${tipo_ricorso}%,attivita.ilike.%ricorso%`)
     }
 
     if (cliente) {
-      query = query.or(`
-        practices.clients.ragione.ilike.%${cliente}%,
-        practices.clients.nome.ilike.%${cliente}%,
-        practices.clients.cognome.ilike.%${cliente}%
-      `)
+      query = query.or(`practices.clients.ragione.ilike.%${cliente}%,practices.clients.nome.ilike.%${cliente}%,practices.clients.cognome.ilike.%${cliente}%`)
     }
 
     const { data, error } = await query
       .order('data', { ascending: true })
       .limit(10)
 
-    if (error) throw error
+    if (error) {
+      console.error('Query error in queryRicorsiSpecializzati:', error)
+      throw error
+    }
+
+    console.log('Query ricorsi specializzati result:', { data, count: data?.length || 0, cliente, tipo_ricorso })
 
     return {
       type: 'success',
