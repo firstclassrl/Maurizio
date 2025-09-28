@@ -21,9 +21,10 @@ import { PartyFilter } from '../components/ui/PartyFilter'
 import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
+import { ChatAssistant } from '../components/assistant/ChatAssistant'
 import { OptionsModal } from '../components/ui/OptionsModal'
 import { SimpleClientForm } from '../components/clients/SimpleClientForm'
-import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText, FolderOpen } from 'lucide-react'
+import { Plus, LogOut, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText, FolderOpen, MessageCircle } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
 interface DashboardPageProps {
@@ -64,6 +65,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [isNewActivityWizardOpen, setIsNewActivityWizardOpen] = useState(false)
   const [isAddActivityModalOpen, setIsAddActivityModalOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false)
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
 
@@ -526,6 +528,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 <Calculator className="h-4 w-4 mr-2" />
                 CALCOLATORE
                 </Button>
+              
+              <Button
+                onClick={() => setIsAssistantOpen(true)}
+                variant="outline"
+                size="sm"
+                className="border-blue-300 text-blue-700 hover:bg-blue-50"
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Assistente
+              </Button>
               
               <Button
                 onClick={() => setIsOptionsModalOpen(true)}
@@ -991,6 +1003,18 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onSuccess={handleClientFormSuccess}
         client={selectedClient}
       />
+
+      {/* Chat Assistant Modal */}
+      {isAssistantOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-4xl h-[80vh] bg-white rounded-lg shadow-xl">
+            <ChatAssistant
+              userId={user.id}
+              onClose={() => setIsAssistantOpen(false)}
+            />
+          </div>
+        </div>
+      )}
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
       
