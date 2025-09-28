@@ -14,4 +14,35 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separazione chunk per ottimizzazione
+          'vendor': ['react', 'react-dom'],
+          'supabase': ['@supabase/supabase-js'],
+          'ui': ['lucide-react'],
+          'utils': ['date-fns', 'date-fns/locale']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000,
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      '@supabase/supabase-js',
+      'lucide-react',
+      'date-fns'
+    ]
+  }
 })

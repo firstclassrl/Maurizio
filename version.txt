@@ -1,4 +1,4 @@
-v3.5.0-beta - Versione finale ottimizzata per produzione
+v3.6.0-final - Versione finale ottimizzata per produzione
 Timestamp: 2025-01-25 22:30:00
 Commit: 436ca76 (versione finale)
 

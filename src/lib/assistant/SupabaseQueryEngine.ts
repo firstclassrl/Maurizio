@@ -1,4 +1,5 @@
 import { supabase } from '../supabase'
+import { performanceMonitor } from '../performance-monitor'
 import { ParsedQuestion } from './QuestionParser'
 import { format } from 'date-fns'
 
@@ -11,6 +12,8 @@ export interface QueryResult {
 
 export class SupabaseQueryEngine {
   async execute(question: ParsedQuestion, userId: string): Promise<QueryResult> {
+    const endTracking = performanceMonitor.startQuery(question.type)
+    
     try {
       switch (question.type) {
         case 'udienza':
@@ -103,10 +106,13 @@ export class SupabaseQueryEngine {
       }
     } catch (error) {
       console.error('Query execution error:', error)
+      endTracking() // Chiudi il tracking anche in caso di errore
       return {
         type: 'error',
         message: 'Errore durante l\'esecuzione della query'
       }
+    } finally {
+      endTracking() // Assicura che il tracking sia sempre chiuso
     }
   }
 
