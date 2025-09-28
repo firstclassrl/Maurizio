@@ -1,10 +1,11 @@
 export interface ParsedQuestion {
-  type: 'udienza' | 'scadenza' | 'cliente' | 'pratica' | 'attivita' | 'appuntamento' | 'generale'
+  type: 'udienza' | 'scadenza' | 'cliente' | 'pratica' | 'attivita' | 'appuntamento' | 'ricorso' | 'generale'
   entities: {
     cliente?: string
     pratica?: string
     data?: string
     periodo?: 'oggi' | 'domani' | 'settimana' | 'mese'
+    attivita?: string
   }
   originalText: string
 }
@@ -24,7 +25,10 @@ export class QuestionParser {
     cliente: [
       /chi\s+(?:è\s+)?(?:il\s+)?cliente\s+(?:della\s+)?(?:pratica\s+)?(.+)/i,
       /cliente\s+(?:della\s+)?(?:pratica\s+)?(.+)/i,
-      /informazioni\s+(?:sul\s+)?(?:cliente\s+)?(.+)/i
+      /informazioni\s+(?:sul\s+)?(?:cliente\s+)?(.+)/i,
+      /ricorso\s+(?:per|di)\s+(?:il\s+)?cliente\s+(.+)/i,
+      /quando\s+(?:devo|faccio)\s+(?:fare\s+)?ricorso\s+(?:per|di)\s+(.+)/i,
+      /ricorso\s+(?:per|di)\s+(.+)/i
     ],
     pratica: [
       /pratica\s+(.+)/i,
@@ -40,6 +44,12 @@ export class QuestionParser {
       /appuntamento\s+(?:di|con)\s+(.+)/i,
       /quando\s+(?:ho|devo)\s+(?:un\s+)?appuntamento\s+(?:con|di)\s+(.+)/i,
       /incontro\s+(?:con|di)\s+(.+)/i
+    ],
+    ricorso: [
+      /quando\s+(?:devo|faccio|fare)\s+(?:fare\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
+      /ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
+      /quando\s+(?:scade|è in scadenza)\s+(?:il\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
+      /scadenza\s+(?:del\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i
     ]
   }
 
@@ -73,12 +83,27 @@ export class QuestionParser {
           if (match[1]) {
             const entity = match[1].trim()
             
-            // Determine if it's a client name or practice number
-            if (/^\d{4}\/\d{3}$/.test(entity) || /^pratica\s+\d{4}\/\d{3}$/i.test(entity)) {
-              entities.pratica = entity.replace(/^pratica\s+/i, '')
-            } else {
-              entities.cliente = entity
-            }
+          // Determine if it's a client name or practice number
+          if (/^\d{4}\/\d{3}$/.test(entity) || /^pratica\s+\d{4}\/\d{3}$/i.test(entity)) {
+            entities.pratica = entity.replace(/^pratica\s+/i, '')
+          } else {
+            // Clean up client name - remove common words
+            const cleanName = entity
+              .replace(/\b(il\s+|la\s+|lo\s+|i\s+|le\s+|gli\s+)\b/gi, '')
+              .replace(/\b(cliente|cliente\s+)\b/gi, '')
+              .replace(/\b(per|di|del|della|dei|delle)\b/gi, '')
+              .trim()
+            entities.cliente = cleanName
+          }
+          }
+
+          // Extract specific activity type if mentioned
+          if (type === 'ricorso' || lowerText.includes('ricorso')) {
+            entities.attivita = 'ricorso'
+          } else if (lowerText.includes('pagamenti')) {
+            entities.attivita = 'pagamenti'
+          } else if (lowerText.includes('udienza')) {
+            entities.attivita = 'udienza'
           }
 
           return {

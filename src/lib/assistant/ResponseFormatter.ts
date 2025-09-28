@@ -23,6 +23,8 @@ export class ResponseFormatter {
         return this.formatActivities(result.data || [])
       case 'appuntamento':
         return this.formatAppointments(result.data || [])
+      case 'ricorso':
+        return this.formatRicorsi(result.data || [])
       case 'generale':
         return this.formatGeneral(result.data || [])
       default:
@@ -168,6 +170,34 @@ export class ResponseFormatter {
   private formatAppointments(appointments: any[]): string {
     // For now, treat appointments as activities
     return this.formatActivities(appointments)
+  }
+
+  private formatRicorsi(ricorsi: any[]): string {
+    if (ricorsi.length === 0) {
+      return '⚖️ Nessun ricorso trovato.'
+    }
+
+    let response = `⚖️ **Ricorsi (${ricorsi.length} trovati):**\n\n`
+    
+    ricorsi.forEach((ricorso, index) => {
+      const practice = ricorso.practices
+      const client = practice?.clients
+      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+      const date = new Date(ricorso.data).toLocaleDateString('it-IT')
+      const time = ricorso.ora || 'Orario non specificato'
+      
+      response += (index + 1) + '. **' + (ricorso.attivita || 'Ricorso') + '**\n'
+      response += '   📅 ' + date + ' alle ' + time + '\n'
+      response += '   👤 ' + clientName + '\n'
+      response += '   📋 Pratica: ' + (practice?.numero || 'N/A') + '\n'
+      
+      if (ricorso.note) {
+        response += '   📝 Note: ' + ricorso.note + '\n'
+      }
+      response += '\n'
+    })
+
+    return response
   }
 
   private formatGeneral(data: any[]): string {

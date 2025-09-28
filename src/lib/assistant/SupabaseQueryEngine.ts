@@ -24,6 +24,8 @@ export class SupabaseQueryEngine {
           return await this.queryActivities(question, userId)
         case 'appuntamento':
           return await this.queryAppointments(question, userId)
+        case 'ricorso':
+          return await this.queryRicorsi(question, userId)
         case 'generale':
           return await this.queryGeneral(question, userId)
         default:
@@ -331,6 +333,43 @@ export class SupabaseQueryEngine {
     // For now, return activities as appointments
     // In the future, this could be expanded to include actual appointments
     return await this.queryActivities(question, userId)
+  }
+
+  private async queryRicorsi(question: ParsedQuestion, userId: string): Promise<QueryResult> {
+    const { cliente } = question.entities
+
+    let query = supabase
+      .from('activities')
+      .select(`
+        *,
+        practices!inner(
+          *,
+          clients!inner(*)
+        )
+      `)
+      .eq('user_id', userId)
+      .ilike('attivita', '%ricorso%')
+
+    if (cliente) {
+      // Try multiple search strategies for client name
+      query = query.or(`
+        practices.clients.ragione.ilike.%${cliente}%,
+        practices.clients.nome.ilike.%${cliente}%,
+        practices.clients.cognome.ilike.%${cliente}%
+      `)
+    }
+
+    const { data, error } = await query
+      .order('data', { ascending: true })
+      .limit(10)
+
+    if (error) throw error
+
+    return {
+      type: 'success',
+      data: data || [],
+      count: data?.length || 0
+    }
   }
 
   private async queryGeneral(_question: ParsedQuestion, userId: string): Promise<QueryResult> {
