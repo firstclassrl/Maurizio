@@ -71,6 +71,26 @@ export class ResponseFormatter {
           return this.formatPrescrizioni(result.data || [])
         case 'decadenze':
           return this.formatDecadenze(result.data || [])
+        case 'comandi_vocali':
+          return this.formatComandiVocali(result.data)
+        case 'ricerca_intelligente':
+          return this.formatRicercaIntelligente(result.data)
+        case 'suggerimenti':
+          return this.formatSuggerimenti(result.data)
+        case 'workflow':
+          return this.formatWorkflow(result.data)
+        case 'produttivita':
+          return this.formatProduttivita(result.data)
+        case 'alert_sistema':
+          return this.formatAlertSistema(result.data)
+        case 'backup_restore':
+          return this.formatBackupRestore(result.data)
+        case 'statistiche_avanzate':
+          return this.formatStatisticheAvanzate(result.data)
+        case 'previsioni':
+          return this.formatPrevisioni(result.data)
+        case 'ottimizzazione':
+          return this.formatOttimizzazione(result.data)
         case 'generale':
           return this.formatGeneral(result.data || [])
       default:
@@ -843,6 +863,307 @@ export class ResponseFormatter {
       }
       response += '\n'
     })
+
+    return response
+  }
+
+  // NUOVI FORMATTER FASE 3 - INTELLIGENZA AVANZATA
+  private formatComandiVocali(data: any): string {
+    if (!data?.comandi) {
+      return '🎤 Comandi vocali non disponibili al momento.'
+    }
+
+    let response = data.message + '\n\n'
+    data.comandi.forEach((comando: string, index: number) => {
+      response += `${index + 1}. ${comando}\n`
+    })
+
+    response += '\n💡 **Suggerimento:** Puoi usare questi comandi sia scrivendo che parlando!'
+    return response
+  }
+
+  private formatRicercaIntelligente(data: any): string {
+    if (!data) {
+      return '🔍 Ricerca intelligente non disponibile.'
+    }
+
+    const totalResults = data.activities.length + data.practices.length + data.clients.length
+    
+    let response = `🔍 **Ricerca Intelligente - ${totalResults} risultati trovati:**\n\n`
+
+    if (data.activities.length > 0) {
+      response += `📝 **Attività (${data.activities.length}):**\n`
+      data.activities.slice(0, 3).forEach((activity: any, index: number) => {
+        const practice = activity.practices
+        const client = practice?.clients
+        const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+        const date = new Date(activity.data).toLocaleDateString('it-IT')
+        
+        response += `${index + 1}. **${activity.attivita}** - ${clientName} (${date})\n`
+      })
+      if (data.activities.length > 3) {
+        response += `   ... e altre ${data.activities.length - 3} attività\n`
+      }
+      response += '\n'
+    }
+
+    if (data.practices.length > 0) {
+      response += `📋 **Pratiche (${data.practices.length}):**\n`
+      data.practices.slice(0, 3).forEach((practice: any, index: number) => {
+        const client = practice.clients
+        const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+        
+        response += `${index + 1}. **Pratica ${practice.numero}** - ${clientName}\n`
+      })
+      if (data.practices.length > 3) {
+        response += `   ... e altre ${data.practices.length - 3} pratiche\n`
+      }
+      response += '\n'
+    }
+
+    if (data.clients.length > 0) {
+      response += `👥 **Clienti (${data.clients.length}):**\n`
+      data.clients.slice(0, 3).forEach((client: any, index: number) => {
+        const name = client.ragione || (client.nome || '') + ' ' + (client.cognome || '')
+        response += `${index + 1}. **${name}**\n`
+      })
+      if (data.clients.length > 3) {
+        response += `   ... e altri ${data.clients.length - 3} clienti\n`
+      }
+    }
+
+    return response
+  }
+
+  private formatSuggerimenti(data: any): string {
+    if (!data) {
+      return '💡 Suggerimenti non disponibili al momento.'
+    }
+
+    let response = '💡 **Suggerimenti Intelligenti:**\n\n'
+
+    if (data.consigli && data.consigli.length > 0) {
+      response += '🎯 **Consigli Personalizzati:**\n'
+      data.consigli.forEach((consiglio: string, index: number) => {
+        response += `${index + 1}. ${consiglio}\n`
+      })
+      response += '\n'
+    }
+
+    if (data.urgenti && data.urgenti.length > 0) {
+      response += `⚡ **Attività Urgenti (${data.urgenti.length}):**\n`
+      data.urgenti.slice(0, 3).forEach((activity: any, index: number) => {
+        const date = new Date(activity.data).toLocaleDateString('it-IT')
+        response += `${index + 1}. **${activity.attivita}** - ${date}\n`
+      })
+      response += '\n'
+    }
+
+    if (data.in_ritardo && data.in_ritardo.length > 0) {
+      response += `🚨 **Attività in Ritardo (${data.in_ritardo.length}):**\n`
+      data.in_ritardo.slice(0, 3).forEach((activity: any, index: number) => {
+        const date = new Date(activity.data).toLocaleDateString('it-IT')
+        response += `${index + 1}. **${activity.attivita}** - Scaduta il ${date}\n`
+      })
+      response += '\n'
+    }
+
+    if (data.prossime && data.prossime.length > 0) {
+      response += `📅 **Prossime Attività (${data.prossime.length}):**\n`
+      data.prossime.slice(0, 3).forEach((activity: any, index: number) => {
+        const date = new Date(activity.data).toLocaleDateString('it-IT')
+        response += `${index + 1}. **${activity.attivita}** - ${date}\n`
+      })
+    }
+
+    return response
+  }
+
+  private formatWorkflow(data: any): string {
+    if (!data) {
+      return '🔄 Analisi workflow non disponibile.'
+    }
+
+    let response = '🔄 **Analisi Workflow:**\n\n'
+    response += `📊 **Statistiche Generali:**\n`
+    response += `   • Totale attività: ${data.total_activities}\n`
+    response += `   • Per categoria: ${Object.keys(data.by_category).length} categorie\n`
+    response += `   • Per stato: ${Object.keys(data.by_status).length} stati\n`
+    response += `   • Per cliente: ${Object.keys(data.by_client).length} clienti\n\n`
+
+    if (data.by_category && Object.keys(data.by_category).length > 0) {
+      response += `📋 **Attività per Categoria:**\n`
+      Object.entries(data.by_category).forEach(([category, count]) => {
+        response += `   • ${category}: ${count} attività\n`
+      })
+      response += '\n'
+    }
+
+    if (data.by_status && Object.keys(data.by_status).length > 0) {
+      response += `📊 **Attività per Stato:**\n`
+      Object.entries(data.by_status).forEach(([status, count]) => {
+        const statusIcon = status === 'done' ? '✅' : '⏳'
+        response += `   ${statusIcon} ${status}: ${count} attività\n`
+      })
+      response += '\n'
+    }
+
+    return response
+  }
+
+  private formatProduttivita(data: any): string {
+    if (!data) {
+      return '📈 Analisi produttività non disponibile.'
+    }
+
+    let response = '📈 **Analisi Produttività:**\n\n'
+    response += `📊 **Metriche Settimanali:**\n`
+    response += `   • Attività completate: ${data.completate_settimana}\n`
+    response += `   • Attività totali: ${data.totali_settimana}\n`
+    response += `   • Attività in ritardo: ${data.in_ritardo}\n`
+    response += `   • Tasso di completamento: ${data.tasso_completamento}%\n\n`
+
+    if (data.suggerimenti && data.suggerimenti.length > 0) {
+      response += `💡 **Suggerimenti per Migliorare:**\n`
+      data.suggerimenti.forEach((suggerimento: string, index: number) => {
+        response += `${index + 1}. ${suggerimento}\n`
+      })
+    }
+
+    return response
+  }
+
+  private formatAlertSistema(data: any): string {
+    if (!data) {
+      return '🔔 Alert sistema non disponibili.'
+    }
+
+    let response = `🔔 **Stato Sistema: ${data.status.toUpperCase()}**\n\n`
+    
+    if (data.recommendations && data.recommendations.length > 0) {
+      response += '📋 **Raccomandazioni Sistema:**\n'
+      data.recommendations.forEach((rec: string, index: number) => {
+        response += `${index + 1}. ${rec}\n`
+      })
+      response += '\n'
+    }
+
+    response += `⏰ Ultimo controllo: ${new Date(data.timestamp).toLocaleString('it-IT')}\n`
+
+    return response
+  }
+
+  private formatBackupRestore(data: any): string {
+    if (!data) {
+      return '💾 Informazioni backup non disponibili.'
+    }
+
+    let response = data.message + '\n\n'
+    response += `📊 **Stato:** ${data.status}\n`
+    response += `⏰ **Ultimo backup:** ${new Date(data.last_backup).toLocaleString('it-IT')}\n\n`
+
+    if (data.recommendations && data.recommendations.length > 0) {
+      response += '💡 **Raccomandazioni:**\n'
+      data.recommendations.forEach((rec: string, index: number) => {
+        response += `${index + 1}. ${rec}\n`
+      })
+    }
+
+    return response
+  }
+
+  private formatStatisticheAvanzate(data: any): string {
+    if (!data) {
+      return '📊 Statistiche avanzate non disponibili.'
+    }
+
+    let response = '📊 **Statistiche Avanzate:**\n\n'
+    response += `📋 **Dati Generali:**\n`
+    response += `   • Pratiche totali: ${data.total_practices}\n`
+    response += `   • Clienti totali: ${data.total_clients}\n`
+    response += `   • Attività totali: ${data.total_activities}\n`
+    response += `   • Attività completate: ${data.completed_activities}\n`
+    response += `   • Attività pendenti: ${data.pending_activities}\n`
+    response += `   • Tasso di completamento: ${data.completion_rate}%\n\n`
+
+    response += `📈 **Trend e Performance:**\n`
+    response += `   • Crescita pratiche: ${data.trends.practices_growth}\n`
+    response += `   • Tasso completamento: ${data.trends.completion_rate}\n`
+    response += `   • Soddisfazione cliente: ${data.trends.client_satisfaction}\n`
+    response += `   • Score produttività: ${data.productivity_score}\n`
+
+    return response
+  }
+
+  private formatPrevisioni(data: any): string {
+    if (!data) {
+      return '🔮 Previsioni non disponibili.'
+    }
+
+    let response = '🔮 **Previsioni e Analisi Futura:**\n\n'
+
+    if (data.previsioni && data.previsioni.length > 0) {
+      response += '📈 **Previsioni Prossimo Mese:**\n'
+      data.previsioni.forEach((prev: string, index: number) => {
+        response += `${index + 1}. ${prev}\n`
+      })
+      response += '\n'
+    }
+
+    if (data.raccomandazioni && data.raccomandazioni.length > 0) {
+      response += '🎯 **Raccomandazioni Strategiche:**\n'
+      data.raccomandazioni.forEach((rec: string, index: number) => {
+        response += `${index + 1}. ${rec}\n`
+      })
+      response += '\n'
+    }
+
+    if (data.prossimo_mese && data.prossimo_mese.length > 0) {
+      response += `📅 **Attività Previste (${data.prossimo_mese.length}):**\n`
+      data.prossimo_mese.slice(0, 5).forEach((activity: any, index: number) => {
+        const practice = activity.practices
+        const client = practice?.clients
+        const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+        const date = new Date(activity.data).toLocaleDateString('it-IT')
+        
+        response += `${index + 1}. **${activity.attivita}** - ${clientName} (${date})\n`
+      })
+      if (data.prossimo_mese.length > 5) {
+        response += `   ... e altre ${data.prossimo_mese.length - 5} attività\n`
+      }
+    }
+
+    return response
+  }
+
+  private formatOttimizzazione(data: any): string {
+    if (!data) {
+      return '⚡ Analisi ottimizzazione non disponibile.'
+    }
+
+    let response = '⚡ **Analisi Ottimizzazione e Performance:**\n\n'
+
+    if (data.analisi_performance) {
+      response += '📊 **Analisi Performance:**\n'
+      response += `   • Tempo medio completamento: ${data.analisi_performance.tempo_medio_completamento}\n`
+      response += `   • Tasso di efficienza: ${data.analisi_performance.tasso_efficienza}\n`
+      response += `   • Bottleneck principale: ${data.analisi_performance.bottleneck_principale}\n\n`
+    }
+
+    if (data.ottimizzazioni_suggerite && data.ottimizzazioni_suggerite.length > 0) {
+      response += '💡 **Ottimizzazioni Suggerite:**\n'
+      data.ottimizzazioni_suggerite.forEach((opt: string, index: number) => {
+        response += `${index + 1}. ${opt}\n`
+      })
+      response += '\n'
+    }
+
+    if (data.metriche_chiave) {
+      response += '🎯 **Metriche Chiave di Miglioramento:**\n'
+      response += `   • Velocità risposta: ${data.metriche_chiave.velocita_risposta}\n`
+      response += `   • Accuratezza dati: ${data.metriche_chiave.accuratezza_dati}\n`
+      response += `   • Soddisfazione cliente: ${data.metriche_chiave.soddisfazione_cliente}\n`
+    }
 
     return response
   }

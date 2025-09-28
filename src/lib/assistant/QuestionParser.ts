@@ -1,5 +1,5 @@
 export interface ParsedQuestion {
-  type: 'udienza' | 'scadenza' | 'cliente' | 'pratica' | 'attivita' | 'appuntamento' | 'ricorso' | 'pagamenti' | 'scadenze_imminenti' | 'udienze_appuntamenti' | 'calcoli_termini' | 'clienti_info' | 'ricerca_clienti' | 'pratiche_info' | 'attivita_pratica' | 'filtri_temporali' | 'filtri_stato' | 'filtri_categoria' | 'contatori' | 'analisi' | 'cosa_fare' | 'pianificazione' | 'emergenze' | 'controlli' | 'ricorsi_specializzati' | 'pagamenti_specializzati' | 'calcoli_avanzati' | 'termini_processuali' | 'prescrizioni' | 'decadenze' | 'generale'
+  type: 'udienza' | 'scadenza' | 'cliente' | 'pratica' | 'attivita' | 'appuntamento' | 'ricorso' | 'pagamenti' | 'scadenze_imminenti' | 'udienze_appuntamenti' | 'calcoli_termini' | 'clienti_info' | 'ricerca_clienti' | 'pratiche_info' | 'attivita_pratica' | 'filtri_temporali' | 'filtri_stato' | 'filtri_categoria' | 'contatori' | 'analisi' | 'cosa_fare' | 'pianificazione' | 'emergenze' | 'controlli' | 'ricorsi_specializzati' | 'pagamenti_specializzati' | 'calcoli_avanzati' | 'termini_processuali' | 'prescrizioni' | 'decadenze' | 'comandi_vocali' | 'ricerca_intelligente' | 'suggerimenti' | 'workflow' | 'produttivita' | 'alert_sistema' | 'backup_restore' | 'statistiche_avanzate' | 'previsioni' | 'ottimizzazione' | 'generale'
   entities: {
     cliente?: string
     pratica?: string
@@ -15,6 +15,10 @@ export interface ParsedQuestion {
     tipo_ricorso?: string
     tipo_pagamento?: string
     importo?: string
+    comando?: string
+    azione?: string
+    priorita?: string
+    categoria_speciale?: string
   }
   originalText: string
 }
@@ -359,6 +363,169 @@ export class QuestionParser {
       /mostrami\s+(?:le\s+)?decadenze\s+(?:di|per)\s+(.+)/i,
       /quale\s+è\s+(?:il\s+)?termine\s+(?:di\s+)?decadenza\s+(?:di|per)\s+(.+)/i,
       /quando\s+scade\s+(?:la\s+)?decadenza\s+(?:breve|ordinaria|lunga)/i
+    ],
+
+    // NUOVI PATTERN FASE 3 - COMANDI VOCALI AVANZATI
+    comandi_vocali: [
+      /hey\s+(?:assistente|ai|assistant)/i,
+      /ok\s+(?:assistente|ai|assistant)/i,
+      /ascolta/i,
+      /parla/i,
+      /dimmi/i,
+      /aiutami/i,
+      /cosa\s+puoi\s+fare/i,
+      /quali\s+(?:sono\s+i\s+)?comandi/i,
+      /mostrami\s+(?:i\s+)?comandi/i,
+      /che\s+comandi\s+hai/i,
+      /come\s+(?:funzioni|funziona)/i,
+      /spiegami\s+(?:come\s+)?(?:funzioni|funziona)/i,
+      /cosa\s+soi\s+capace\s+di\s+fare/i,
+      /quali\s+(?:sono\s+le\s+)?funzionalità/i,
+      /mostrami\s+(?:le\s+)?funzionalità/i
+    ],
+
+    // NUOVI PATTERN FASE 3 - RICERCA INTELLIGENTE
+    ricerca_intelligente: [
+      /cerca\s+(?:tutto\s+)?(?:quello\s+che\s+)?(?:riguarda|riguarda)\s+(.+)/i,
+      /trova\s+(?:tutto\s+)?(?:quello\s+che\s+)?(?:riguarda|riguarda)\s+(.+)/i,
+      /mostrami\s+(?:tutto\s+)?(?:quello\s+che\s+)?(?:riguarda|riguarda)\s+(.+)/i,
+      /ricerca\s+(?:avanzata\s+)?(?:per\s+)?(.+)/i,
+      /filtra\s+(?:per\s+)?(.+)/i,
+      /seleziona\s+(?:tutto\s+)?(?:quello\s+che\s+)?(?:riguarda|riguarda)\s+(.+)/i,
+      /estrae\s+(?:tutto\s+)?(?:quello\s+che\s+)?(?:riguarda|riguarda)\s+(.+)/i,
+      /elenca\s+(?:tutto\s+)?(?:quello\s+che\s+)?(?:riguarda|riguarda)\s+(.+)/i,
+      /raggruppa\s+(?:per\s+)?(.+)/i,
+      /ordina\s+(?:per\s+)?(.+)/i
+    ],
+
+    // NUOVI PATTERN FASE 3 - SUGGERIMENTI INTELLIGENTI
+    suggerimenti: [
+      /cosa\s+mi\s+suggerisci/i,
+      /che\s+cosa\s+dovrei\s+fare/i,
+      /cosa\s+consigli/i,
+      /hai\s+(?:dei\s+)?suggerimenti/i,
+      /dammi\s+(?:dei\s+)?suggerimenti/i,
+      /consigliami/i,
+      /aiutami\s+a\s+decidere/i,
+      /cosa\s+faresti\s+al\s+mio\s+posto/i,
+      /qual\s+è\s+(?:la\s+)?migliore\s+strategia/i,
+      /come\s+posso\s+migliorare/i,
+      /cosa\s+devo\s+ottimizzare/i,
+      /hai\s+(?:dei\s+)?consigli/i,
+      /cosa\s+mi\s+raccomandi/i,
+      /che\s+cosa\s+mi\s+proponi/i
+    ],
+
+    // NUOVI PATTERN FASE 3 - WORKFLOW E AUTOMAZIONE
+    workflow: [
+      /crea\s+(?:un\s+)?workflow\s+(?:per\s+)?(.+)/i,
+      /automatizza\s+(?:la\s+)?(.+)/i,
+      /schedula\s+(?:la\s+)?(.+)/i,
+      /programma\s+(?:la\s+)?(.+)/i,
+      /imposta\s+(?:un\s+)?(?:promemoria|reminder)\s+(?:per\s+)?(.+)/i,
+      /ricorda\s+di\s+(.+)/i,
+      /notifica\s+(?:quando\s+)?(.+)/i,
+      /avvisami\s+(?:quando\s+)?(.+)/i,
+      /crea\s+(?:una\s+)?sequenza\s+(?:per\s+)?(.+)/i,
+      /organizza\s+(?:il\s+)?lavoro\s+(?:per\s+)?(.+)/i,
+      /gestisci\s+(?:il\s+)?processo\s+(?:di\s+)?(.+)/i,
+      /ottimizza\s+(?:il\s+)?flusso\s+(?:di\s+)?(.+)/i
+    ],
+
+    // NUOVI PATTERN FASE 3 - PRODUTTIVITÀ
+    produttivita: [
+      /come\s+(?:aumentare|migliorare)\s+(?:la\s+)?produttività/i,
+      /come\s+(?:essere\s+più\s+)?efficiente/i,
+      /come\s+(?:risparmiare|ottimizzare)\s+(?:il\s+)?tempo/i,
+      /come\s+(?:organizzare\s+)?meglio\s+(?:il\s+)?lavoro/i,
+      /come\s+(?:gestire\s+)?meglio\s+(?:le\s+)?priorità/i,
+      /come\s+(?:essere\s+più\s+)?veloce/i,
+      /come\s+(?:lavorare\s+)?meglio/i,
+      /come\s+(?:essere\s+più\s+)?organizzato/i,
+      /come\s+(?:gestire\s+)?meglio\s+(?:lo\s+)?stress/i,
+      /come\s+(?:bilanciare\s+)?meglio\s+(?:il\s+)?carico\s+di\s+lavoro/i,
+      /come\s+(?:delegare\s+)?meglio/i,
+      /come\s+(?:collaborare\s+)?meglio/i
+    ],
+
+    // NUOVI PATTERN FASE 3 - ALERT E SISTEMA
+    alert_sistema: [
+      /attiva\s+(?:gli\s+)?alert/i,
+      /disattiva\s+(?:gli\s+)?alert/i,
+      /configura\s+(?:gli\s+)?alert/i,
+      /imposta\s+(?:gli\s+)?alert/i,
+      /notifiche\s+(?:di\s+)?sistema/i,
+      /avvisi\s+(?:di\s+)?sistema/i,
+      /controlli\s+(?:di\s+)?sistema/i,
+      /verifica\s+(?:il\s+)?sistema/i,
+      /stato\s+(?:del\s+)?sistema/i,
+      /salute\s+(?:del\s+)?sistema/i,
+      /monitora\s+(?:il\s+)?sistema/i,
+      /diagnostica\s+(?:il\s+)?sistema/i
+    ],
+
+    // NUOVI PATTERN FASE 3 - BACKUP E RESTORE
+    backup_restore: [
+      /backup\s+(?:dei\s+)?dati/i,
+      /salva\s+(?:i\s+)?dati/i,
+      /esporta\s+(?:i\s+)?dati/i,
+      /importa\s+(?:i\s+)?dati/i,
+      /ripristina\s+(?:i\s+)?dati/i,
+      /restore\s+(?:dei\s+)?dati/i,
+      /sincronizza\s+(?:i\s+)?dati/i,
+      /aggiorna\s+(?:i\s+)?dati/i,
+      /pulisci\s+(?:i\s+)?dati/i,
+      /ottimizza\s+(?:i\s+)?dati/i,
+      /comprimi\s+(?:i\s+)?dati/i,
+      /archivia\s+(?:i\s+)?dati/i
+    ],
+
+    // NUOVI PATTERN FASE 3 - STATISTICHE AVANZATE
+    statistiche_avanzate: [
+      /statistiche\s+(?:dettagliate|avanzate|complete)/i,
+      /analisi\s+(?:dettagliata|avanzata|completa)/i,
+      /report\s+(?:dettagliato|avanzato|completo)/i,
+      /dashboard\s+(?:avanzata|completa)/i,
+      /metriche\s+(?:dettagliate|avanzate)/i,
+      /kpi\s+(?:key\s+performance\s+indicators?)/i,
+      /performance\s+(?:analysis|analisi)/i,
+      /trend\s+(?:analysis|analisi)/i,
+      /benchmark/i,
+      /confronto\s+(?:delle\s+)?performance/i,
+      /valutazione\s+(?:delle\s+)?performance/i,
+      /misurazione\s+(?:delle\s+)?performance/i
+    ],
+
+    // NUOVI PATTERN FASE 3 - PREVISIONI
+    previsioni: [
+      /previsioni\s+(?:per\s+)?(.+)/i,
+      /prevedi\s+(.+)/i,
+      /cosa\s+(?:succederà|accadrà)\s+(?:in\s+)?(.+)/i,
+      /come\s+(?:sarà|andrà)\s+(.+)/i,
+      /quale\s+è\s+(?:la\s+)?previsione\s+(?:per\s+)?(.+)/i,
+      /forecast\s+(?:per\s+)?(.+)/i,
+      /proiezioni\s+(?:per\s+)?(.+)/i,
+      /scenari\s+(?:per\s+)?(.+)/i,
+      /cosa\s+(?:mi\s+)?aspetto\s+(?:per\s+)?(.+)/i,
+      /quali\s+(?:sono\s+)?le\s+aspettative\s+(?:per\s+)?(.+)/i,
+      /come\s+(?:evolverà|si\s+evolverà)\s+(.+)/i,
+      /quale\s+è\s+(?:la\s+)?tendenza\s+(?:per\s+)?(.+)/i
+    ],
+
+    // NUOVI PATTERN FASE 3 - OTTIMIZZAZIONE
+    ottimizzazione: [
+      /ottimizza\s+(.+)/i,
+      /migliora\s+(.+)/i,
+      /perfeziona\s+(.+)/i,
+      /affina\s+(.+)/i,
+      /raffina\s+(.+)/i,
+      /tuning\s+(?:di\s+)?(.+)/i,
+      /ottimizzazione\s+(?:di\s+)?(.+)/i,
+      /miglioramento\s+(?:di\s+)?(.+)/i,
+      /performance\s+(?:di\s+)?(.+)/i,
+      /efficienza\s+(?:di\s+)?(.+)/i,
+      /velocità\s+(?:di\s+)?(.+)/i,
+      /rendimento\s+(?:di\s+)?(.+)/i
     ]
   }
 
