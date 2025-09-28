@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { format, addMonths, subMonths } from 'date-fns'
 import { it } from 'date-fns/locale'
 import { Button } from '../ui/button'
@@ -30,7 +31,8 @@ interface DashboardHeaderProps {
   onNewTask: () => void
   onLogout: () => void
   tasks: Task[]
-  onAssistantOpen: () => void
+  onAssistantOpen: (query?: string) => void
+  onOptionsOpen: () => void
 }
 
 export function DashboardHeader({
@@ -45,7 +47,9 @@ export function DashboardHeader({
   onNewTask,
   onLogout,
   onAssistantOpen,
+  onOptionsOpen,
 }: DashboardHeaderProps) {
+  const [assistantQuery, setAssistantQuery] = useState('')
   const handlePrevious = () => {
     if (viewMode === 'month') {
       onDateChange(subMonths(currentDate, 1))
@@ -163,10 +167,13 @@ export function DashboardHeader({
             <Sparkles className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
             <Input
               placeholder="Chiedi al tuo assistente AI..."
+              value={assistantQuery}
+              onChange={(e) => setAssistantQuery(e.target.value)}
               className="pl-10 bg-blue-50 border-blue-200 text-blue-700 placeholder-blue-400 focus:bg-blue-100 focus:border-blue-300"
               onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  onAssistantOpen()
+                if (e.key === 'Enter' && assistantQuery.trim()) {
+                  onAssistantOpen(assistantQuery.trim())
+                  setAssistantQuery('')
                 }
               }}
             />
@@ -185,7 +192,7 @@ export function DashboardHeader({
             </Select>
             
             {/* Pulsante Opzioni - solo rotella */}
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={onOptionsOpen}>
               <Settings className="h-4 w-4" />
             </Button>
           </div>

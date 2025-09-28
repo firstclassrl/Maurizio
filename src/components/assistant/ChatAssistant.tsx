@@ -16,10 +16,11 @@ interface Message {
 
 interface ChatAssistantProps {
   userId: string
+  initialQuery?: string
   onClose?: () => void
 }
 
-export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
+export function ChatAssistant({ userId, initialQuery, onClose }: ChatAssistantProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -63,6 +64,14 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
     }
   }, [])
 
+  // Gestisci query iniziale
+  useEffect(() => {
+    if (initialQuery && initialQuery.trim()) {
+      setInputValue(initialQuery)
+      handleSendMessage(initialQuery.trim())
+    }
+  }, [initialQuery])
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -71,13 +80,14 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
     scrollToBottom()
   }, [messages])
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return
+  const handleSendMessage = async (query?: string) => {
+    const messageContent = query || inputValue.trim()
+    if (!messageContent || isLoading) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
       type: 'user',
-      content: inputValue.trim(),
+      content: messageContent,
       timestamp: new Date()
     }
 
@@ -88,7 +98,7 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
     try {
       // Parse the question
       const parser = new QuestionParser()
-      const parsedQuestion = parser.parse(inputValue.trim())
+      const parsedQuestion = parser.parse(messageContent)
       
       // Execute query
       const queryEngine = new SupabaseQueryEngine()
@@ -235,7 +245,7 @@ export function ChatAssistant({ userId, onClose }: ChatAssistantProps) {
             )}
           </div>
           <Button
-            onClick={handleSendMessage}
+            onClick={() => handleSendMessage()}
             disabled={!inputValue.trim() || isLoading}
             className="px-4 bg-blue-600 hover:bg-blue-700 text-white"
           >

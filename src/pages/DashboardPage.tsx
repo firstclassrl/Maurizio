@@ -66,6 +66,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const [isAddActivityModalOpen, setIsAddActivityModalOpen] = useState(false)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
   const [isAssistantOpen, setIsAssistantOpen] = useState(false)
+  const [initialAssistantQuery, setInitialAssistantQuery] = useState<string>('')
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
   const [showUrgentTasks, setShowUrgentTasks] = useState(false)
   
@@ -509,7 +510,16 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onNewTask={() => setIsNewActivityWizardOpen(true)}
         onLogout={handleLogout}
         tasks={tasks}
-        onAssistantOpen={() => setIsAssistantOpen(true)}
+        onAssistantOpen={(query) => {
+          if (query) {
+            setInitialAssistantQuery(query)
+            setIsAssistantOpen(true)
+          } else {
+            setInitialAssistantQuery('')
+            setIsAssistantOpen(true)
+          }
+        }}
+        onOptionsOpen={() => setIsOptionsModalOpen(true)}
       />
       
       {/* Quick Actions Bar */}
@@ -1003,7 +1013,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           <div className="w-full max-w-4xl h-[80vh] bg-white rounded-lg shadow-xl">
             <ChatAssistant
               userId={user.id}
-              onClose={() => setIsAssistantOpen(false)}
+              initialQuery={initialAssistantQuery}
+              onClose={() => {
+                setIsAssistantOpen(false)
+                setInitialAssistantQuery('')
+              }}
             />
           </div>
         </div>
