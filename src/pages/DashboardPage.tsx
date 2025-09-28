@@ -24,7 +24,7 @@ import { ChatAssistant } from '../components/assistant/ChatAssistant'
 import { OptionsModal } from '../components/ui/OptionsModal'
 import { SimpleClientForm } from '../components/clients/SimpleClientForm'
 import { DashboardHeader } from '../components/dashboard/DashboardHeader'
-import { Plus, Calendar, CalendarDays, Trash2, Calculator, Settings, Users, AlertTriangle, FileText, FolderOpen } from 'lucide-react'
+import { Plus, Trash2, Users, AlertTriangle, FileText, FolderOpen } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
 interface DashboardPageProps {
@@ -498,51 +498,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
           }
         }}
         onOptionsOpen={() => setIsOptionsModalOpen(true)}
+        onNavigateToWeek={onNavigateToWeek}
+        onNavigateToMonth={onNavigateToMonth}
+        onNavigateToCalcolatore={onNavigateToCalcolatore}
       />
-      
-      {/* Quick Actions Bar */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-2 py-3">
-            <Button
-              onClick={onNavigateToWeek}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white border-0"
-              size="sm"
-            >
-              <CalendarDays className="h-4 w-4 mr-2" />
-              Settimana
-            </Button>
-            
-            <Button
-              onClick={onNavigateToMonth}
-              className="bg-green-600 hover:bg-green-700 text-white border-0"
-              size="sm"
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Mese
-            </Button>
-            
-            <Button
-              onClick={onNavigateToCalcolatore}
-              className="bg-amber-200 hover:bg-amber-300 text-amber-900 border-0"
-              size="sm"
-            >
-              <Calculator className="h-4 w-4 mr-2" />
-              CALCOLATORE
-            </Button>
-            
-            <Button
-              onClick={() => setIsOptionsModalOpen(true)}
-              variant="outline"
-              size="sm"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Opzioni
-            </Button>
-          </div>
-        </div>
-      </div>
 
       {/* Main Content */}
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
