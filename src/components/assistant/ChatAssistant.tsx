@@ -121,7 +121,7 @@ export function ChatAssistant({ userId, initialQuery, onClose }: ChatAssistantPr
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: '❌ Mi dispiace, si è verificato un errore. Riprova con una domanda diversa.',
+        content: `❌ Errore durante l'esecuzione della query: ${error instanceof Error ? error.message : 'Errore sconosciuto'}`,
         timestamp: new Date()
       }
       setMessages(prev => [...prev, errorMessage])

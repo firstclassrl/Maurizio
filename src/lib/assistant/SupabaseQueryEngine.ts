@@ -109,7 +109,7 @@ export class SupabaseQueryEngine {
       endTracking() // Chiudi il tracking anche in caso di errore
       return {
         type: 'error',
-        message: 'Errore durante l\'esecuzione della query'
+        message: `Errore durante l'esecuzione della query: ${error instanceof Error ? error.message : 'Errore sconosciuto'}`
       }
     } finally {
       endTracking() // Assicura che il tracking sia sempre chiuso

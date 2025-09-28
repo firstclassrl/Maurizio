@@ -63,7 +63,9 @@ export class QuestionParser {
       /quando\s+(?:devo|faccio|fare)\s+(?:fare\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
       /quando\s+(?:scade|è in scadenza)\s+(?:il\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
-      /scadenza\s+(?:del\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i
+      /scadenza\s+(?:del\s+)?ricorso\s+(?:per|di|del\s+cliente\s+)?(.+)/i,
+      /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?ricorso\s+(?:della|dello)\s+(.+)/i,
+      /ricorso\s+(?:della|dello)\s+(.+)/i
     ],
     pagamenti: [
       /quando\s+(?:ci\s+sarà|sarà|è)\s+(?:il\s+)?pagamenti?\s+(?:di|per|del\s+cliente\s+)?(.+)/i,
@@ -581,6 +583,9 @@ export class QuestionParser {
           } else if (lowerText.includes('udienza')) {
             entities.attivita = 'udienza'
           }
+
+          // Log per debugging
+          console.log(`QuestionParser: Parsed "${text}" as type "${type}" with entities:`, entities)
 
           return {
             type: type as ParsedQuestion['type'],

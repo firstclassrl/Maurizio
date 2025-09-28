@@ -22,7 +22,7 @@ export function DashboardHeader({
   const [assistantQuery, setAssistantQuery] = useState('')
 
   return (
-    <div className="bg-slate-900 border-b border-slate-700 shadow-lg">
+    <div className="bg-slate-900 border-b border-slate-700 shadow-lg relative">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo e Titolo LexAgenda */}
@@ -90,6 +90,8 @@ export function DashboardHeader({
           </div>
         </div>
       </div>
+      {/* Riga dorata alla base */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
     </div>
   )
 }
