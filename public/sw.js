@@ -1,5 +1,5 @@
 // Service Worker per Push Notifications - LexAgenda
-const CACHE_NAME = 'lexagenda-v3.2.2';
+const CACHE_NAME = 'lexagenda-sw-3.7.5';
 const urlsToCache = [
   '/',
   '/favicon.png',
@@ -51,6 +51,11 @@ self.addEventListener('activate', (event) => {
     }).then(() => {
       console.log('Service Worker: Attivazione completata');
       return self.clients.claim();
+    }).then(async () => {
+      const all = await self.clients.matchAll({ includeUncontrolled: true });
+      for (const client of all) {
+        client.postMessage({ type: 'SW_READY' });
+      }
     })
   );
 });
