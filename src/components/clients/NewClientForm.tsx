@@ -212,7 +212,7 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Persona fisica">Persona fisica</SelectItem>
-                  <SelectItem value="Ditta Individuale">Ditta Individuale</SelectItem>
+                  <SelectItem value="Ditta Individuale">Ditta Individuale/Professionista</SelectItem>
                   <SelectItem value="Persona Giuridica">Persona Giuridica</SelectItem>
                   <SelectItem value="Altro ente">Altro ente</SelectItem>
                 </SelectContent>
