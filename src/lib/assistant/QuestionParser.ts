@@ -233,6 +233,8 @@ export class QuestionParser {
     // NUOVI PATTERN FASE 1 - OPERATIVE
     cosa_fare: [
       /cosa\s+devo\s+fare\s+(?:oggi|ora)/i,
+      /attivita\s+di\s+oggi/i,
+      /attività\s+di\s+oggi/i,
       /qual\s+è\s+(?:la\s+mia\s+)?prossima\s+attività/i,
       /quali\s+sono\s+(?:le\s+mie\s+)?priorità/i,
       /cosa\s+è\s+più\s+urgente/i,

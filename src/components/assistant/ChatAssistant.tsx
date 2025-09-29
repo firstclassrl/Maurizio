@@ -33,6 +33,7 @@ export function ChatAssistant({ userId, initialQuery, onClose }: ChatAssistantPr
   const [isLoading, setIsLoading] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const [isSpeechSupported, setIsSpeechSupported] = useState(false)
+  const [hasProcessedInitialQuery, setHasProcessedInitialQuery] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const recognitionRef = useRef<any>(null)
 
@@ -66,7 +67,8 @@ export function ChatAssistant({ userId, initialQuery, onClose }: ChatAssistantPr
 
   // Gestisci query iniziale
   useEffect(() => {
-    if (initialQuery && initialQuery.trim()) {
+    if (initialQuery && initialQuery.trim() && !hasProcessedInitialQuery) {
+      setHasProcessedInitialQuery(true)
       setInputValue(initialQuery)
       // Chiama handleSendMessage direttamente senza dipendenze
       const processInitialQuery = async () => {
