@@ -68,9 +68,61 @@ export function ChatAssistant({ userId, initialQuery, onClose }: ChatAssistantPr
   useEffect(() => {
     if (initialQuery && initialQuery.trim()) {
       setInputValue(initialQuery)
-      handleSendMessage(initialQuery.trim())
+      // Chiama handleSendMessage direttamente senza dipendenze
+      const processInitialQuery = async () => {
+        const messageContent = initialQuery.trim()
+        if (!messageContent || isLoading) return
+
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          type: 'user',
+          content: messageContent,
+          timestamp: new Date()
+        }
+
+        setMessages(prev => [...prev, userMessage])
+        setIsLoading(true)
+
+        try {
+          // Parse the question
+          const parser = new QuestionParser()
+          const parsed = parser.parse(messageContent)
+          console.log('ChatAssistant: Parsed question:', parsed)
+
+          // Execute query
+          const queryEngine = new SupabaseQueryEngine()
+          const result = await queryEngine.execute(parsed, userId)
+          console.log('ChatAssistant: Query result:', result)
+
+          // Format response
+          const formatter = new ResponseFormatter()
+          const response = formatter.format(parsed.type, result, parsed.entities)
+
+          const assistantMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            type: 'assistant',
+            content: response,
+            timestamp: new Date()
+          }
+
+          setMessages(prev => [...prev, assistantMessage])
+        } catch (error) {
+          console.error('ChatAssistant: Error processing query:', error)
+          const errorMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            type: 'assistant',
+            content: `❌ Errore durante l'esecuzione della query: ${error instanceof Error ? error.message : 'Errore sconosciuto'}`,
+            timestamp: new Date()
+          }
+          setMessages(prev => [...prev, errorMessage])
+        } finally {
+          setIsLoading(false)
+        }
+      }
+      
+      processInitialQuery()
     }
-  }, [initialQuery])
+  }, [initialQuery, userId])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -83,6 +135,8 @@ export function ChatAssistant({ userId, initialQuery, onClose }: ChatAssistantPr
   const handleSendMessage = async (query?: string) => {
     const messageContent = query || inputValue.trim()
     if (!messageContent || isLoading) return
+
+    console.log('ChatAssistant: handleSendMessage called with:', messageContent)
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -99,10 +153,12 @@ export function ChatAssistant({ userId, initialQuery, onClose }: ChatAssistantPr
       // Parse the question
       const parser = new QuestionParser()
       const parsedQuestion = parser.parse(messageContent)
+      console.log('ChatAssistant: Parsed question:', parsedQuestion)
       
       // Execute query
       const queryEngine = new SupabaseQueryEngine()
       const queryResult = await queryEngine.execute(parsedQuestion, userId)
+      console.log('ChatAssistant: Query result:', queryResult)
       
       // Format response
       const formatter = new ResponseFormatter()
@@ -117,7 +173,7 @@ export function ChatAssistant({ userId, initialQuery, onClose }: ChatAssistantPr
 
       setMessages(prev => [...prev, assistantMessage])
     } catch (error) {
-      console.error('Error processing message:', error)
+      console.error('ChatAssistant: Error processing message:', error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
