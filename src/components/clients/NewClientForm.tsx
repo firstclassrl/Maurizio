@@ -441,7 +441,7 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                   onSelect={(s)=>{
                     setIndirizzo({ strada: s.via, civico: s.civico, cap: s.cap, citta: s.citta, provincia: s.provincia })
                   }}
-                  placeholder="CAP o indirizzo…"
+                  placeholder="CAP (autocomplete)"
                 />
               </div>
               <div>
@@ -452,7 +452,7 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                   onSelect={(s)=>{
                     setIndirizzo({ strada: s.via, civico: s.civico, cap: s.cap, citta: s.citta, provincia: s.provincia })
                   }}
-                  placeholder="Città/Paese…"
+                  placeholder="Città/Paese (autocomplete)"
                 />
               </div>
               <div>
@@ -463,7 +463,7 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
                   onSelect={(s)=>{
                     setIndirizzo({ strada: s.via, civico: s.civico, cap: s.cap, citta: s.citta, provincia: s.provincia })
                   }}
-                  placeholder="Provincia…"
+                  placeholder="Provincia (autocomplete, sigla)"
                 />
               </div>
             </div>
