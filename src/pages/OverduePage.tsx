@@ -216,7 +216,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-6 py-4 flex justify-between items-center">
@@ -230,15 +230,12 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
               <h1 className="text-2xl font-bold text-gray-900">Attività Scadute</h1>
             </div>
           </div>
-          <Button onClick={handleNewTask} variant="outline" size="sm" className="bg-red-600 text-white hover:bg-red-700">
-            <AlertTriangle className="h-4 w-4 mr-2" />
-            Nuova Attività Urgente
-          </Button>
+          {/* Tasto rimosso come richiesto */}
         </div>
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6 py-6">
+      <div className="container mx-auto px-6 py-6 flex-1">
 
         {tasks.length === 0 ? (
           <Card className="text-center py-12">
@@ -335,7 +332,7 @@ export function OverduePage({ user, onBackToDashboard }: OverduePageProps) {
       />
       
       {/* Footer */}
-      <Footer />
+      <Footer className="mt-auto" />
     </div>
   )
 }
