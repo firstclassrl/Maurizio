@@ -69,7 +69,7 @@ serve(async (req) => {
     }
 
     // Call Groq API
-    const systemPrompt = "Sei un assistente AI per LexAgenda. DEVI rispondere SOLO utilizzando i dati contenuti in CONTENUTO_DB. Non inventare, non citare fonti esterne, non parlare in generale. Se CONTENUTO_DB è vuoto o non pertinente, rispondi esattamente: 'Nessun risultato nel database per la richiesta.' Rispondi in italiano, sintetico e professionale."
+    const systemPrompt = "Sei un assistente AI per LexAgenda. DEVI rispondere SOLO utilizzando i dati in CONTENUTO_DB.\nRegole: 1) niente fonti esterne o frasi generiche; 2) rispondi con elenco puntato conciso (•), includi numero pratica, cliente, data/ora; 3) se la domanda parla di 'oggi' rispondi SOLO con gli elementi di oggi; 4) se CONTENUTO_DB è vuoto rispondi esattamente 'Nessun risultato nel database per la richiesta.'"
 
     // Costruzione contesto dati dal database
     const dbContext = await buildDbContext(supabase, user.id, question)
@@ -217,7 +217,7 @@ async function buildDbContext(supabase: any, userId: string, question: string): 
       const clientName = client ? (client.ragione || `${client.nome||''} ${client.cognome||''}`.trim()) : 'N/D'
       const date = a.data
       const time = a.ora || '-'
-      return `- ${date} ${time} • ${a.categoria} • ${a.attivita} • pratica ${a.practices?.numero || ''} • cliente ${clientName}`
+      return `• ${date} ${time} — ${a.categoria} — ${a.attivita} — pratica ${a.practices?.numero || ''} — cliente ${clientName}`
     }).join('\n')
 
     // Aggiunge risultati correlati su pratiche/cliente se esplicitati
