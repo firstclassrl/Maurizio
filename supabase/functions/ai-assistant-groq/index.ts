@@ -125,6 +125,7 @@ serve(async (req) => {
 async function buildDbContext(supabase: any, userId: string, question: string): Promise<string> {
   try {
     const q = question.toLowerCase()
+    const entities = extractEntities(q)
     // finestra temporale
     let days = 30
     if (/[\b\s]oggi\b/.test(q)) days = 1
@@ -154,6 +155,22 @@ async function buildDbContext(supabase: any, userId: string, question: string): 
       query = query.ilike('categoria', `%${categoriaFilter}%`)
     }
 
+    // filtri per cliente/pratica se estratti
+    if (entities.practice) {
+      // join su practices.numero non direttamente filtrabile: recupera id pratica e poi filtra
+      const { data: prac } = await supabase
+        .from('practices')
+        .select('id')
+        .eq('user_id', userId)
+        .ilike('numero', `%${entities.practice}%`)
+        .limit(1)
+        .maybeSingle()
+      if (prac?.id) query = query.eq('pratica_id', prac.id)
+    }
+    if (entities.client) {
+      query = query.or(`practices.clients.ragione.ilike.%${entities.client}%,practices.clients.nome.ilike.%${entities.client}%,practices.clients.cognome.ilike.%${entities.client}%`)
+    }
+
     const { data, error } = await query
     if (error) return ''
     if (!data || data.length === 0) return ''
@@ -169,10 +186,49 @@ async function buildDbContext(supabase: any, userId: string, question: string): 
       return `- ${date} ${time} • ${a.categoria} • ${a.attivita} • pratica ${a.practices?.numero || ''} • cliente ${clientName}`
     }).join('\n')
 
-    return `Intervallo: prossimi ${days} giorni. Totale risultati: ${data.length}. Udienze nel periodo: ${countUdienze}.\nElenco (max 20):\n${lines}`
+    // Aggiunge risultati correlati su pratiche/cliente se esplicitati
+    let extra = ''
+    if (entities.practice) {
+      const { data: pr } = await supabase
+        .from('practices')
+        .select('numero, tipo_procedura, autorita_giudiziaria, rg, giudice')
+        .eq('user_id', userId)
+        .ilike('numero', `%${entities.practice}%`)
+        .limit(1)
+      if (pr && pr.length) {
+        const p = pr[0]
+        extra += `\nDettagli pratica ${p.numero}: tipo ${p.tipo_procedura || '-'}, autorità ${p.autorita_giudiziaria || '-'}, R.G. ${p.rg || '-'}, giudice ${p.giudice || '-'}.`
+      }
+    }
+    if (entities.client) {
+      const { data: cl } = await supabase
+        .from('clients')
+        .select('ragione,nome,cognome,email,telefono')
+        .eq('user_id', userId)
+        .or(`ragione.ilike.%${entities.client}%,nome.ilike.%${entities.client}%,cognome.ilike.%${entities.client}%`)
+        .limit(1)
+      if (cl && cl.length) {
+        const c = cl[0]
+        const name = c.ragione || `${c.nome||''} ${c.cognome||''}`.trim()
+        extra += `\nCliente: ${name}${c.email?`, email ${c.email}`:''}${c.telefono?`, tel ${c.telefono}`:''}.`
+      }
+    }
+
+    return `Intervallo: prossimi ${days} giorni. Totale risultati: ${data.length}. Udienze nel periodo: ${countUdienze}.\nElenco (max 20):\n${lines}${extra}`
   } catch (_) {
     return ''
   }
+}
+
+function extractEntities(q: string): { client?: string; practice?: string } {
+  const out: any = {}
+  // pratica tipo 2025/003
+  const prac = q.match(/\b\d{4}\s*\/?\s*\d{1,4}\b/)
+  if (prac) out.practice = prac[0].replace(/\s+/g,'')
+  // semplice heuristica per client: dopo "cliente" o nome società maiuscola
+  const clientAfterWord = q.match(/cliente\s+([a-zàèéìòùA-Z0-9\.,&\-\s]{2,})/i)
+  if (clientAfterWord) out.client = clientAfterWord[1].trim()
+  return out
 }
 
 
