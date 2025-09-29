@@ -18,9 +18,10 @@ interface ChatAssistantProps {
   userId: string
   initialQuery?: string
   onClose?: () => void
+  onInitialQueryProcessed?: () => void
 }
 
-export function ChatAssistant({ userId, initialQuery, onClose }: ChatAssistantProps) {
+export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryProcessed }: ChatAssistantProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -119,12 +120,16 @@ export function ChatAssistant({ userId, initialQuery, onClose }: ChatAssistantPr
           setMessages(prev => [...prev, errorMessage])
         } finally {
           setIsLoading(false)
+          // Notifica che la query iniziale è stata processata
+          if (onInitialQueryProcessed) {
+            onInitialQueryProcessed()
+          }
         }
       }
       
       processInitialQuery()
     }
-  }, [initialQuery, userId])
+  }, [initialQuery, userId, onInitialQueryProcessed])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

@@ -915,15 +915,10 @@ export class SupabaseQueryEngine {
     const nextWeek = new Date()
     nextWeek.setDate(today.getDate() + 7)
 
-    const { data, error } = await supabase
+    // Prima provo una query semplice senza join per testare
+    let query = supabase
       .from('activities')
-      .select(`
-        *,
-        practices!inner(
-          *,
-          clients!inner(*)
-        )
-      `)
+      .select('*')
       .eq('user_id', userId)
       .eq('stato', 'todo')
       .gte('data', format(today, 'yyyy-MM-dd'))
@@ -932,7 +927,54 @@ export class SupabaseQueryEngine {
       .order('data', { ascending: true })
       .limit(5)
 
-    if (error) throw error
+    const { data, error } = await query
+
+    if (error) {
+      console.error('Query error in queryCosaFare:', error)
+      throw error
+    }
+
+    console.log('Query cosa fare result (simple):', { data, count: data?.length || 0 })
+
+    // Se la query semplice funziona, provo quella con join
+    if (data && data.length > 0) {
+      const enrichedQuery = supabase
+        .from('activities')
+        .select(`
+          *,
+          practices!inner(
+            *,
+            clients!inner(*)
+          )
+        `)
+        .eq('user_id', userId)
+        .eq('stato', 'todo')
+        .gte('data', format(today, 'yyyy-MM-dd'))
+        .lte('data', format(nextWeek, 'yyyy-MM-dd'))
+        .order('priorita', { ascending: false })
+        .order('data', { ascending: true })
+        .limit(5)
+
+      const { data: enrichedData, error: enrichedError } = await enrichedQuery
+
+      if (enrichedError) {
+        console.error('Enriched query error:', enrichedError)
+        // Ritorna i dati semplici se il join fallisce
+        return {
+          type: 'success',
+          data: data || [],
+          count: data?.length || 0
+        }
+      }
+
+      console.log('Query cosa fare result (enriched):', { data: enrichedData, count: enrichedData?.length || 0 })
+      
+      return {
+        type: 'success',
+        data: enrichedData || [],
+        count: enrichedData?.length || 0
+      }
+    }
 
     return {
       type: 'success',

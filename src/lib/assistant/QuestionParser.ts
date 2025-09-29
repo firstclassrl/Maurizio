@@ -119,7 +119,28 @@ export class QuestionParser {
       /calcola\s+(\d+)\s+giorni?\s+per\s+(?:la\s+)?(cassazione|notifica)/i,
       /quando\s+scade\s+(?:la\s+)?prescrizione/i,
       /calcola\s+(?:il\s+)?termine\s+(?:per\s+)?(.+)/i,
-      /quanto\s+tempo\s+ho\s+per\s+(.+)/i
+      /quanto\s+tempo\s+ho\s+per\s+(.+)/i,
+      // Pattern aggiuntivi dall'app per termini processuali
+      /quando\s+scade\s+(?:la\s+)?memoria/i,
+      /quanto\s+tempo\s+per\s+(?:la\s+)?memoria/i,
+      /quando\s+scade\s+(?:il\s+)?ricorso/i,
+      /quanto\s+tempo\s+per\s+(?:il\s+)?ricorso/i,
+      /quando\s+scade\s+(?:la\s+)?notifica/i,
+      /quanto\s+tempo\s+per\s+(?:la\s+)?notifica/i,
+      /quando\s+scade\s+(?:la\s+)?prova/i,
+      /quanto\s+tempo\s+per\s+(?:la\s+)?prova/i,
+      /quando\s+scade\s+(?:il\s+)?reclamo/i,
+      /quanto\s+tempo\s+per\s+(?:il\s+)?reclamo/i,
+      /quando\s+scade\s+(?:l'|la\s+)?impugnazione/i,
+      /quanto\s+tempo\s+per\s+(?:l'|la\s+)?impugnazione/i,
+      /quando\s+scade\s+(?:l'|la\s+)?esecuzione/i,
+      /quanto\s+tempo\s+per\s+(?:l'|la\s+)?esecuzione/i,
+      /calcola\s+(?:il\s+)?termine\s+(?:processuale\s+)?(?:per\s+)?(.+)/i,
+      /quanti\s+giorni\s+(?:processuali\s+)?per\s+(.+)/i,
+      /termine\s+(?:processuale\s+)?(?:per\s+)?(.+)/i,
+      /scadenza\s+(?:processuale\s+)?(?:per\s+)?(.+)/i,
+      /quando\s+devo\s+(?:presentare|depositare|notificare)\s+(.+)/i,
+      /quanto\s+tempo\s+ho\s+per\s+(?:presentare|depositare|notificare)\s+(.+)/i
     ],
     
     // NUOVI PATTERN FASE 1 - CLIENTI
@@ -245,7 +266,20 @@ export class QuestionParser {
       /quali\s+documenti\s+devo\s+preparare/i,
       /mostrami\s+(?:la\s+mia\s+)?to-do\s+list/i,
       /qual\s+è\s+(?:la\s+mia\s+)?prossima\s+priorità/i,
-      /cosa\s+non\s+posso\s+dimenticare/i
+      /cosa\s+non\s+posso\s+dimenticare/i,
+      // Pattern aggiuntivi dall'app
+      /quali\s+scadenze\s+ho\s+oggi/i,
+      /cosa\s+scade\s+oggi/i,
+      /quale\s+termine\s+scade\s+oggi/i,
+      /cosa\s+devo\s+presentare\s+oggi/i,
+      /quale\s+atto\s+devo\s+fare\s+oggi/i,
+      /cosa\s+devo\s+depositare\s+oggi/i,
+      /quale\s+memoria\s+devo\s+preparare/i,
+      /cosa\s+devo\s+notificare\s+oggi/i,
+      /quale\s+ricorso\s+devo\s+fare/i,
+      /cosa\s+devo\s+impugnare/i,
+      /quale\s+prova\s+devo\s+proporre/i,
+      /cosa\s+devo\s+chiedere\s+in\s+tribunale/i
     ],
     
     pianificazione: [

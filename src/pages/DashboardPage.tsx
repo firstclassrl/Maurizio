@@ -955,6 +955,9 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
                 setIsAssistantOpen(false)
                 setInitialAssistantQuery('')
               }}
+              onInitialQueryProcessed={() => {
+                setInitialAssistantQuery('')
+              }}
             />
           </div>
         </div>
