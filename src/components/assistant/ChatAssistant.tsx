@@ -31,6 +31,7 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isListening, setIsListening] = useState(false)
+  const stopListenTimeoutRef = useRef<number | null>(null)
   const [isSpeechSupported, setIsSpeechSupported] = useState(false)
   const [remainingQueries, setRemainingQueries] = useState<number | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -50,9 +51,16 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
       recognitionRef.current.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript
         setInputValue(transcript)
+        // auto-stop on speech end
+        recognitionRef.current.stop()
         setIsListening(false)
       }
       
+      recognitionRef.current.onspeechend = () => {
+        recognitionRef.current.stop()
+        setIsListening(false)
+      }
+
       recognitionRef.current.onerror = () => {
         setIsListening(false)
       }
@@ -209,6 +217,14 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
     } else {
       recognitionRef.current.start()
       setIsListening(true)
+      // safety timeout 8s
+      if (stopListenTimeoutRef.current) window.clearTimeout(stopListenTimeoutRef.current)
+      stopListenTimeoutRef.current = window.setTimeout(() => {
+        if (isListening && recognitionRef.current) {
+          recognitionRef.current.stop()
+          setIsListening(false)
+        }
+      }, 8000)
     }
   }
 
@@ -307,17 +323,30 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
               disabled={isLoading}
             />
             {isSpeechSupported && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleVoiceInput}
-                disabled={isLoading}
-                className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 ${
-                  isListening ? 'text-red-400 hover:text-red-300' : 'text-slate-400 hover:text-slate-300'
-                }`}
-              >
-                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              </Button>
+              <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleVoiceInput}
+                  disabled={isLoading}
+                  className={`h-8 w-8 p-0 ${
+                    isListening ? 'text-red-400 hover:text-red-300' : 'text-slate-400 hover:text-slate-300'
+                  }`}
+                >
+                  {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                </Button>
+                {onClose && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onClose}
+                    className="h-8 w-8 p-0 text-slate-400 hover:text-slate-300"
+                    title="Apri a tutto schermo"
+                  >
+                    ↗
+                  </Button>
+                )}
+              </div>
             )}
           </div>
           <Button
