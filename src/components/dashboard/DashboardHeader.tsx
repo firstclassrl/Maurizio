@@ -82,7 +82,6 @@ export function DashboardHeader({
             <Logo size={40} />
             <div>
               <h1 className="text-xl font-bold text-white">LexAgenda</h1>
-              <p className="text-sm text-slate-300">Gestione pratiche e scadenze</p>
             </div>
           </div>
           
