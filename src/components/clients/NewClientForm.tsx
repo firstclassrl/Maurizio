@@ -435,35 +435,29 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
               </div>
               <div>
                 <Label htmlFor="indirizzo_cap">CAP</Label>
-                <AddressAutocomplete
+                <Input
+                  id="indirizzo_cap"
                   value={indirizzo.cap}
-                  onChange={(v)=> setIndirizzo(prev => ({ ...prev, cap: v }))}
-                  onSelect={(s)=>{
-                    setIndirizzo({ strada: s.via, civico: s.civico, cap: s.cap, citta: s.citta, provincia: s.provincia })
-                  }}
-                  placeholder="CAP (autocomplete)"
+                  onChange={(e) => setIndirizzo(prev => ({ ...prev, cap: e.target.value }))}
+                  placeholder="00100"
                 />
               </div>
               <div>
                 <Label htmlFor="indirizzo_citta">Città</Label>
-                <AddressAutocomplete
+                <Input
+                  id="indirizzo_citta"
                   value={indirizzo.citta}
-                  onChange={(v)=> setIndirizzo(prev => ({ ...prev, citta: v }))}
-                  onSelect={(s)=>{
-                    setIndirizzo({ strada: s.via, civico: s.civico, cap: s.cap, citta: s.citta, provincia: s.provincia })
-                  }}
-                  placeholder="Città/Paese (autocomplete)"
+                  onChange={(e) => setIndirizzo(prev => ({ ...prev, citta: e.target.value }))}
+                  placeholder="Roma"
                 />
               </div>
               <div>
                 <Label htmlFor="indirizzo_provincia">Provincia</Label>
-                <AddressAutocomplete
+                <Input
+                  id="indirizzo_provincia"
                   value={indirizzo.provincia}
-                  onChange={(v)=> setIndirizzo(prev => ({ ...prev, provincia: v }))}
-                  onSelect={(s)=>{
-                    setIndirizzo({ strada: s.via, civico: s.civico, cap: s.cap, citta: s.citta, provincia: s.provincia })
-                  }}
-                  placeholder="Provincia (autocomplete, sigla)"
+                  onChange={(e) => setIndirizzo(prev => ({ ...prev, provincia: e.target.value }))}
+                  placeholder="RM"
                 />
               </div>
             </div>

@@ -471,29 +471,29 @@ export const SimpleClientForm: React.FC<SimpleClientFormProps> = ({
               </div>
               <div>
                 <Label htmlFor="indirizzo_cap">CAP</Label>
-                <AddressAutocomplete
+                <Input
+                  id="indirizzo_cap"
                   value={formData.indirizzo_cap}
-                  onChange={(v) => handleInputChange('indirizzo_cap', v)}
-                  onSelect={handleAddressSelect}
-                  placeholder="CAP (autocomplete)"
+                  onChange={(e) => handleInputChange('indirizzo_cap', e.target.value)}
+                  placeholder="00100"
                 />
               </div>
               <div>
                 <Label htmlFor="indirizzo_citta">Città</Label>
-                <AddressAutocomplete
+                <Input
+                  id="indirizzo_citta"
                   value={formData.indirizzo_citta}
-                  onChange={(v) => handleInputChange('indirizzo_citta', v)}
-                  onSelect={handleAddressSelect}
-                  placeholder="Città (autocomplete)"
+                  onChange={(e) => handleInputChange('indirizzo_citta', e.target.value)}
+                  placeholder="Roma"
                 />
               </div>
               <div>
                 <Label htmlFor="indirizzo_provincia">Provincia</Label>
-                <AddressAutocomplete
+                <Input
+                  id="indirizzo_provincia"
                   value={formData.indirizzo_provincia}
-                  onChange={(v) => handleInputChange('indirizzo_provincia', v)}
-                  onSelect={handleAddressSelect}
-                  placeholder="Provincia (autocomplete)"
+                  onChange={(e) => handleInputChange('indirizzo_provincia', e.target.value)}
+                  placeholder="RM"
                 />
               </div>
             </div>
