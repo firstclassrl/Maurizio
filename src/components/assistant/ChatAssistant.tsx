@@ -2,13 +2,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent } from '../ui/card'
 import { Input } from '../ui/input'
-import { Mic, MicOff, Send, Bot, User, Loader2 } from 'lucide-react'
-import { QuestionParser } from '../../lib/assistant/QuestionParser'
-import { SupabaseQueryEngine } from '../../lib/assistant/SupabaseQueryEngine'
-import { ResponseFormatter } from '../../lib/assistant/ResponseFormatter'
-import { IntentAnalyzer } from '../../lib/assistant/IntentAnalyzer'
-import { IntelligentQueryEngine } from '../../lib/assistant/IntelligentQueryEngine'
-import { IntelligentResponseFormatter } from '../../lib/assistant/IntelligentResponseFormatter'
+import { Mic, MicOff, Send, Bot, User, Loader2, Zap } from 'lucide-react'
+import { supabase } from '../../lib/supabase'
 
 interface Message {
   id: string
@@ -29,7 +24,7 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
     {
       id: '1',
       type: 'assistant',
-      content: '👋 Ciao! Sono il tuo assistente legale. Puoi chiedermi informazioni su pratiche, udienze, clienti e scadenze. Prova a chiedere: "Quando è l\'udienza di Alfa Srl?" o "Quali pratiche scadono questa settimana?"',
+      content: '👋 Ciao! Sono il tuo assistente legale AI. Puoi chiedermi informazioni su pratiche, udienze, clienti e scadenze. Prova a chiedere: "Quando è l\'udienza di Alfa Srl?" o "Quali pratiche scadono questa settimana?"',
       timestamp: new Date()
     }
   ])
@@ -37,6 +32,7 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
   const [isLoading, setIsLoading] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const [isSpeechSupported, setIsSpeechSupported] = useState(false)
+  const [remainingQueries, setRemainingQueries] = useState<number | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const recognitionRef = useRef<any>(null)
   const hasProcessedInitialQueryRef = useRef(false)
@@ -120,35 +116,82 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
     setInputValue('')
     setIsLoading(true)
 
-        try {
-          // ANALISI INTENT INTELLIGENTE
-          const intentAnalyzer = new IntentAnalyzer()
-          const intent = intentAnalyzer.analyzeIntent(messageContent)
-          console.log('ChatAssistant: Intent analysis:', intent)
+    try {
+      // Risposte immediate senza API per richieste di ora/data
+      const timeNowRegex = /(che ore sono|che\s*ora(?:\s*(?:è|e')?)?)/i
+      const dateTodayRegex = /(che\s*giorno\s*è|data\s*(?:di\s*)?oggi)/i
+      if (timeNowRegex.test(messageContent)) {
+        const now = new Date()
+        const response = `⌚ Ora attuale: ${now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'assistant',
+          content: response,
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, assistantMessage])
+        return
+      }
+      if (dateTodayRegex.test(messageContent)) {
+        const today = new Date()
+        const response = `📅 Oggi è ${today.toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'assistant',
+          content: response,
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, assistantMessage])
+        return
+      }
 
-          // Execute query intelligente
-          const queryEngine = new IntelligentQueryEngine()
-          const result = await queryEngine.execute(intent, userId)
-          console.log('ChatAssistant: Query result:', result)
+      // Chiama la Edge Function Groq
+      const { data, error } = await supabase.functions.invoke('ai-assistant-groq', {
+        body: {
+          question: messageContent,
+          userId: userId,
+          context: {
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent
+          }
+        }
+      })
 
-          // Format response intelligente
-          const formatter = new IntelligentResponseFormatter()
-          const response = formatter.format(intent, result)
+      if (error) {
+        throw new Error(`Errore API: ${error.message}`)
+      }
+
+      if (data.error) {
+        if (data.error === 'Daily limit reached') {
+          const errorMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            type: 'assistant',
+            content: `⚠️ Hai raggiunto il limite giornaliero di 100 query. Riprova domani o contatta l'amministratore per aumentare il limite.`,
+            timestamp: new Date()
+          }
+          setMessages(prev => [...prev, errorMessage])
+          setRemainingQueries(0)
+          return
+        }
+        throw new Error(data.error)
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: response,
+        content: data.answer || 'Nessuna risposta ricevuta.',
         timestamp: new Date()
       }
 
       setMessages(prev => [...prev, assistantMessage])
+      setRemainingQueries(data.remaining || null)
+
     } catch (error) {
       console.error('ChatAssistant: Error processing message:', error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: `❌ Errore durante l'esecuzione della query: ${error instanceof Error ? error.message : 'Errore sconosciuto'}`,
+        content: `❌ Errore durante l'elaborazione: ${error instanceof Error ? error.message : 'Errore sconosciuto'}`,
         timestamp: new Date()
       }
       setMessages(prev => [...prev, errorMessage])
@@ -183,6 +226,12 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
         <div className="flex items-center gap-2">
           <Bot className="h-6 w-6 text-blue-400" />
           <h2 className="text-lg font-semibold text-white">Assistente Legale AI</h2>
+          {remainingQueries !== null && (
+            <div className="flex items-center gap-1 ml-2 px-2 py-1 bg-slate-700 rounded-full">
+              <Zap className="h-3 w-3 text-yellow-400" />
+              <span className="text-xs text-slate-300">{remainingQueries} rimaste</span>
+            </div>
+          )}
         </div>
         {onClose && (
           <Button variant="ghost" size="sm" onClick={onClose} className="text-slate-300 hover:text-white hover:bg-slate-700">
@@ -280,33 +329,7 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
           </Button>
         </div>
         
-        {/* Quick Actions */}
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setInputValue('Quando è l\'udienza di Alfa Srl?')}
-            className="text-xs bg-slate-700 border-slate-600 text-slate-200 hover:bg-slate-600"
-          >
-            📅 Udienze
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setInputValue('Quali pratiche scadono questa settimana?')}
-            className="text-xs bg-slate-700 border-slate-600 text-slate-200 hover:bg-slate-600"
-          >
-            ⏰ Scadenze
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setInputValue('Mostrami tutti i clienti')}
-            className="text-xs bg-slate-700 border-slate-600 text-slate-200 hover:bg-slate-600"
-          >
-            👥 Clienti
-          </Button>
-        </div>
+        {/* Quick Actions rimossi */}
       </div>
     </Card>
   )

@@ -116,10 +116,12 @@ export class IntentAnalyzer {
     }
     
     // Estrazione attività
-    const activityKeywords = ['udienza', 'ricorso', 'memoria', 'notifica', 'pagamento', 'scadenza', 'appuntamento']
+    // supporta semplici plurali e variazioni (udienza/udienze, scadenza/scadenze, ecc.)
+    const activityKeywords = ['udienza', 'udienze', 'ricorso', 'memoria', 'notifica', 'pagamento', 'scadenza', 'scadenze', 'appuntamento', 'appuntamenti']
     for (const keyword of activityKeywords) {
       if (text.includes(keyword)) {
-        entities.activity = keyword
+        // normalizza al singolare più comune per le query
+        entities.activity = keyword.replace(/e?s$/,'')
         break
       }
     }
