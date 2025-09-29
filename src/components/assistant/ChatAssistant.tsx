@@ -6,6 +6,9 @@ import { Mic, MicOff, Send, Bot, User, Loader2 } from 'lucide-react'
 import { QuestionParser } from '../../lib/assistant/QuestionParser'
 import { SupabaseQueryEngine } from '../../lib/assistant/SupabaseQueryEngine'
 import { ResponseFormatter } from '../../lib/assistant/ResponseFormatter'
+import { IntentAnalyzer } from '../../lib/assistant/IntentAnalyzer'
+import { IntelligentQueryEngine } from '../../lib/assistant/IntelligentQueryEngine'
+import { IntelligentResponseFormatter } from '../../lib/assistant/IntelligentResponseFormatter'
 
 interface Message {
   id: string
@@ -117,20 +120,20 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
     setInputValue('')
     setIsLoading(true)
 
-    try {
-      // Parse the question
-      const parser = new QuestionParser()
-      const parsedQuestion = parser.parse(messageContent)
-      console.log('ChatAssistant: Parsed question:', parsedQuestion)
-      
-      // Execute query
-      const queryEngine = new SupabaseQueryEngine()
-      const queryResult = await queryEngine.execute(parsedQuestion, userId)
-      console.log('ChatAssistant: Query result:', queryResult)
-      
-      // Format response
-      const formatter = new ResponseFormatter()
-      const response = formatter.format(parsedQuestion.type, queryResult, parsedQuestion.entities)
+        try {
+          // ANALISI INTENT INTELLIGENTE
+          const intentAnalyzer = new IntentAnalyzer()
+          const intent = intentAnalyzer.analyzeIntent(messageContent)
+          console.log('ChatAssistant: Intent analysis:', intent)
+
+          // Execute query intelligente
+          const queryEngine = new IntelligentQueryEngine()
+          const result = await queryEngine.execute(intent, userId)
+          console.log('ChatAssistant: Query result:', result)
+
+          // Format response intelligente
+          const formatter = new IntelligentResponseFormatter()
+          const response = formatter.format(intent, result)
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
