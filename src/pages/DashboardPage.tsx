@@ -503,12 +503,27 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         {/* Welcome Message and Counters */}
         <div className="mb-6">
           <div className="flex items-center justify-between bg-white border rounded-md p-4">
-            <div className="text-gray-800 font-semibold">
-              {new Date().toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
+            <div className="text-gray-800">
+              <span className="font-bold mr-2">Buongiorno Avvocato</span>
+              <span className="font-semibold">
+                {new Date().toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
+              </span>
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-800">Oggi {getTodayTasks().length}</span>
-              <span className="px-2 py-1 rounded-full bg-red-100 text-red-800">Urgenti {tasks.filter(t=> t.urgent && t.stato==='todo').length}</span>
+              <button
+                onClick={() => setShowUrgentTasks(true)}
+                className="px-2 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 transition"
+                title="Vedi attività urgenti"
+              >
+                Urgenti {tasks.filter(t=> t.urgent && t.stato==='todo').length}
+              </button>
+              <button
+                onClick={onNavigateToOverdue}
+                className="px-2 py-1 rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 transition"
+                title="Vedi attività scadute"
+              >
+                Scaduti {tasks.filter(t=> new Date(t.scadenza) < new Date() && t.stato==='todo').length}
+              </button>
             </div>
           </div>
         </div>
