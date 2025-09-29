@@ -3,7 +3,7 @@ import { Card, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Badge } from '../ui/badge'
-import { Calendar, User, Users, FileText, ChevronRight } from 'lucide-react'
+import { Calendar, User, Users, FileText, ChevronRight, Trash2 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { Practice, Activity } from '../../types/practice'
 import { formatTimeWithoutSeconds } from '../../lib/time-utils'
@@ -19,6 +19,7 @@ export function PracticeArchive({ open, onOpenChange }: PracticeArchiveProps) {
   const [practiceActivities, setPracticeActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(false)
   const [activitiesLoading, setActivitiesLoading] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   // Carica tutte le pratiche
   const loadPractices = async () => {
@@ -38,6 +39,42 @@ export function PracticeArchive({ open, onOpenChange }: PracticeArchiveProps) {
     } catch (error) {
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Elimina pratica e tutte le attività collegate
+  const handleDeletePractice = async (practice: Practice) => {
+    if (!practice?.id) return
+    const confirmed = window.confirm(`Eliminare definitivamente la pratica ${practice.numero}? Verranno eliminate anche tutte le attività associate.`)
+    if (!confirmed) return
+
+    setDeletingId(practice.id)
+    try {
+      // 1) Elimina attività collegate
+      const { error: actErr } = await supabase
+        .from('activities')
+        .delete()
+        .eq('pratica_id', practice.id)
+
+      if (actErr) throw actErr
+
+      // 2) Elimina pratica
+      const { error: pracErr } = await supabase
+        .from('practices')
+        .delete()
+        .eq('id', practice.id)
+
+      if (pracErr) throw pracErr
+
+      // 3) Aggiorna UI
+      setPractices(prev => prev.filter(p => p.id !== practice.id))
+      if (selectedPractice?.id === practice.id) {
+        handleCloseActivities()
+      }
+    } catch (error) {
+      alert(`Errore durante l'eliminazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -155,15 +192,25 @@ export function PracticeArchive({ open, onOpenChange }: PracticeArchiveProps) {
                         </div>
                       </div>
                       
-                      <Button
-                        onClick={() => handlePracticeSelect(practice)}
-                        variant="outline"
-                        size="sm"
-                        className="ml-4"
-                      >
-                        <ChevronRight className="h-4 w-4 mr-1" />
-                        Visualizza Attività
-                      </Button>
+                      <div className="flex items-center gap-2 ml-4">
+                        <Button
+                          onClick={() => handlePracticeSelect(practice)}
+                          variant="outline"
+                          size="sm"
+                        >
+                          <ChevronRight className="h-4 w-4 mr-1" />
+                          Visualizza Attività
+                        </Button>
+                        <Button
+                          onClick={() => handleDeletePractice(practice)}
+                          variant="destructive"
+                          size="sm"
+                          disabled={deletingId === practice.id}
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          {deletingId === practice.id ? 'Eliminazione…' : 'Elimina'}
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
