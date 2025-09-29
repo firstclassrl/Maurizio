@@ -34,9 +34,9 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
   const [isLoading, setIsLoading] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const [isSpeechSupported, setIsSpeechSupported] = useState(false)
-  const [hasProcessedInitialQuery, setHasProcessedInitialQuery] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const recognitionRef = useRef<any>(null)
+  const hasProcessedInitialQueryRef = useRef(false)
 
   useEffect(() => {
     // Check if speech recognition is supported
@@ -66,11 +66,16 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
     }
   }, [])
 
+  // Reset ref quando initialQuery cambia
+  useEffect(() => {
+    hasProcessedInitialQueryRef.current = false
+  }, [initialQuery])
+
   // Gestisci query iniziale
   useEffect(() => {
-    if (initialQuery && initialQuery.trim() && !hasProcessedInitialQuery) {
+    if (initialQuery && initialQuery.trim() && !hasProcessedInitialQueryRef.current) {
       console.log('ChatAssistant: Processing initial query:', initialQuery)
-      setHasProcessedInitialQuery(true)
+      hasProcessedInitialQueryRef.current = true
       setInputValue(initialQuery)
       // Chiama handleSendMessage direttamente senza dipendenze
       const processInitialQuery = async () => {
