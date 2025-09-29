@@ -61,9 +61,6 @@ export function useGeoapifyAutocomplete(initialQuery = '', mode: Mode = 'generic
         abortRef.current = new AbortController()
 
         const apiKey = (import.meta as any).env?.VITE_GEOAPIFY_API_KEY
-        console.log('Geoapify API Key:', apiKey ? 'Presente' : 'Mancante')
-        console.log('Tutte le variabili env:', Object.keys((import.meta as any).env || {}))
-        
         if (!apiKey || apiKey === 'your-geoapify-api-key-here') {
           setError('Chiave API Geoapify non configurata. Configura VITE_GEOAPIFY_API_KEY nel file .env con la tua chiave reale')
           setLoading(false)

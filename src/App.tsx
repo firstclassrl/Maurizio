@@ -14,8 +14,6 @@ import { Loader2 } from 'lucide-react'
 import { WeekendSettingsProvider } from './contexts/WeekendSettingsContext'
 import { useAppUpdate } from './hooks/useAppUpdate'
 import { UpdateNotification } from './components/ui/UpdateNotification'
-import { EnvDebug } from './components/debug/EnvDebug'
-import { GeoapifyTest } from './components/debug/GeoapifyTest'
 
 type AppView = 'dashboard' | 'month' | 'week' | 'overdue' | 'calcolatore-termini' | 'clients' | 'storage' | 'practice-archive'
 
@@ -159,8 +157,6 @@ function App() {
         }}
         onDismiss={() => setShowUpdateNotification(false)}
       />
-      <EnvDebug />
-      <GeoapifyTest />
     </WeekendSettingsProvider>
   )
 }
