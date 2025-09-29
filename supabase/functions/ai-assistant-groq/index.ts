@@ -1,12 +1,21 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-function corsHeaders(origin: string = '*') {
+function corsHeaders(originHeader?: string) {
+  const ALLOWED_ORIGINS = new Set<string>([
+    'https://lexagenda.netlify.app'
+  ])
+
+  const origin = originHeader && ALLOWED_ORIGINS.has(originHeader)
+    ? originHeader
+    : 'https://lexagenda.netlify.app'
+
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type,Authorization,apikey,x-client-info',
     'Access-Control-Allow-Credentials': 'true',
+    'Vary': 'Origin'
   }
 }
 
@@ -20,7 +29,7 @@ const DEFAULT_MODEL = Deno.env.get('GROQ_MODEL') || 'llama-3.1-8b-instant'
 const DAILY_LIMIT = Number(Deno.env.get('AI_DAILY_LIMIT') ?? '100')
 
 serve(async (req) => {
-  const origin = req.headers.get('origin') ?? '*'
+  const origin = req.headers.get('origin') ?? undefined
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(origin) })
   }
