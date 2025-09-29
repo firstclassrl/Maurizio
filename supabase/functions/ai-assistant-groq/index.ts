@@ -69,10 +69,18 @@ serve(async (req) => {
     }
 
     // Call Groq API
-    const systemPrompt = "Sei un assistente AI specializzato per studi legali italiani. Usa CONTENUTO_DB quando presente per rispondere con dati reali dell'utente. Se il dato non è in CONTENUTO_DB, spiega cosa manca e suggerisci come ottenerlo. Rispondi in italiano, sintetico e professionale."
+    const systemPrompt = "Sei un assistente AI per LexAgenda. DEVI rispondere SOLO utilizzando i dati contenuti in CONTENUTO_DB. Non inventare, non citare fonti esterne, non parlare in generale. Se CONTENUTO_DB è vuoto o non pertinente, rispondi esattamente: 'Nessun risultato nel database per la richiesta.' Rispondi in italiano, sintetico e professionale."
 
     // Costruzione contesto dati dal database
     const dbContext = await buildDbContext(supabase, user.id, question)
+
+    // Se il contesto è vuoto, rispondiamo senza coinvolgere il modello
+    if (!dbContext) {
+      return new Response(
+        JSON.stringify({ answer: 'Nessun risultato nel database per la richiesta.', model: DEFAULT_MODEL, tokens: { in: 0, out: 0 }, remaining: Math.max(DAILY_LIMIT - (Number(usageCountData || 0)), 0) }),
+        { headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' } }
+      )
+    }
 
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
