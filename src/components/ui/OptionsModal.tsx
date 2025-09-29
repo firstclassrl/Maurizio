@@ -12,9 +12,10 @@ interface OptionsModalProps {
   onOpenChange: (open: boolean) => void
   user: User
   onNavigateToStorage?: () => void
+  onNavigateToPracticeStorage?: () => void
 }
 
-export function OptionsModal({ open, onOpenChange, user, onNavigateToStorage }: OptionsModalProps) {
+export function OptionsModal({ open, onOpenChange, user, onNavigateToStorage, onNavigateToPracticeStorage }: OptionsModalProps) {
   const [activeTab, setActiveTab] = useState<'audio' | 'push' | 'calendar' | 'storage'>('audio')
 
   return (
@@ -92,22 +93,40 @@ export function OptionsModal({ open, onOpenChange, user, onNavigateToStorage }: 
 
           {activeTab === 'storage' && (
             <div>
-              <h3 className="text-lg font-semibold mb-4">Storage Attività Evase</h3>
-              <p className="text-gray-600 mb-4">
-                Accedi allo storage per visualizzare e gestire tutte le attività marcate come evase.
-              </p>
-              {onNavigateToStorage && (
-                <Button
-                  onClick={() => {
-                    onNavigateToStorage()
-                    onOpenChange(false)
-                  }}
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
-                >
-                  <Archive className="h-4 w-4 mr-2" />
-                  Apri Storage
-                </Button>
-              )}
+              <h3 className="text-lg font-semibold mb-4">Storage</h3>
+              <div className="space-y-3">
+                <div className="p-3 border rounded-md">
+                  <p className="text-gray-700 mb-3">Attività evase</p>
+                  {onNavigateToStorage && (
+                    <Button
+                      onClick={() => {
+                        onNavigateToStorage()
+                        onOpenChange(false)
+                      }}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      <Archive className="h-4 w-4 mr-2" />
+                      Apri Storage Attività
+                    </Button>
+                  )}
+                </div>
+
+                <div className="p-3 border rounded-md">
+                  <p className="text-gray-700 mb-3">Pratiche archiviate</p>
+                  {onNavigateToPracticeStorage && (
+                    <Button
+                      onClick={() => {
+                        onNavigateToPracticeStorage()
+                        onOpenChange(false)
+                      }}
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                    >
+                      <Archive className="h-4 w-4 mr-2" />
+                      Apri Storage Pratiche
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>

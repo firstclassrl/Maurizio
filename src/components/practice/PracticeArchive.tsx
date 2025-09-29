@@ -73,9 +73,9 @@ export function PracticeArchive({ open, onOpenChange }: PracticeArchiveProps) {
       if (selectedPractice?.id === practice.id) {
         handleCloseActivities()
       }
-      showSuccess(`Pratica ${practice.numero} eliminata`)
+      showSuccess('Pratica eliminata', `Pratica ${practice.numero} eliminata`)
     } catch (error) {
-      showError(`Errore durante l'eliminazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
+      showError('Errore', `Errore durante l'eliminazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
     } finally {
       setDeletingId(null)
     }

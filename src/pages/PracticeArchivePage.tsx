@@ -6,6 +6,7 @@ import { Calendar, User, Users, FileText, ArrowLeft, Plus, Trash2 } from 'lucide
 import { supabase } from '../lib/supabase'
 import { Practice } from '../types/practice'
 import { useToast } from '../components/ui/Toast'
+import { Archive } from 'lucide-react'
 import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
@@ -39,6 +40,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
     giudice: ''
   })
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [archivingId, setArchivingId] = useState<string | null>(null)
 
   const loadUserData = async () => {
     try {
@@ -68,11 +70,34 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       if (pracErr) throw pracErr
 
       setPractices(prev => prev.filter(p => p.id !== practice.id))
-      showSuccess(`Pratica ${practice.numero} eliminata`)
+      showSuccess('Pratica eliminata', `Pratica ${practice.numero} eliminata`)
     } catch (error) {
-      showError(`Errore durante l'eliminazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
+      showError('Errore', `Errore durante l'eliminazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
     } finally {
       setDeletingId(null)
+    }
+  }
+
+  // Archivia pratica (sposta in storage pratiche)
+  const handleArchivePractice = async (practice: Practice) => {
+    if (!practice?.id) return
+    const confirmed = window.confirm(`Archiviare la pratica ${practice.numero}? Potrai vederla nello Storage Pratiche e ripristinarla in seguito.`)
+    if (!confirmed) return
+
+    setArchivingId(practice.id)
+    try {
+      const { error } = await supabase
+        .from('practices')
+        .update({ stato: 'archived' })
+        .eq('id', practice.id)
+      if (error) throw error
+
+      setPractices(prev => prev.filter(p => p.id !== practice.id))
+      showSuccess('Pratica archiviata', `Pratica ${practice.numero} archiviata`)
+    } catch (error) {
+      showError('Errore', `Errore durante l'archiviazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
+    } finally {
+      setArchivingId(null)
     }
   }
 
@@ -431,6 +456,16 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                           >
                             <Plus className="h-4 w-4 mr-2" />
                             Aggiungi Attività
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => handleArchivePractice(practice)}
+                            disabled={archivingId === practice.id}
+                          >
+                            <Archive className="h-4 w-4 mr-2" />
+                            {archivingId === practice.id ? 'Archiviazione…' : 'Archivia Pratica'}
                           </Button>
                           <Button
                             variant="destructive"
