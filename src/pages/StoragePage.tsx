@@ -35,6 +35,7 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
   }
 
   const [tasks, setTasks] = useState<Task[]>([])
+  const [archivedPractices, setArchivedPractices] = useState<any[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
@@ -48,6 +49,7 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
   useEffect(() => {
     loadTasks()
     loadClients()
+    loadArchivedPractices()
   }, [])
 
   const loadTasks = async () => {
@@ -133,6 +135,25 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
       setClients(data || [])
     } catch (error) {
       console.error('Error loading clients:', error)
+    }
+  }
+
+  const loadArchivedPractices = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('practices')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('stato', 'archived')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      setArchivedPractices(data || [])
+    } catch (error) {
+      setArchivedPractices([])
     }
   }
 
@@ -222,7 +243,7 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
               <Logo />
             </div>
             <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-semibold text-gray-900">Storage Attività Evase</h1>
+              <h1 className="text-xl font-semibold text-gray-900">Storage</h1>
             </div>
           </div>
         </div>
@@ -371,6 +392,56 @@ export function StoragePage({ onNavigateBack }: StoragePageProps) {
                       <Trash2 className="h-4 w-4 mr-1" />
                       Elimina
                     </Button>
+                  </div>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
+
+        {/* Archived Practices */}
+        <div className="mt-10">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Pratiche archiviate</h2>
+            <p className="text-sm text-gray-600">Ripristina o elimina definitivamente le pratiche archiviate.</p>
+          </div>
+          {archivedPractices.length === 0 ? (
+            <Card className="p-6">
+              <div className="text-gray-500">Nessuna pratica archiviata</div>
+            </Card>
+          ) : (
+            archivedPractices.map((p) => (
+              <Card key={p.id} className="p-4 mb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold">Pratica {p.numero}</div>
+                    <div className="text-sm text-gray-600">Creata: {new Date(p.created_at).toLocaleDateString('it-IT')}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline" onClick={async () => {
+                      try {
+                        const { error } = await supabase
+                          .from('practices')
+                          .update({ stato: 'active' })
+                          .eq('id', p.id)
+                        if (error) throw error
+                        setArchivedPractices(prev => prev.filter(x => x.id !== p.id))
+                        showSuccess('Pratica ripristinata', `Pratica ${p.numero} ripristinata`)
+                      } catch (e) {
+                        showError('Errore', 'Errore nel ripristino pratica')
+                      }
+                    }}>Ripristina</Button>
+                    <Button size="sm" variant="destructive" onClick={async () => {
+                      try {
+                        await supabase.from('activities').delete().eq('pratica_id', p.id)
+                        const { error } = await supabase.from('practices').delete().eq('id', p.id)
+                        if (error) throw error
+                        setArchivedPractices(prev => prev.filter(x => x.id !== p.id))
+                        showError('Pratica eliminata', `Pratica ${p.numero} eliminata definitivamente`)
+                      } catch (e) {
+                        showError('Errore', 'Errore nell\'eliminazione pratica')
+                      }
+                    }}>Elimina</Button>
                   </div>
                 </div>
               </Card>
