@@ -151,7 +151,7 @@ async function buildDbContext(supabase: any, userId: string, question: string): 
       .order('data', { ascending: true })
       .limit(50)
 
-    if (categoriaFilter) {
+    if (categoriaFilter || entities.category) {
       query = query.ilike('categoria', `%${categoriaFilter}%`)
     }
 
@@ -169,6 +169,19 @@ async function buildDbContext(supabase: any, userId: string, question: string): 
     }
     if (entities.client) {
       query = query.or(`practices.clients.ragione.ilike.%${entities.client}%,practices.clients.nome.ilike.%${entities.client}%,practices.clients.cognome.ilike.%${entities.client}%`)
+    }
+    if (entities.counterparty) {
+      // controparti salvate su controparti_ids -> cerca per nome su clients e mappa a id
+      const { data: cps } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('user_id', userId)
+        .or(`ragione.ilike.%${entities.counterparty}%,nome.ilike.%${entities.counterparty}%,cognome.ilike.%${entities.counterparty}%`)
+        .limit(50)
+      if (cps && cps.length) {
+        const ids = cps.map((c: any) => c.id).join(',')
+        // PostgREST non filtra array contains facilmente qui, lasciamo solo categoria/cliente/pratica
+      }
     }
 
     const { data, error } = await query
@@ -220,7 +233,7 @@ async function buildDbContext(supabase: any, userId: string, question: string): 
   }
 }
 
-function extractEntities(q: string): { client?: string; practice?: string } {
+function extractEntities(q: string): { client?: string; practice?: string; counterparty?: string; category?: string } {
   const out: any = {}
   // pratica tipo 2025/003
   const prac = q.match(/\b\d{4}\s*\/?\s*\d{1,4}\b/)
@@ -228,6 +241,12 @@ function extractEntities(q: string): { client?: string; practice?: string } {
   // semplice heuristica per client: dopo "cliente" o nome società maiuscola
   const clientAfterWord = q.match(/cliente\s+([a-zàèéìòùA-Z0-9\.,&\-\s]{2,})/i)
   if (clientAfterWord) out.client = clientAfterWord[1].trim()
+  const counterAfterWord = q.match(/controparte\s+([a-zàèéìòùA-Z0-9\.,&\-\s]{2,})/i)
+  if (counterAfterWord) out.counterparty = counterAfterWord[1].trim()
+  // categorie chiave
+  if (q.includes('udienz')) out.category = 'Udienza'
+  else if (q.includes('scadenz')) out.category = 'Scadenza'
+  else if (q.includes('appuntament')) out.category = 'Appuntamento'
   return out
 }
 
