@@ -6,6 +6,7 @@ import { Badge } from '../ui/badge'
 import { Calendar, User, Users, FileText, ChevronRight, Trash2 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { Practice, Activity } from '../../types/practice'
+import { useToast } from '../ui/Toast'
 import { formatTimeWithoutSeconds } from '../../lib/time-utils'
 
 interface PracticeArchiveProps {
@@ -14,6 +15,7 @@ interface PracticeArchiveProps {
 }
 
 export function PracticeArchive({ open, onOpenChange }: PracticeArchiveProps) {
+  const { showSuccess, showError } = useToast()
   const [practices, setPractices] = useState<Practice[]>([])
   const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null)
   const [practiceActivities, setPracticeActivities] = useState<Activity[]>([])
@@ -71,8 +73,9 @@ export function PracticeArchive({ open, onOpenChange }: PracticeArchiveProps) {
       if (selectedPractice?.id === practice.id) {
         handleCloseActivities()
       }
+      showSuccess(`Pratica ${practice.numero} eliminata`)
     } catch (error) {
-      alert(`Errore durante l'eliminazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
+      showError(`Errore durante l'eliminazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
     } finally {
       setDeletingId(null)
     }

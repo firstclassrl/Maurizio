@@ -5,6 +5,7 @@ import { Badge } from '../components/ui/badge'
 import { Calendar, User, Users, FileText, ArrowLeft, Plus, Trash2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Practice } from '../types/practice'
+import { useToast } from '../components/ui/Toast'
 import { PracticeFilter } from '../components/ui/PracticeFilter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
@@ -17,6 +18,7 @@ interface PracticeArchivePageProps {
 }
 
 export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps) {
+  const { showSuccess, showError } = useToast()
   const [practices, setPractices] = useState<Practice[]>([])
   const [clients] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
@@ -66,8 +68,9 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       if (pracErr) throw pracErr
 
       setPractices(prev => prev.filter(p => p.id !== practice.id))
+      showSuccess(`Pratica ${practice.numero} eliminata`)
     } catch (error) {
-      alert(`Errore durante l'eliminazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
+      showError(`Errore durante l'eliminazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
     } finally {
       setDeletingId(null)
     }
