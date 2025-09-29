@@ -179,7 +179,7 @@ async function buildDbContext(supabase: any, userId: string, question: string): 
       query = query.or(`practices.clients.ragione.ilike.%${entities.client}%,practices.clients.nome.ilike.%${entities.client}%,practices.clients.cognome.ilike.%${entities.client}%`)
     }
     if (entities.counterparty) {
-      // controparti salvate su controparti_ids -> cerca per nome su clients e mappa a id
+      // 1) Trova ID controparti per nome
       const { data: cps } = await supabase
         .from('clients')
         .select('id')
@@ -187,8 +187,21 @@ async function buildDbContext(supabase: any, userId: string, question: string): 
         .or(`ragione.ilike.%${entities.counterparty}%,nome.ilike.%${entities.counterparty}%,cognome.ilike.%${entities.counterparty}%`)
         .limit(50)
       if (cps && cps.length) {
-        const ids = cps.map((c: any) => c.id).join(',')
-        // PostgREST non filtra array contains facilmente qui, lasciamo solo categoria/cliente/pratica
+        const counterpartyIds = cps.map((c: any) => c.id)
+        // 2) Trova pratiche che includono almeno una di queste controparti
+        const { data: pracs } = await supabase
+          .from('practices')
+          .select('id, controparti_ids')
+          .eq('user_id', userId)
+          .overlaps('controparti_ids', counterpartyIds)
+          .limit(200)
+        const practiceIds = (pracs || []).map((p: any) => p.id)
+        if (practiceIds.length > 0) {
+          query = query.in('pratica_id', practiceIds)
+        } else {
+          // Nessuna pratica collegata → forza query vuota
+          query = query.eq('pratica_id', '00000000-0000-0000-0000-000000000000')
+        }
       }
     }
 
