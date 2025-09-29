@@ -93,7 +93,13 @@ export class QuestionParser {
       /quando\s+è\s+(?:la\s+)?prossima\s+scadenza\s+(?:critica|importante)/i,
       /mostrami\s+le\s+scadenze\s+(?:di\s+)?questa\s+settimana/i,
       /quali\s+sono\s+le\s+scadenze\s+più\s+urgenti/i,
-      /cosa\s+devo\s+fare\s+entro\s+fine\s+mese/i
+      /cosa\s+devo\s+fare\s+entro\s+fine\s+mese/i,
+      /che\s+scadenze\s+ho\s+oggi/i,
+      /che\s+scadenza\s+ho\s+oggi/i,
+      /scadenze\s+di\s+oggi/i,
+      /scadenza\s+di\s+oggi/i,
+      /scadenze\s+oggi/i,
+      /scadenza\s+oggi/i
     ],
     
     udienze_appuntamenti: [

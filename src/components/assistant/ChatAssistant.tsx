@@ -66,75 +66,29 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
     }
   }, [])
 
-  // Reset ref quando initialQuery cambia
+  // Gestisci query iniziale con approccio più sicuro
   useEffect(() => {
-    hasProcessedInitialQueryRef.current = false
-  }, [initialQuery])
-
-  // Gestisci query iniziale
-  useEffect(() => {
-    if (initialQuery && initialQuery.trim() && !hasProcessedInitialQueryRef.current) {
-      console.log('ChatAssistant: Processing initial query:', initialQuery)
-      hasProcessedInitialQueryRef.current = true
-      setInputValue(initialQuery)
-      // Chiama handleSendMessage direttamente senza dipendenze
-      const processInitialQuery = async () => {
-        const messageContent = initialQuery.trim()
-        if (!messageContent || isLoading) return
-
-        const userMessage: Message = {
-          id: Date.now().toString(),
-          type: 'user',
-          content: messageContent,
-          timestamp: new Date()
-        }
-
-        setMessages(prev => [...prev, userMessage])
-        setIsLoading(true)
-
-        try {
-          // Parse the question
-          const parser = new QuestionParser()
-          const parsed = parser.parse(messageContent)
-          console.log('ChatAssistant: Parsed question:', parsed)
-
-          // Execute query
-          const queryEngine = new SupabaseQueryEngine()
-          const result = await queryEngine.execute(parsed, userId)
-          console.log('ChatAssistant: Query result:', result)
-
-          // Format response
-          const formatter = new ResponseFormatter()
-          const response = formatter.format(parsed.type, result, parsed.entities)
-
-          const assistantMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            type: 'assistant',
-            content: response,
-            timestamp: new Date()
-          }
-
-          setMessages(prev => [...prev, assistantMessage])
-        } catch (error) {
-          console.error('ChatAssistant: Error processing query:', error)
-          const errorMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            type: 'assistant',
-            content: `❌ Errore durante l'esecuzione della query: ${error instanceof Error ? error.message : 'Errore sconosciuto'}`,
-            timestamp: new Date()
-          }
-          setMessages(prev => [...prev, errorMessage])
-        } finally {
-          setIsLoading(false)
+    if (initialQuery && initialQuery.trim()) {
+      console.log('ChatAssistant: Initial query detected:', initialQuery)
+      
+      // Usa un timeout per evitare duplicazioni immediate
+      const timeoutId = setTimeout(() => {
+        if (!hasProcessedInitialQueryRef.current) {
+          console.log('ChatAssistant: Processing initial query:', initialQuery)
+          hasProcessedInitialQueryRef.current = true
+          setInputValue(initialQuery)
+          
+          // Chiama handleSendMessage direttamente
+          handleSendMessage(initialQuery)
+          
           // Notifica che la query iniziale è stata processata
-          console.log('ChatAssistant: Calling onInitialQueryProcessed')
           if (onInitialQueryProcessed) {
             onInitialQueryProcessed()
           }
         }
-      }
-      
-      processInitialQuery()
+      }, 100)
+
+      return () => clearTimeout(timeoutId)
     }
   }, [initialQuery])
 

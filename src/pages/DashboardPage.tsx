@@ -13,8 +13,6 @@ import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useToast, ToastContainer } from '../components/ui/Toast'
 import { STRAGIUDIZIALE_CATEGORIES, GIUDIZIALE_CATEGORIES } from '../types/practice'
 import { useMobile } from '../hooks/useMobile'
-import { UrgentCounter } from '../components/notifications/UrgentCounter'
-import { OverdueCounter } from '../components/notifications/OverdueCounter'
 import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { PartyFilter } from '../components/ui/PartyFilter'
 import { PracticeFilter } from '../components/ui/PracticeFilter'
@@ -346,10 +344,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
     return todayTasks
   }
 
-  const handleUrgentCounterClick = () => {
-    loadUrgentTasks()
-    setShowUrgentTasks(true)
-  }
 
   const handleAddActivityClick = () => {
     setIsAddActivityModalOpen(true)
@@ -507,25 +501,6 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Welcome Message and Counters */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="text-left">
-            <h2 className="text-2xl font-semibold text-gray-800">
-              Buongiorno Avvocato
-            </h2>
-            <p className="text-sm text-gray-600">
-              {new Date().toLocaleDateString('it-IT', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-              </p>
-            </div>
-                <div className="flex items-center gap-4">
-            <UrgentCounter userId={user.id} onClick={handleUrgentCounterClick} />
-            <OverdueCounter userId={user.id} onClick={onNavigateToOverdue} />
-            </div>
-          </div>
 
 
         {/* Today's Activities - Yellow Card */}
