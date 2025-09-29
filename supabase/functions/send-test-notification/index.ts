@@ -48,7 +48,10 @@ serve(async (req) => {
       }
     })
 
-    await webPush.sendNotification({
+    console.log('[send-test-notification] endpoint:', subscription?.endpoint)
+    console.log('[send-test-notification] vapid public set:', !!Deno.env.get('VAPID_PUBLIC_KEY'))
+
+    const response = await webPush.sendNotification({
       endpoint: subscription.endpoint,
       keys: {
         p256dh: subscription.keys.p256dh,
@@ -61,6 +64,16 @@ serve(async (req) => {
         privateKey: Deno.env.get('VAPID_PRIVATE_KEY')
       }
     })
+
+    // Alcune versioni restituiscono { statusCode, body }
+    const statusCode = (response as any)?.statusCode ?? (response as any)?.status ?? 201
+    if (statusCode < 200 || statusCode >= 300) {
+      console.error('[send-test-notification] web-push non 2xx:', statusCode, (response as any))
+      return new Response(
+        JSON.stringify({ success: false, statusCode, info: response }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      )
+    }
 
     return new Response(
       JSON.stringify({ success: true, message: 'Test notification sent' }),
