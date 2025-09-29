@@ -435,29 +435,35 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
               </div>
               <div>
                 <Label htmlFor="indirizzo_cap">CAP</Label>
-                <Input
-                  id="indirizzo_cap"
+                <AddressAutocomplete
                   value={indirizzo.cap}
-                  onChange={(e) => setIndirizzo(prev => ({ ...prev, cap: e.target.value }))}
-                  placeholder="00100"
+                  onChange={(v)=> setIndirizzo(prev => ({ ...prev, cap: v }))}
+                  onSelect={(s)=>{
+                    setIndirizzo({ strada: s.via, civico: s.civico, cap: s.cap, citta: s.citta, provincia: s.provincia })
+                  }}
+                  placeholder="CAP o indirizzo…"
                 />
               </div>
               <div>
                 <Label htmlFor="indirizzo_citta">Città</Label>
-                <Input
-                  id="indirizzo_citta"
+                <AddressAutocomplete
                   value={indirizzo.citta}
-                  onChange={(e) => setIndirizzo(prev => ({ ...prev, citta: e.target.value }))}
-                  placeholder="Roma"
+                  onChange={(v)=> setIndirizzo(prev => ({ ...prev, citta: v }))}
+                  onSelect={(s)=>{
+                    setIndirizzo({ strada: s.via, civico: s.civico, cap: s.cap, citta: s.citta, provincia: s.provincia })
+                  }}
+                  placeholder="Città/Paese…"
                 />
               </div>
               <div>
                 <Label htmlFor="indirizzo_provincia">Provincia</Label>
-                <Input
-                  id="indirizzo_provincia"
+                <AddressAutocomplete
                   value={indirizzo.provincia}
-                  onChange={(e) => setIndirizzo(prev => ({ ...prev, provincia: e.target.value }))}
-                  placeholder="RM"
+                  onChange={(v)=> setIndirizzo(prev => ({ ...prev, provincia: v }))}
+                  onSelect={(s)=>{
+                    setIndirizzo({ strada: s.via, civico: s.civico, cap: s.cap, citta: s.citta, provincia: s.provincia })
+                  }}
+                  placeholder="Provincia…"
                 />
               </div>
             </div>
