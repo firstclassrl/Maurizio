@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
-import { Calendar, User, Users, FileText, ArrowLeft, Plus } from 'lucide-react'
+import { Calendar, User, Users, FileText, ArrowLeft, Plus, Trash2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Practice } from '../types/practice'
 import { PracticeFilter } from '../components/ui/PracticeFilter'
@@ -36,12 +36,40 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
     rg: '',
     giudice: ''
   })
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const loadUserData = async () => {
     try {
       await loadPractices()
     } catch (error) {
       console.error('Errore nel caricamento dei dati:', error)
+    }
+  }
+  // Elimina pratica e tutte le attività collegate
+  const handleDeletePractice = async (practice: Practice) => {
+    if (!practice?.id) return
+    const confirmed = window.confirm(`Eliminare definitivamente la pratica ${practice.numero}? Verranno eliminate anche tutte le attività associate.`)
+    if (!confirmed) return
+
+    setDeletingId(practice.id)
+    try {
+      const { error: actErr } = await supabase
+        .from('activities')
+        .delete()
+        .eq('pratica_id', practice.id)
+      if (actErr) throw actErr
+
+      const { error: pracErr } = await supabase
+        .from('practices')
+        .delete()
+        .eq('id', practice.id)
+      if (pracErr) throw pracErr
+
+      setPractices(prev => prev.filter(p => p.id !== practice.id))
+    } catch (error) {
+      alert(`Errore durante l'eliminazione: ${error instanceof Error ? error.message : 'Sconosciuto'}`)
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -400,6 +428,16 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                           >
                             <Plus className="h-4 w-4 mr-2" />
                             Aggiungi Attività
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => handleDeletePractice(practice)}
+                            disabled={deletingId === practice.id}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            {deletingId === practice.id ? 'Eliminazione…' : 'Elimina Pratica'}
                           </Button>
                         </div>
                       </div>
