@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Switch } from '../ui/switch';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
+import { AddressAutocomplete } from './AddressAutocomplete';
 
 interface Client {
   id?: string;
@@ -129,6 +130,17 @@ export const SimpleClientForm: React.FC<SimpleClientFormProps> = ({
     setFormData(prev => ({
       ...prev,
       [field]: value
+    }));
+  };
+
+  const handleAddressSelect = (suggestion: any) => {
+    setFormData(prev => ({
+      ...prev,
+      indirizzo_strada: suggestion.via || '',
+      indirizzo_civico: suggestion.civico || '',
+      indirizzo_cap: suggestion.cap || '',
+      indirizzo_citta: suggestion.citta || '',
+      indirizzo_provincia: suggestion.provincia || ''
     }));
   };
 
@@ -441,11 +453,11 @@ export const SimpleClientForm: React.FC<SimpleClientFormProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="indirizzo_strada">Via/Strada</Label>
-                <Input
-                  id="indirizzo_strada"
+                <AddressAutocomplete
                   value={formData.indirizzo_strada}
-                  onChange={(e) => handleInputChange('indirizzo_strada', e.target.value)}
-                  placeholder="Via, Strada, Piazza..."
+                  onChange={(v) => handleInputChange('indirizzo_strada', v)}
+                  onSelect={handleAddressSelect}
+                  placeholder="Via, Strada, Piazza... (autocomplete)"
                 />
               </div>
               <div>
@@ -459,29 +471,29 @@ export const SimpleClientForm: React.FC<SimpleClientFormProps> = ({
               </div>
               <div>
                 <Label htmlFor="indirizzo_cap">CAP</Label>
-                <Input
-                  id="indirizzo_cap"
+                <AddressAutocomplete
                   value={formData.indirizzo_cap}
-                  onChange={(e) => handleInputChange('indirizzo_cap', e.target.value)}
-                  placeholder="00100"
+                  onChange={(v) => handleInputChange('indirizzo_cap', v)}
+                  onSelect={handleAddressSelect}
+                  placeholder="CAP (autocomplete)"
                 />
               </div>
               <div>
                 <Label htmlFor="indirizzo_citta">Città</Label>
-                <Input
-                  id="indirizzo_citta"
+                <AddressAutocomplete
                   value={formData.indirizzo_citta}
-                  onChange={(e) => handleInputChange('indirizzo_citta', e.target.value)}
-                  placeholder="Roma"
+                  onChange={(v) => handleInputChange('indirizzo_citta', v)}
+                  onSelect={handleAddressSelect}
+                  placeholder="Città (autocomplete)"
                 />
               </div>
               <div>
                 <Label htmlFor="indirizzo_provincia">Provincia</Label>
-                <Input
-                  id="indirizzo_provincia"
+                <AddressAutocomplete
                   value={formData.indirizzo_provincia}
-                  onChange={(e) => handleInputChange('indirizzo_provincia', e.target.value)}
-                  placeholder="RM"
+                  onChange={(v) => handleInputChange('indirizzo_provincia', v)}
+                  onSelect={handleAddressSelect}
+                  placeholder="Provincia (autocomplete)"
                 />
               </div>
             </div>
