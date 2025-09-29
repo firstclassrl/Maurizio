@@ -1,50 +1,31 @@
 import { useState, useEffect } from 'react';
 
-interface PushNotificationState {
+interface NotificationState {
   isSupported: boolean;
   permission: NotificationPermission;
-  subscription: PushSubscription | null;
-  isSubscribed: boolean;
+  isEnabled: boolean;
   isLoading: boolean;
 }
 
 export function usePushNotifications() {
-  const [state, setState] = useState<PushNotificationState>({
+  const [state, setState] = useState<NotificationState>({
     isSupported: false,
     permission: 'default',
-    subscription: null,
-    isSubscribed: false,
+    isEnabled: false,
     isLoading: false
   });
 
   useEffect(() => {
-    // Verifica supporto per Service Worker e Push Manager
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      setState(prev => ({ ...prev, isSupported: true }));
-      
-      // Verifica permessi notifiche
-      if ('Notification' in window) {
-        setState(prev => ({ ...prev, permission: Notification.permission }));
-      }
-
-      // Verifica se già sottoscritto
-      checkExistingSubscription();
-    }
-  }, []);
-
-  const checkExistingSubscription = async () => {
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-      
+    // Verifica supporto per le notifiche
+    if ('Notification' in window) {
       setState(prev => ({ 
         ...prev, 
-        subscription, 
-        isSubscribed: !!subscription 
+        isSupported: true,
+        permission: Notification.permission,
+        isEnabled: Notification.permission === 'granted'
       }));
-    } catch (error) {
     }
-  };
+  }, []);
 
   const requestPermission = async (): Promise<boolean> => {
     if (!state.isSupported) {
@@ -53,237 +34,66 @@ export function usePushNotifications() {
 
     try {
       const permission = await Notification.requestPermission();
-      setState(prev => ({ ...prev, permission }));
-      
-      if (permission === 'granted') {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (error) {
-      return false;
-    }
-  };
-
-  const subscribeToPush = async (): Promise<boolean> => {
-    if (!state.isSupported || state.permission !== 'granted') {
-      return false;
-    }
-
-    setState(prev => ({ ...prev, isLoading: true }));
-
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      
-      // Chiave VAPID pubblica (dovrebbe essere in .env)
-      const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || 
-        'BBtzXffm323WoFzkn6tSqS-ZP5Hr3pJluGbkuD20hcgUet0gO84sZWbPJptoCbJ90rLFd0vpL8yuMPM-M4tceSE';
-
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey) as BufferSource
-      });
-
       setState(prev => ({ 
         ...prev, 
-        subscription, 
-        isSubscribed: true,
-        isLoading: false
+        permission,
+        isEnabled: permission === 'granted'
       }));
-
-      // Invia subscription al server (implementare endpoint)
-      await sendSubscriptionToServer(subscription);
-
-      return true;
-    } catch (error) {
-      setState(prev => ({ ...prev, isLoading: false }));
-      return false;
-    }
-  };
-
-  const unsubscribeFromPush = async (): Promise<boolean> => {
-    if (!state.subscription) {
-      console.log('Nessuna subscription attiva');
-      return false;
-    }
-
-    setState(prev => ({ ...prev, isLoading: true }));
-
-    try {
-      await state.subscription.unsubscribe();
       
-      setState(prev => ({ 
-        ...prev, 
-        subscription: null, 
-        isSubscribed: false,
-        isLoading: false
-      }));
-
-      // Rimuovi subscription dal server
-      await removeSubscriptionFromServer(state.subscription);
-
-      console.log('Disiscrizione push completata');
-      return true;
+      return permission === 'granted';
     } catch (error) {
-      console.error('Errore durante la disiscrizione:', error);
-      setState(prev => ({ ...prev, isLoading: false }));
+      console.error('Errore richiesta permessi:', error);
       return false;
     }
   };
 
-  const toggleSubscription = async (): Promise<boolean> => {
-    if (state.isSubscribed) {
-      const result = await unsubscribeFromPush();
-      // Refresh state after unsubscribe
-      if (result) {
-        await checkExistingSubscription();
-      }
-      return result;
+  const toggleNotifications = async (): Promise<boolean> => {
+    if (state.isEnabled) {
+      // Disabilita notifiche
+      setState(prev => ({ ...prev, isEnabled: false }));
+      return true;
     } else {
-      const hasPermission = await requestPermission();
-      if (hasPermission) {
-        const result = await subscribeToPush();
-        // Refresh state after subscribe
-        if (result) {
-          await checkExistingSubscription();
-        }
-        return result;
-      }
-      return false;
+      // Richiedi permessi e abilita
+      const granted = await requestPermission();
+      return granted;
     }
   };
 
   const sendTestNotification = async (): Promise<boolean> => {
-    if (!state.isSubscribed || !state.subscription) {
-      console.log('Nessuna subscription attiva per il test');
+    if (!state.isEnabled) {
+      console.log('Notifiche non abilitate');
       return false;
     }
 
     try {
-      // Usa l'endpoint Supabase Edge Function
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabase = await import('../lib/supabase');
-      const { data: { session } } = await supabase.supabase.auth.getSession();
-      
-      if (!session?.access_token) {
-        console.error('Nessun token di accesso disponibile');
-        return false;
-      }
-
-      const response = await fetch(`${supabaseUrl}/functions/v1/send-test-notification`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({
-          subscription: state.subscription.toJSON(),
-          title: 'Test Notifica LexAgenda',
-          body: 'Questa è una notifica di test per verificare che le push notifications funzionino correttamente!'
-        })
+      const notification = new Notification('Test Notifica LexAgenda', {
+        body: 'Questa è una notifica di test per verificare che le notifiche funzionino correttamente!',
+        icon: '/favicon.png',
+        badge: '/favicon.png',
+        tag: 'test-notification',
+        requireInteraction: true
       });
 
-      if (response.ok) {
-        console.log('Notifica di test inviata con successo');
-        return true;
-      } else {
-        const errorData = await response.json();
-        console.error('Errore nell\'invio notifica di test:', errorData);
-        return false;
-      }
+      // Chiudi automaticamente dopo 5 secondi
+      setTimeout(() => {
+        notification.close();
+      }, 5000);
+
+      console.log('Notifica di test inviata con successo');
+      return true;
     } catch (error) {
-      console.error('Errore nella notifica di test:', error);
+      console.error('Errore nell\'invio notifica di test:', error);
       return false;
     }
   };
 
   return {
-    ...state,
+    isSupported: state.isSupported,
+    permission: state.permission,
+    isSubscribed: state.isEnabled,
+    isLoading: state.isLoading,
     requestPermission,
-    subscribeToPush,
-    unsubscribeFromPush,
-    toggleSubscription,
+    toggleSubscription: toggleNotifications,
     sendTestNotification
   };
-}
-
-// Utility function per convertire VAPID key
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, '+')
-    .replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
-
-// Funzioni per comunicare con il server
-async function sendSubscriptionToServer(subscription: PushSubscription): Promise<void> {
-  try {
-    // Usa l'endpoint Supabase Edge Function
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const { supabase } = await import('../lib/supabase');
-    const { data: { session } } = await supabase.auth.getSession();
-
-    const accessToken = session?.access_token || '';
-
-    const response = await fetch(`${supabaseUrl}/functions/v1/subscribe`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({
-        subscription: subscription.toJSON(),
-        userAgent: navigator.userAgent,
-        timestamp: new Date().toISOString()
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error('Errore nel salvataggio subscription');
-    }
-
-    console.log('Subscription salvata sul server');
-  } catch (error) {
-    console.error('Errore nel salvataggio subscription:', error);
-    // Non bloccare l'utente se il server non è disponibile
-  }
-}
-
-async function removeSubscriptionFromServer(subscription: PushSubscription): Promise<void> {
-  try {
-    // Usa l'endpoint Supabase Edge Function
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const { supabase } = await import('../lib/supabase');
-    const { data: { session } } = await supabase.auth.getSession();
-
-    const accessToken = session?.access_token || '';
-
-    const response = await fetch(`${supabaseUrl}/functions/v1/unsubscribe`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({
-        subscription: subscription.toJSON()
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error('Errore nella rimozione subscription');
-    }
-
-    console.log('Subscription rimossa dal server');
-  } catch (error) {
-    console.error('Errore nella rimozione subscription:', error);
-    // Non bloccare l'utente se il server non è disponibile
-  }
 }

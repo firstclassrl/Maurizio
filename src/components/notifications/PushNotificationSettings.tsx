@@ -61,17 +61,17 @@ export function PushNotificationSettings() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Smartphone className="h-5 w-5" />
-          Push Notifications
+          <Bell className="h-5 w-5" />
+          Notifiche
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Toggle principale */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium">Notifiche Push</p>
+            <p className="font-medium">Notifiche</p>
             <p className="text-sm text-gray-600">
-              Ricevi notifiche per scadenze importanti anche quando l'app è chiusa
+              Ricevi notifiche per scadenze importanti
             </p>
           </div>
           <Switch
@@ -112,7 +112,7 @@ export function PushNotificationSettings() {
             <div>
               <p className="font-medium text-green-900">Notifiche Attive</p>
               <p className="text-sm text-green-800">
-                Riceverai notifiche per le scadenze importanti anche quando l'app è chiusa.
+                Riceverai notifiche per le scadenze importanti.
               </p>
             </div>
           </div>
@@ -158,10 +158,10 @@ export function PushNotificationSettings() {
         {/* Informazioni aggiuntive */}
         <div className="pt-4 border-t">
           <div className="text-xs text-gray-500 space-y-1">
-            <p>• Le notifiche funzionano anche quando l'app è chiusa</p>
-            <p>• Riceverai promemoria per scadenze urgenti e imminenti</p>
+            <p>• Notifiche immediate per scadenze urgenti</p>
+            <p>• Funziona su tutti i browser moderni</p>
             <p>• Puoi disabilitare le notifiche in qualsiasi momento</p>
-            <p>• Compatibile con iOS 16.4+ e Android Chrome</p>
+            <p>• Compatibile con Chrome, Firefox, Safari, Edge</p>
           </div>
         </div>
       </CardContent>
