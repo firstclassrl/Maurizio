@@ -69,7 +69,10 @@ serve(async (req) => {
     }
 
     // Call Groq API
-    const systemPrompt = "Sei un assistente AI specializzato per studi legali italiani. Aiuti gli avvocati a gestire scadenze, pratiche e calendario. Rispondi sempre in italiano professionale ma chiaro. Se ti vengono fatte domande su dati, specifica che puoi interrogare il database dell'utente. Non inventare informazioni legali specifiche."
+    const systemPrompt = "Sei un assistente AI specializzato per studi legali italiani. Usa CONTENUTO_DB quando presente per rispondere con dati reali dell'utente. Se il dato non è in CONTENUTO_DB, spiega cosa manca e suggerisci come ottenerlo. Rispondi in italiano, sintetico e professionale."
+
+    // Costruzione contesto dati dal database
+    const dbContext = await buildDbContext(supabase, user.id, question)
 
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -81,6 +84,7 @@ serve(async (req) => {
         model: DEFAULT_MODEL,
         messages: [
           { role: 'system', content: systemPrompt },
+          { role: 'assistant', content: dbContext ? `CONTENUTO_DB:\n${dbContext}` : 'CONTENUTO_DB: (nessun risultato pertinente)' },
           { role: 'user', content: question }
         ],
         temperature: 0.2,
@@ -116,5 +120,59 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: 'Internal error', details: (error as Error).message }), { status: 500, headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' } })
   }
 })
+
+// Heuristica semplice per creare un contesto dai dati su Supabase
+async function buildDbContext(supabase: any, userId: string, question: string): Promise<string> {
+  try {
+    const q = question.toLowerCase()
+    // finestra temporale
+    let days = 30
+    if (/[\b\s]oggi\b/.test(q)) days = 1
+    else if (q.includes('settimana')) days = 7
+    else if (q.includes('mese')) days = 30
+    else if (q.includes('domani')) days = 2
+
+    // categoria
+    let categoriaFilter: string | null = null
+    if (q.includes('udienz')) categoriaFilter = 'Udienza'
+    else if (q.includes('scadenz')) categoriaFilter = 'Scadenza'
+
+    const today = new Date()
+    const to = new Date()
+    to.setDate(today.getDate() + days)
+
+    let query = supabase
+      .from('activities')
+      .select(`*, practices!inner(numero, cliente_id, clients!practices_cliente_id_fkey(ragione,nome,cognome))`)
+      .eq('user_id', userId)
+      .gte('data', today.toISOString().slice(0,10))
+      .lte('data', to.toISOString().slice(0,10))
+      .order('data', { ascending: true })
+      .limit(50)
+
+    if (categoriaFilter) {
+      query = query.ilike('categoria', `%${categoriaFilter}%`)
+    }
+
+    const { data, error } = await query
+    if (error) return ''
+    if (!data || data.length === 0) return ''
+
+    // Conteggi sintetici utili (es. quante udienze)
+    const countUdienze = (data as any[]).filter(a => (a.categoria || '').toLowerCase().includes('udienz')).length
+
+    const lines = (data as any[]).slice(0, 20).map((a: any) => {
+      const client = a.practices?.clients
+      const clientName = client ? (client.ragione || `${client.nome||''} ${client.cognome||''}`.trim()) : 'N/D'
+      const date = a.data
+      const time = a.ora || '-'
+      return `- ${date} ${time} • ${a.categoria} • ${a.attivita} • pratica ${a.practices?.numero || ''} • cliente ${clientName}`
+    }).join('\n')
+
+    return `Intervallo: prossimi ${days} giorni. Totale risultati: ${data.length}. Udienze nel periodo: ${countUdienze}.\nElenco (max 20):\n${lines}`
+  } catch (_) {
+    return ''
+  }
+}
 
 
