@@ -41,35 +41,37 @@ interface NewClientFormProps {
   client?: Client | null;
 }
 
+const getEmptyFormData = (): Client => ({
+  tipologia: 'Persona fisica',
+  alternativa: false,
+  ragione: '',
+  titolo: '',
+  cognome: '',
+  nome: '',
+  sesso: '',
+  data_nascita: '',
+  luogo_nascita: '',
+  partita_iva: '',
+  codice_fiscale: '',
+  denominazione: '',
+  indirizzi: [],
+  contatti: [],
+  cliente: false,
+  controparte: false,
+  altri: false,
+  codice_destinatario: '',
+  codice_destinatario_pa: '',
+  note: '',
+  sigla: ''
+});
+
 export const NewClientForm: React.FC<NewClientFormProps> = ({
   isOpen,
   onClose,
   onSuccess,
   client
 }) => {
-  const [formData, setFormData] = useState<Client>({
-    tipologia: 'Persona fisica',
-    alternativa: false,
-    ragione: '',
-    titolo: '',
-    cognome: '',
-    nome: '',
-    sesso: '',
-    data_nascita: '',
-    luogo_nascita: '',
-    partita_iva: '',
-    codice_fiscale: '',
-    denominazione: '',
-    indirizzi: [],
-    contatti: [],
-    cliente: false,
-    controparte: false,
-    altri: false,
-    codice_destinatario: '',
-    codice_destinatario_pa: '',
-    note: '',
-    sigla: ''
-  });
+  const [formData, setFormData] = useState<Client>(getEmptyFormData());
 
   // Stati per indirizzo e contatti
   const [indirizzo, setIndirizzo] = useState({
@@ -97,32 +99,13 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
         indirizzi: client.indirizzi || [],
         contatti: client.contatti || []
       });
-    } else {
-      setFormData({
-        tipologia: 'Persona fisica',
-        alternativa: false,
-        ragione: '',
-        titolo: '',
-        cognome: '',
-        nome: '',
-        sesso: '',
-        data_nascita: '',
-        luogo_nascita: '',
-        partita_iva: '',
-        codice_fiscale: '',
-        denominazione: '',
-        indirizzi: [],
-        contatti: [],
-        cliente: false,
-        controparte: false,
-        altri: false,
-        codice_destinatario: '',
-        codice_destinatario_pa: '',
-        note: '',
-        sigla: ''
-      });
+    } else if (isOpen) {
+      // reset completo quando il modal apre in modalità nuovo
+      setFormData(getEmptyFormData());
+      setIndirizzo({ strada: '', civico: '', cap: '', citta: '', provincia: '' });
+      setContatti({ telefono: '', mail: '', pec: '' });
     }
-  }, [client]);
+  }, [client, isOpen]);
 
   const handleInputChange = (field: keyof Client, value: any) => {
     setFormData(prev => ({
@@ -196,6 +179,10 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
         showSuccess('Successo', 'Parte creata con successo');
       }
 
+      // reset locali per evitare bleed tra aperture successive
+      setFormData(getEmptyFormData());
+      setIndirizzo({ strada: '', civico: '', cap: '', citta: '', provincia: '' });
+      setContatti({ telefono: '', mail: '', pec: '' });
       onSuccess();
       onClose();
     } catch (error) {
