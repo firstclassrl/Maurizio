@@ -69,6 +69,7 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
   // Gestisci query iniziale
   useEffect(() => {
     if (initialQuery && initialQuery.trim() && !hasProcessedInitialQuery) {
+      console.log('ChatAssistant: Processing initial query:', initialQuery)
       setHasProcessedInitialQuery(true)
       setInputValue(initialQuery)
       // Chiama handleSendMessage direttamente senza dipendenze
@@ -121,6 +122,7 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
         } finally {
           setIsLoading(false)
           // Notifica che la query iniziale è stata processata
+          console.log('ChatAssistant: Calling onInitialQueryProcessed')
           if (onInitialQueryProcessed) {
             onInitialQueryProcessed()
           }
@@ -129,7 +131,7 @@ export function ChatAssistant({ userId, initialQuery, onClose, onInitialQueryPro
       
       processInitialQuery()
     }
-  }, [initialQuery, userId, onInitialQueryProcessed])
+  }, [initialQuery])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

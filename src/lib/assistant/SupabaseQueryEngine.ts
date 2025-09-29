@@ -923,7 +923,6 @@ export class SupabaseQueryEngine {
       .eq('stato', 'todo')
       .gte('data', format(today, 'yyyy-MM-dd'))
       .lte('data', format(nextWeek, 'yyyy-MM-dd'))
-      .order('priorita', { ascending: false })
       .order('data', { ascending: true })
       .limit(5)
 
@@ -951,7 +950,6 @@ export class SupabaseQueryEngine {
         .eq('stato', 'todo')
         .gte('data', format(today, 'yyyy-MM-dd'))
         .lte('data', format(nextWeek, 'yyyy-MM-dd'))
-        .order('priorita', { ascending: false })
         .order('data', { ascending: true })
         .limit(5)
 
