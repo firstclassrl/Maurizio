@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
-import { Settings, Sparkles, Calendar, CalendarDays, Calculator, LogOut } from 'lucide-react'
+import { Settings, Sparkles, Calendar, CalendarDays, Calculator, LogOut, Mic, MicOff } from 'lucide-react'
 import { Logo } from '../ui/Logo'
 import { supabase } from '../../lib/supabase'
 
@@ -21,12 +21,55 @@ export function DashboardHeader({
   onNavigateToCalcolatore,
 }: DashboardHeaderProps) {
   const [assistantQuery, setAssistantQuery] = useState('')
+  const [isListening, setIsListening] = useState(false)
+  const [isSpeechSupported, setIsSpeechSupported] = useState(false)
+  const recognitionRef = useRef<any>(null)
+
+  useEffect(() => {
+    // Check if speech recognition is supported
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (SpeechRecognition) {
+      setIsSpeechSupported(true)
+      recognitionRef.current = new SpeechRecognition()
+      recognitionRef.current.continuous = false
+      recognitionRef.current.interimResults = false
+      recognitionRef.current.lang = 'it-IT'
+      
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript
+        setAssistantQuery(transcript)
+        setIsListening(false)
+      }
+      
+      recognitionRef.current.onerror = () => {
+        setIsListening(false)
+      }
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+    }
+  }, [])
 
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut()
     } catch (error) {
       console.error('Errore durante il logout:', error)
+    }
+  }
+
+  const handleVoiceInput = () => {
+    if (!isSpeechSupported || !recognitionRef.current) return
+
+    if (isListening) {
+      recognitionRef.current.stop()
+      setIsListening(false)
+    } else {
+      recognitionRef.current.start()
+      setIsListening(true)
     }
   }
 
@@ -52,7 +95,7 @@ export function DashboardHeader({
                 placeholder="Chiedi al tuo assistente AI..."
                 value={assistantQuery}
                 onChange={(e) => setAssistantQuery(e.target.value)}
-                className="pl-10 bg-blue-50 border-blue-200 text-blue-700 placeholder-blue-400 focus:bg-blue-100 focus:border-blue-300 w-64"
+                className="pl-10 pr-16 bg-blue-50 border-blue-200 text-blue-700 placeholder-blue-400 focus:bg-blue-100 focus:border-blue-300 w-64"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && assistantQuery.trim()) {
                     onAssistantOpen(assistantQuery.trim())
@@ -60,6 +103,18 @@ export function DashboardHeader({
                   }
                 }}
               />
+              {isSpeechSupported && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleVoiceInput}
+                  className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 ${
+                    isListening ? 'text-red-500 hover:text-red-400' : 'text-blue-400 hover:text-blue-300'
+                  }`}
+                >
+                  {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                </Button>
+              )}
             </div>
             
             {/* Tasto Settimana */}
