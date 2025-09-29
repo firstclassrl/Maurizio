@@ -17,7 +17,8 @@ if ('serviceWorker' in navigator) {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 console.log('🔄 Nuovo Service Worker disponibile');
-                // Qui potresti mostrare una notifica all'utente per aggiornare
+                // attiva subito il nuovo SW
+                newWorker.postMessage({ type: 'SKIP_WAITING' })
               }
             });
           }
@@ -34,6 +35,17 @@ if ('serviceWorker' in navigator) {
     // Ricarica la pagina per usare il nuovo Service Worker
     window.location.reload();
   });
+
+  // Messaggio dal SW quando è pronto: ricarica in modo gentile
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SW_READY') {
+      console.log('📦 Nuova versione pronta');
+      // Reload soft con preservazione scroll
+      const { scrollX, scrollY } = window;
+      window.location.reload();
+      window.scrollTo(scrollX, scrollY);
+    }
+  })
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
