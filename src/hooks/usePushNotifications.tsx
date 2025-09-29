@@ -228,11 +228,16 @@ async function sendSubscriptionToServer(subscription: PushSubscription): Promise
   try {
     // Usa l'endpoint Supabase Edge Function
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const { supabase } = await import('../lib/supabase');
+    const { data: { session } } = await supabase.auth.getSession();
+
+    const accessToken = session?.access_token || '';
+
     const response = await fetch(`${supabaseUrl}/functions/v1/subscribe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${(await import('../lib/supabase')).supabase.auth.getSession().then(s => s.data.session?.access_token)}`
+        'Authorization': `Bearer ${accessToken}`
       },
       body: JSON.stringify({
         subscription: subscription.toJSON(),
@@ -256,11 +261,16 @@ async function removeSubscriptionFromServer(subscription: PushSubscription): Pro
   try {
     // Usa l'endpoint Supabase Edge Function
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const { supabase } = await import('../lib/supabase');
+    const { data: { session } } = await supabase.auth.getSession();
+
+    const accessToken = session?.access_token || '';
+
     const response = await fetch(`${supabaseUrl}/functions/v1/unsubscribe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${(await import('../lib/supabase')).supabase.auth.getSession().then(s => s.data.session?.access_token)}`
+        'Authorization': `Bearer ${accessToken}`
       },
       body: JSON.stringify({
         subscription: subscription.toJSON()
