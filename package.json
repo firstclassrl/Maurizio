@@ -1,7 +1,7 @@
 {
   "name": "legal-planner",
   "private": true,
-  "version": "3.7.5-beta",
+  "version": "3.7.6-beta",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -7,9 +7,7 @@ import { supabase } from '../lib/supabase'
 import { Practice } from '../types/practice'
 import { useToast } from '../components/ui/Toast'
 import { Archive } from 'lucide-react'
-import { PracticeFilter } from '../components/ui/PracticeFilter'
-import { CategoryFilter } from '../components/ui/CategoryFilter'
-import { PartyFilter } from '../components/ui/PartyFilter'
+import { Input } from '../components/ui/input'
 import { Footer } from '../components/ui/Footer'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
@@ -25,9 +23,13 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
   const [loading, setLoading] = useState(false)
   
   const [filteredPractices, setFilteredPractices] = useState<Practice[]>([])
-  const [selectedPractice, setSelectedPractice] = useState<string>('all')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [selectedParty, setSelectedParty] = useState<string>('all')
+  // Nuovi filtri
+  const [searchText, setSearchText] = useState<string>('')
+  const [filterTipo, setFilterTipo] = useState<string>('all')
+  const [filterAutorita, setFilterAutorita] = useState<string>('')
+  const [filterRG, setFilterRG] = useState<string>('')
+  const [filterGiudice, setFilterGiudice] = useState<string>('')
+  const [filterStato, setFilterStato] = useState<string>('all')
   const [isNewPracticeModalOpen, setIsNewPracticeModalOpen] = useState(false)
   const [selectedPracticeForDetails, setSelectedPracticeForDetails] = useState<Practice | null>(null)
   const [selectedPracticeForActivity, setSelectedPracticeForActivity] = useState<Practice | null>(null)
@@ -235,27 +237,45 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
   const getFilteredPractices = () => {
     let filtered = practices
 
-    // Filtro per pratica
-    if (selectedPractice !== 'all') {
-      filtered = filtered.filter((practice: any) => practice.numero === selectedPractice)
-    }
-
-    // Filtro per categoria (basato sulle attività della pratica)
-    if (selectedCategory !== 'all') {
-      // Per ora filtriamo solo per tipo procedura
-      if (selectedCategory === 'STRAGIUDIZIALE' || selectedCategory === 'GIUDIZIALE') {
-        filtered = filtered.filter((practice: any) => practice.tipo_procedura === selectedCategory)
-      }
-    }
-
-    // Filtro per cliente/controparte
-    if (selectedParty !== 'all') {
-      filtered = filtered.filter((practice: any) => {
-        const clientName = practice.clients?.nome?.toLowerCase() || ''
-        const counterpartyNames = practice.counterparties?.map((c: any) => c.nome.toLowerCase()).join(' ') || ''
-        const searchTerm = selectedParty.toLowerCase()
-        return clientName.includes(searchTerm) || counterpartyNames.includes(searchTerm)
+    // Ricerca libera: numero pratica, cliente, controparti
+    if (searchText.trim()) {
+      const q = searchText.toLowerCase()
+      filtered = filtered.filter((p: any) => {
+        const num = (p.numero || '').toString().toLowerCase()
+        const cliente = (p.clients?.ragione || `${p.clients?.nome || ''} ${p.clients?.cognome || ''}`).toLowerCase()
+        const controparti = (p.counterparties || []).map((c: any) => (c.ragione || `${c.nome || ''} ${c.cognome || ''}`).toLowerCase()).join(' ')
+        const note = (p.note || '').toLowerCase()
+        return num.includes(q) || cliente.includes(q) || controparti.includes(q) || note.includes(q)
       })
+    }
+
+    // Tipo procedura
+    if (filterTipo !== 'all') {
+      filtered = filtered.filter((p: any) => p.tipo_procedura === filterTipo)
+    }
+
+    // Stato pratica
+    if (filterStato !== 'all') {
+      if (filterStato === 'active') filtered = filtered.filter((p: any) => p.stato !== 'archived')
+      if (filterStato === 'archived') filtered = filtered.filter((p: any) => p.stato === 'archived')
+    }
+
+    // Autorità
+    if (filterAutorita.trim()) {
+      const q = filterAutorita.toLowerCase()
+      filtered = filtered.filter((p: any) => (p.autorita_giudiziaria || '').toLowerCase().includes(q))
+    }
+
+    // RG
+    if (filterRG.trim()) {
+      const q = filterRG.toLowerCase()
+      filtered = filtered.filter((p: any) => (p.rg || '').toLowerCase().includes(q))
+    }
+
+    // Giudice
+    if (filterGiudice.trim()) {
+      const q = filterGiudice.toLowerCase()
+      filtered = filtered.filter((p: any) => (p.giudice || '').toLowerCase().includes(q))
     }
 
     return filtered
@@ -280,7 +300,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
 
   useEffect(() => {
     setFilteredPractices(getFilteredPractices())
-  }, [selectedPractice, selectedCategory, selectedParty, practices])
+  }, [searchText, filterTipo, filterAutorita, filterRG, filterGiudice, filterStato, practices])
 
   // Aggiorna filteredPractices quando cambiano i dati sicuri
   useEffect(() => {
@@ -326,24 +346,42 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         <Card className="mb-6">
           <CardContent className="p-6">
             <h2 className="text-lg font-semibold mb-4">Filtri</h2>
-            <div className="flex items-center gap-4 flex-wrap">
-              <PracticeFilter 
-                selectedPractice={selectedPractice}
-                onPracticeChange={setSelectedPractice}
-                tasks={[]} // Non necessario per l'archivio
-                className="w-64"
-              />
-              <CategoryFilter 
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                className="w-64"
-              />
-              <PartyFilter 
-                selectedParty={selectedParty}
-                onPartyChange={setSelectedParty}
-                tasks={[]} // Non necessario per l'archivio
-                className="w-64"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Ricerca</label>
+                <Input value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Numero pratica, cliente, controparti, note…" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Tipo procedura</label>
+                <select value={filterTipo} onChange={(e)=>setFilterTipo(e.target.value)} className="w-full px-3 py-2 border rounded-md">
+                  <option value="all">Tutte</option>
+                  <option value="GIUDIZIALE">Giudiziale</option>
+                  <option value="STRAGIUDIZIALE">Stragiudiziale</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Autorità</label>
+                <Input value={filterAutorita} onChange={(e)=>setFilterAutorita(e.target.value)} placeholder="es. Tribunale di Pescara" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">R.G.</label>
+                <Input value={filterRG} onChange={(e)=>setFilterRG(e.target.value)} placeholder="es. 12345/2025" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Giudice</label>
+                <Input value={filterGiudice} onChange={(e)=>setFilterGiudice(e.target.value)} placeholder="es. Dott. Rossi" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Stato</label>
+                <select value={filterStato} onChange={(e)=>setFilterStato(e.target.value)} className="w-full px-3 py-2 border rounded-md">
+                  <option value="all">Tutte</option>
+                  <option value="active">Attive</option>
+                  <option value="archived">Archiviate</option>
+                </select>
+              </div>
+              <div className="flex items-end">
+                <Button variant="outline" onClick={()=>{setSearchText('');setFilterTipo('all');setFilterAutorita('');setFilterRG('');setFilterGiudice('');setFilterStato('all');}}>Reset</Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -460,7 +498,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                           <Button
                             variant="outline"
                             size="sm"
-                            className="w-full"
+                            className="w-full text-orange-600 border-orange-600 hover:bg-orange-50 bg-white"
                             onClick={() => handleArchivePractice(practice)}
                             disabled={archivingId === practice.id}
                           >
