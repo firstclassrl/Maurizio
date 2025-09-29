@@ -12,6 +12,8 @@ import { StoragePage } from './pages/StoragePage'
 import { PracticeArchivePage } from './pages/PracticeArchivePage'
 import { Loader2 } from 'lucide-react'
 import { WeekendSettingsProvider } from './contexts/WeekendSettingsContext'
+import { useAppUpdate } from './hooks/useAppUpdate'
+import { UpdateNotification } from './components/ui/UpdateNotification'
 
 type AppView = 'dashboard' | 'month' | 'week' | 'overdue' | 'calcolatore-termini' | 'clients' | 'storage' | 'practice-archive'
 
@@ -19,6 +21,8 @@ function App() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [currentView, setCurrentView] = useState<AppView>('dashboard')
+  const [showUpdateNotification, setShowUpdateNotification] = useState(false)
+  const { isUpdateAvailable, isUpdating, updateApp } = useAppUpdate()
 
   useEffect(() => {
     // Get initial session
@@ -40,6 +44,13 @@ function App() {
 
     return () => subscription.unsubscribe()
   }, [])
+
+  // Mostra la notifica di aggiornamento quando disponibile
+  useEffect(() => {
+    if (isUpdateAvailable) {
+      setShowUpdateNotification(true)
+    }
+  }, [isUpdateAvailable])
 
   if (loading) {
     return (
@@ -137,6 +148,15 @@ function App() {
   return (
     <WeekendSettingsProvider>
       {renderCurrentView()}
+      <UpdateNotification
+        isVisible={showUpdateNotification}
+        isUpdating={isUpdating}
+        onUpdate={() => {
+          updateApp()
+          setShowUpdateNotification(false)
+        }}
+        onDismiss={() => setShowUpdateNotification(false)}
+      />
     </WeekendSettingsProvider>
   )
 }

@@ -15,22 +15,25 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co;"
 
-# Non cache-are la shell SPA
+# Cache strategy per index.html - controlla sempre la rete per aggiornamenti
 [[headers]]
   for = "/index.html"
   [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
+    Cache-Control = "no-cache, must-revalidate"
+    ETag = "true"
 
 [[headers]]
   for = "/"
   [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
+    Cache-Control = "no-cache, must-revalidate"
+    ETag = "true"
 
-# Non cache-are il service worker
+# Service worker - non cacheare mai
 [[headers]]
   for = "/sw.js"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
+    ETag = "true"
 
 # Cache lunga solo per asset hashati
 [[headers]]

@@ -1,5 +1,6 @@
 // Service Worker per Push Notifications - LexAgenda
-const CACHE_NAME = 'lexagenda-sw-3.7.5';
+const CACHE_NAME = 'lexagenda-sw-v1';
+const STATIC_CACHE_NAME = 'lexagenda-static-v1';
 const urlsToCache = [
   '/',
   '/favicon.png',
@@ -42,7 +43,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
+          if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE_NAME) {
             console.log('Service Worker: Rimozione cache vecchia:', cacheName);
             return caches.delete(cacheName);
           }
@@ -158,31 +159,66 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Se la risorsa è in cache, restituiscila
-        if (response) {
-          return response;
-        }
-
-        // Altrimenti, fai la richiesta e metti in cache
-        return fetch(event.request).then((response) => {
-          // Verifica che la risposta sia valida
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          // Clona la risposta per metterla in cache
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
+  const url = new URL(event.request.url);
+  
+  // Per l'index.html, usa sempre la rete per verificare aggiornamenti
+  if (url.pathname === '/' || url.pathname === '/index.html') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Se la risposta è valida, aggiorna la cache
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, responseToCache);
             });
-
+          }
           return response;
-        });
+        })
+        .catch(() => {
+          // Se la rete fallisce, usa la cache
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // Per gli asset statici, usa cache-first
+  if (url.pathname.startsWith('/assets/') || url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico)$/)) {
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => {
+          if (response) {
+            return response;
+          }
+          return fetch(event.request).then((response) => {
+            if (response && response.status === 200) {
+              const responseToCache = response.clone();
+              caches.open(STATIC_CACHE_NAME).then((cache) => {
+                cache.put(event.request, responseToCache);
+              });
+            }
+            return response;
+          });
+        })
+    );
+    return;
+  }
+
+  // Per altre richieste, usa network-first
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request);
       })
   );
 });
