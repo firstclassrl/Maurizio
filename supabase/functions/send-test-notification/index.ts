@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { sendNotification as sendWebPush } from "https://deno.land/x/webpush@v1.3.0/mod.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -33,8 +34,7 @@ serve(async (req) => {
       throw new Error('Utente non autenticato')
     }
 
-    // Invia notifica push usando web-push
-    const webPush = await import('https://esm.sh/web-push@3.6.7')
+    // Invia notifica push usando libreria Deno webpush
     
     const payload = JSON.stringify({
       title: title || 'Test Notifica LexAgenda',
@@ -51,29 +51,21 @@ serve(async (req) => {
     console.log('[send-test-notification] endpoint:', subscription?.endpoint)
     console.log('[send-test-notification] vapid public set:', !!Deno.env.get('VAPID_PUBLIC_KEY'))
 
-    const response = await webPush.sendNotification({
+    const sub = {
       endpoint: subscription.endpoint,
       keys: {
         p256dh: subscription.keys.p256dh,
-        auth: subscription.keys.auth
-      }
-    }, payload, {
+        auth: subscription.keys.auth,
+      },
+    }
+
+    await sendWebPush(sub as any, payload, {
       vapidDetails: {
         subject: 'mailto:your-email@example.com',
-        publicKey: Deno.env.get('VAPID_PUBLIC_KEY'),
-        privateKey: Deno.env.get('VAPID_PRIVATE_KEY')
-      }
+        publicKey: Deno.env.get('VAPID_PUBLIC_KEY')!,
+        privateKey: Deno.env.get('VAPID_PRIVATE_KEY')!,
+      },
     })
-
-    // Alcune versioni restituiscono { statusCode, body }
-    const statusCode = (response as any)?.statusCode ?? (response as any)?.status ?? 201
-    if (statusCode < 200 || statusCode >= 300) {
-      console.error('[send-test-notification] web-push non 2xx:', statusCode, (response as any))
-      return new Response(
-        JSON.stringify({ success: false, statusCode, info: response }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-      )
-    }
 
     return new Response(
       JSON.stringify({ success: true, message: 'Test notification sent' }),

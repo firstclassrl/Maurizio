@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { sendNotification as sendWebPush } from "https://deno.land/x/webpush@v1.3.0/mod.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -32,9 +33,7 @@ serve(async (req) => {
       throw new Error('Subscription non trovata')
     }
 
-    // Invia notifica push usando web-push
-    const webPush = await import('https://esm.sh/web-push@3.6.7')
-    
+    // Invia notifica push usando libreria Deno webpush
     const payload = JSON.stringify({
       title: title || 'LexAgenda',
       body: body || 'Nuova notifica',
@@ -43,18 +42,18 @@ serve(async (req) => {
       data: data || {}
     })
 
-    await webPush.sendNotification({
+    await sendWebPush({
       endpoint: subscription.endpoint,
       keys: {
         p256dh: subscription.p256dh_key,
-        auth: subscription.auth_key
-      }
-    }, payload, {
+        auth: subscription.auth_key,
+      },
+    } as any, payload, {
       vapidDetails: {
         subject: 'mailto:your-email@example.com',
-        publicKey: Deno.env.get('VAPID_PUBLIC_KEY'),
-        privateKey: Deno.env.get('VAPID_PRIVATE_KEY')
-      }
+        publicKey: Deno.env.get('VAPID_PUBLIC_KEY')!,
+        privateKey: Deno.env.get('VAPID_PRIVATE_KEY')!,
+      },
     })
 
     return new Response(
