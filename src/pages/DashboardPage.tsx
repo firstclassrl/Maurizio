@@ -910,6 +910,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         onOpenChange={setIsOptionsModalOpen}
         user={user}
         onNavigateToStorage={onNavigateToStorage}
+        onNavigateToPracticeStorage={onNavigateToStorage}
       />
 
       <SimpleClientForm
