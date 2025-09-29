@@ -103,16 +103,27 @@ export function DashboardHeader({
                 }}
               />
               {isSpeechSupported && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleVoiceInput}
-                  className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 ${
-                    isListening ? 'text-red-500 hover:text-red-400' : 'text-blue-400 hover:text-blue-300'
-                  }`}
-                >
-                  {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                </Button>
+                <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleVoiceInput}
+                    className={`h-8 w-8 p-0 ${
+                      isListening ? 'text-red-500 hover:text-red-400' : 'text-blue-400 hover:text-blue-300'
+                    }`}
+                  >
+                    {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onAssistantOpen(assistantQuery.trim() || '')}
+                    className="h-8 w-8 p-0 text-blue-400 hover:text-blue-300"
+                    title="Apri assistente"
+                  >
+                    ↗
+                  </Button>
+                </div>
               )}
             </div>
             
