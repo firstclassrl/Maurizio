@@ -579,26 +579,63 @@ export class ResponseFormatter {
   // NUOVI FORMATTER FASE 1 - OPERATIVE
   private formatCosaFare(attivita: any[]): string {
     if (attivita.length === 0) {
-      return '✅ Non hai attività urgenti da fare oggi!'
+      return '✅ **Nessun impegno per oggi!**\n\nPuoi dedicarti ad altre attività o preparare il lavoro per domani.'
     }
 
-    let response = `📋 **Cosa Devi Fare Oggi:**\n\n`
-    
-    attivita.forEach((att, index) => {
-      const practice = att.practices
-      const client = practice?.clients
-      const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
-      const time = att.ora || 'Orario non specificato'
-      const priority = att.priorita > 7 ? '🔴' : att.priorita > 4 ? '🟡' : '🟢'
-      
-      response += (index + 1) + '. ' + priority + ' **' + (att.attivita || 'Attività') + '**\n'
-      response += '   🕐 ' + time + '\n'
-      response += '   👤 ' + clientName + '\n'
-      if (att.note) {
-        response += '   📝 ' + att.note + '\n'
-      }
-      response += '\n'
+    // Raggruppa per tipo di attività
+    const attivitaOggi = attivita.filter(att => {
+      const today = new Date().toISOString().split('T')[0]
+      return att.data === today
     })
+
+    const attivitaDomani = attivita.filter(att => {
+      const tomorrow = new Date()
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      return att.data === tomorrow.toISOString().split('T')[0]
+    })
+
+    let response = `📅 **I TUOI IMPEGNI:**\n\n`
+
+    if (attivitaOggi.length > 0) {
+      response += `🟢 **OGGI (${new Date().toLocaleDateString('it-IT')}):**\n\n`
+      
+      attivitaOggi.forEach((att, index) => {
+        const practice = att.practices
+        const client = practice?.clients
+        const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+        const time = att.ora || 'Orario da definire'
+        
+        response += `${index + 1}. 🕐 **${time}** - ${att.attivita || 'Attività'}\n`
+        response += `   👤 Cliente: ${clientName || 'Non specificato'}\n`
+        if (att.note) {
+          response += `   📝 ${att.note}\n`
+        }
+        response += '\n'
+      })
+    }
+
+    if (attivitaDomani.length > 0) {
+      response += `🔵 **DOMANI (${new Date(Date.now() + 86400000).toLocaleDateString('it-IT')}):**\n\n`
+      
+      attivitaDomani.slice(0, 3).forEach((att, index) => {
+        const practice = att.practices
+        const client = practice?.clients
+        const clientName = client?.ragione || (client?.nome || '') + ' ' + (client?.cognome || '')
+        const time = att.ora || 'Orario da definire'
+        
+        response += `${index + 1}. 🕐 **${time}** - ${att.attivita || 'Attività'}\n`
+        response += `   👤 Cliente: ${clientName || 'Non specificato'}\n`
+        response += '\n'
+      })
+    }
+
+    if (attivitaOggi.length === 0 && attivitaDomani.length === 0) {
+      response += '✅ **Nessun impegno per oggi e domani!**\n\n'
+      response += 'Puoi dedicarti a:\n'
+      response += '• Preparare documenti per pratiche future\n'
+      response += '• Aggiornare l\'archivio pratiche\n'
+      response += '• Pianificare la prossima settimana\n'
+    }
 
     return response
   }

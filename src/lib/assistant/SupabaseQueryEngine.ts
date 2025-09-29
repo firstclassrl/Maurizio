@@ -910,10 +910,21 @@ export class SupabaseQueryEngine {
   }
 
   // NUOVI METODI FASE 1 - OPERATIVE
-  private async queryCosaFare(_question: ParsedQuestion, userId: string): Promise<QueryResult> {
+  private async queryCosaFare(question: ParsedQuestion, userId: string): Promise<QueryResult> {
     const today = new Date()
-    const nextWeek = new Date()
-    nextWeek.setDate(today.getDate() + 7)
+    const tomorrow = new Date()
+    tomorrow.setDate(today.getDate() + 1)
+    
+    // Se la domanda è specifica per "oggi", filtra solo oggi
+    const isTodayQuery = question.entities.periodo === 'oggi' || 
+                        question.originalText.toLowerCase().includes('oggi') ||
+                        question.originalText.toLowerCase().includes('impegni') ||
+                        question.originalText.toLowerCase().includes('attivita')
+
+    const startDate = isTodayQuery ? today : today
+    const endDate = isTodayQuery ? today : tomorrow
+
+    console.log('QueryCosaFare: isTodayQuery =', isTodayQuery, 'periodo =', question.entities.periodo)
 
     // Prima provo una query semplice senza join per testare
     let query = supabase
@@ -921,10 +932,10 @@ export class SupabaseQueryEngine {
       .select('*')
       .eq('user_id', userId)
       .eq('stato', 'todo')
-      .gte('data', format(today, 'yyyy-MM-dd'))
-      .lte('data', format(nextWeek, 'yyyy-MM-dd'))
+      .gte('data', format(startDate, 'yyyy-MM-dd'))
+      .lte('data', format(endDate, 'yyyy-MM-dd'))
       .order('data', { ascending: true })
-      .limit(5)
+      .limit(isTodayQuery ? 10 : 5)
 
     const { data, error } = await query
 
@@ -948,10 +959,10 @@ export class SupabaseQueryEngine {
         `)
         .eq('user_id', userId)
         .eq('stato', 'todo')
-        .gte('data', format(today, 'yyyy-MM-dd'))
-        .lte('data', format(nextWeek, 'yyyy-MM-dd'))
+        .gte('data', format(startDate, 'yyyy-MM-dd'))
+        .lte('data', format(endDate, 'yyyy-MM-dd'))
         .order('data', { ascending: true })
-        .limit(5)
+        .limit(isTodayQuery ? 10 : 5)
 
       const { data: enrichedData, error: enrichedError } = await enrichedQuery
 
