@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { AddressAutocomplete } from './AddressAutocomplete'
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Switch } from '../ui/switch';
@@ -414,11 +415,13 @@ export const NewClientForm: React.FC<NewClientFormProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="indirizzo_strada">Via/Strada</Label>
-                <Input
-                  id="indirizzo_strada"
+                <AddressAutocomplete
                   value={indirizzo.strada}
-                  onChange={(e) => setIndirizzo(prev => ({ ...prev, strada: e.target.value }))}
-                  placeholder="Via, Strada, Piazza..."
+                  onChange={(v)=> setIndirizzo(prev => ({ ...prev, strada: v }))}
+                  onSelect={(s)=>{
+                    setIndirizzo({ strada: s.via, civico: s.civico, cap: s.cap, citta: s.citta, provincia: s.provincia })
+                  }}
+                  placeholder="Inizia a digitare per suggerimenti…"
                 />
               </div>
               <div>
