@@ -498,7 +498,7 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
                           <Button
                             variant="outline"
                             size="sm"
-                            className="w-full text-orange-600 border-orange-600 hover:bg-orange-50 bg-white"
+                            className="w-full bg-white text-orange-600 border border-orange-600 hover:bg-orange-50"
                             onClick={() => handleArchivePractice(practice)}
                             disabled={archivingId === practice.id}
                           >

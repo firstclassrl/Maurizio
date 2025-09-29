@@ -10,7 +10,7 @@ interface AddressAutocompleteProps {
 }
 
 export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({ value, onChange, onSelect, placeholder }) => {
-  const { query, setQuery, results, loading } = useGeoapifyAutocomplete(value)
+  const { query, setQuery, results, loading, error } = useGeoapifyAutocomplete(value)
 
   React.useEffect(() => {
     setQuery(value)
@@ -22,7 +22,12 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({ value,
       {loading && (
         <div className="absolute right-2 top-2 text-xs text-gray-400">…</div>
       )}
-      {results.length > 0 && (
+      {error && (
+        <div className="absolute z-10 mt-1 w-full bg-red-50 border border-red-200 rounded-md shadow p-2">
+          <div className="text-xs text-red-600">{error}</div>
+        </div>
+      )}
+      {results.length > 0 && !error && (
         <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow">
           {results.map((item, idx) => (
             <div key={idx} className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm" onClick={()=> onSelect(item)}>

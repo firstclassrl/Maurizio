@@ -22,7 +22,7 @@ function normalizeProvinceNameToCode(name: string): string {
     'macerata':'MC','mantova':'MN','massa-carrara':'MS','massa carrara':'MS','matera':'MT','messina':'ME','milano':'MI','modena':'MO','monza e della brianza':'MB','monza e brianza':'MB','mb':'MB',
     'napoli':'NA','novara':'NO','nuoro':'NU','ogliastra':'OG','olbia-tempio':'OT','olbia tempio':'OT','oristano':'OR',
     'padova':'PD','palermo':'PA','parma':'PR','pavia':'PV','perugia':'PG','pescara':'PE','piacenza':'PC','pisa':'PI','pistoia':'PT','pordenone':'PN','potenza':'PZ','prato':'PO',
-    'ragusa':'RG','ravenna':'RA','ragusa':'RG','reggio calabria':'RC','reggio emilia':'RE','rieti':'RI','rimini':'RN','roma':'RM','rovigo':'RO','salerno':'SA','sassari':'SS','savona':'SV','siena':'SI',
+    'ragusa':'RG','ravenna':'RA','reggio calabria':'RC','reggio emilia':'RE','rieti':'RI','rimini':'RN','roma':'RM','rovigo':'RO','salerno':'SA','sassari':'SS','savona':'SV','siena':'SI',
     'siracusa':'SR','sondrio':'SO','sud sardegna':'SU','taranto':'TA','tempio pausania-olbia':'OT','terni':'TR','torino':'TO','trapani':'TP','trento':'TN','treviso':'TV','trieste':'TS','udine':'UD',
     'varese':'VA','venezia':'VE','verbania':'VB','verbano-cusio-ossola':'VB','vercelli':'VC','verona':'VR','vibo valentia':'VV','vicenza':'VI','viterbo':'VT'
   }
@@ -34,6 +34,7 @@ export function useGeoapifyAutocomplete(initialQuery = '', mode: Mode = 'generic
   const [query, setQuery] = useState(initialQuery)
   const [results, setResults] = useState<GeoapifySuggestion[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const cacheRef = useRef<Map<string, GeoapifySuggestion[]>>(new Map())
   const abortRef = useRef<AbortController | null>(null)
 
@@ -41,16 +42,19 @@ export function useGeoapifyAutocomplete(initialQuery = '', mode: Mode = 'generic
     const trimmed = query.trim()
     if (!trimmed || trimmed.length < 3) {
       setResults([])
+      setError(null)
       return
     }
 
     const key = `it:${trimmed.toLowerCase()}`
     if (cacheRef.current.has(key)) {
       setResults(cacheRef.current.get(key)!)
+      setError(null)
       return
     }
 
     setLoading(true)
+    setError(null)
     const t = setTimeout(async () => {
       try {
         if (abortRef.current) abortRef.current.abort()
@@ -58,6 +62,7 @@ export function useGeoapifyAutocomplete(initialQuery = '', mode: Mode = 'generic
 
         const apiKey = (import.meta as any).env?.VITE_GEOAPIFY_API_KEY
         if (!apiKey) {
+          setError('Chiave API Geoapify non configurata. Configura VITE_GEOAPIFY_API_KEY nel file .env')
           setLoading(false)
           return
         }
@@ -82,8 +87,11 @@ export function useGeoapifyAutocomplete(initialQuery = '', mode: Mode = 'generic
         })
         cacheRef.current.set(key, items)
         setResults(items)
-      } catch (_) {
-        // ignore aborts
+        setError(null)
+      } catch (err) {
+        if (err instanceof Error && err.name !== 'AbortError') {
+          setError('Errore nel caricamento dei suggerimenti indirizzo')
+        }
       } finally {
         setLoading(false)
       }
@@ -92,7 +100,7 @@ export function useGeoapifyAutocomplete(initialQuery = '', mode: Mode = 'generic
     return () => clearTimeout(t)
   }, [query])
 
-  return { query, setQuery, results, loading }
+  return { query, setQuery, results, loading, error }
 }
 
 
