@@ -1,25 +1,23 @@
-v3.6.0-final - Versione finale ottimizzata per produzione
-Timestamp: 2025-01-25 22:30:00
-Commit: 436ca76 (versione finale)
+v3.8.0-beta - Notifiche migliorate e banner demo
+Timestamp: 2025-09-30 11:58:00
+Commit: pending (working tree)
 
-🎨 NUOVO LAYOUT CARD PRATICHE:
-- ✅ RIGA 1: Pratica - Cliente - Controparte
-- ✅ RIGA 2: Data - Ora - Attività - Note
-- ✅ Layout più organizzato e leggibile
-- ✅ Informazioni disposte in modo logico
-- ✅ Migliorata usabilità delle card
+🔔 NOTIFICHE:
+- ✅ Semplificazione completa: Notification API nativa
+- ✅ Fallback universale: notifiche in‑app con suono (Web Audio API)
+- ✅ Opzioni specifiche per Chrome/macOS
+- ✅ Test notifica e toggle nelle impostazioni
 
-🔧 MODIFICHE TECNICHE:
-- ✅ Aggiornato DashboardPage.tsx con nuovo layout
-- ✅ Aggiornato Calendar.tsx con nuovo layout
-- ✅ Footer aggiornato a versione 3.2.2-beta
-- ✅ Layout responsive con flex-wrap
-- ✅ Mantenuta compatibilità con design esistente
+🎛️ DASHBOARD:
+- ✅ Banner rosso “Versione Demo Beta Test” per demo1/2/3@abruzzo.it|ai
+- ✅ Fix contatore “Urgenti” allineato a elenco nel modal
+- ✅ Caricamento urgente prima dell’apertura modal
 
-📊 COMPONENTI AGGIORNATI:
-- DashboardPage.tsx: nuovo layout card urgenti e normali
-- Calendar.tsx: nuovo layout card calendario
-- Footer.tsx: versione aggiornata a 3.2.2-beta
+📦 COMPONENTI/HOOK NUOVI:
+- src/components/notifications/InAppNotification.tsx
+- src/hooks/useInAppNotifications.tsx
+- Aggiornato src/hooks/usePushNotifications.tsx
+- Aggiornato src/components/notifications/PushNotificationSettings.tsx
 
 🎯 MIGLIORAMENTI UX:
 - ✅ Informazioni più facilmente scannabili

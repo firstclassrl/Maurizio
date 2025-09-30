@@ -40,6 +40,19 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
   const { toasts, removeToast, showSuccess, showError } = useToast()
   const isMobile = useMobile()
 
+  // Demo banner for specific test users (robust check across metadata)
+  const isDemoUser = (() => {
+    const primaryEmail = (user as any)?.email as string | undefined
+    const metaEmail = ((user as any)?.user_metadata?.email as string | undefined)
+    const email = (primaryEmail || metaEmail || '').trim().toLowerCase()
+    if (email) {
+      try { console.debug('Dashboard email detected for banner:', email) } catch {}
+    }
+    // Accept demoN@abruzzo.it or demoN@abruzzo.ai
+    const demoRegex = /^demo\d+@abruzzo\.(it|ai)$/
+    return demoRegex.test(email)
+  })()
+
   const [clients, setClients] = useState<Client[]>([])
 
   // Function to get category color
@@ -502,6 +515,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       {/* Main Content */}
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
+        {isDemoUser && (
+          <div className="mb-4 p-3 border-2 border-red-300 bg-red-50 rounded-md">
+            <p className="text-red-700 font-bold text-center">Versione Demo Beta Test</p>
+          </div>
+        )}
+
         {/* Welcome Message and Counters */}
         <div className="mb-6">
           <div className="flex items-center justify-between bg-white border rounded-md p-4">
@@ -513,7 +532,10 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             </div>
             <div className="flex items-center gap-2 text-xs">
               <button
-                onClick={() => setShowUrgentTasks(true)}
+                onClick={async () => {
+                  await loadUrgentTasks()
+                  setShowUrgentTasks(true)
+                }}
                 className="px-2 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 transition"
                 title="Vedi attività urgenti"
               >
