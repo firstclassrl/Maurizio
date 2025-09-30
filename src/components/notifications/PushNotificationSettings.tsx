@@ -4,6 +4,8 @@ import { Button } from '../ui/button';
 import { Switch } from '../ui/switch';
 import { Bell, BellOff, Smartphone, TestTube, AlertCircle, CheckCircle } from 'lucide-react';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
+import { useInAppNotifications } from '../../hooks/useInAppNotifications';
+import { InAppNotification } from './InAppNotification';
 
 export function PushNotificationSettings() {
   const {
@@ -15,6 +17,7 @@ export function PushNotificationSettings() {
     sendTestNotification
   } = usePushNotifications();
 
+  const { notifications, showNotification, removeNotification } = useInAppNotifications();
   const [testResult, setTestResult] = useState<'idle' | 'success' | 'error'>('idle');
 
   const handleToggle = async () => {
@@ -27,7 +30,27 @@ export function PushNotificationSettings() {
   const handleTestNotification = async () => {
     setTestResult('idle');
     const success = await sendTestNotification();
-    setTestResult(success ? 'success' : 'error');
+    
+    if (success) {
+      setTestResult('success');
+      // Mostra notifica in-app per Chrome
+      if (navigator.userAgent.includes('Chrome')) {
+        showNotification(
+          'Notifica Inviata',
+          'Notifica di test inviata con successo! (Chrome: potrebbe non essere visibile)',
+          'success',
+          4000
+        );
+      }
+    } else {
+      setTestResult('error');
+      showNotification(
+        'Errore',
+        'Impossibile inviare la notifica di test',
+        'error',
+        4000
+      );
+    }
     
     // Reset del risultato dopo 3 secondi
     setTimeout(() => setTestResult('idle'), 3000);
@@ -58,6 +81,7 @@ export function PushNotificationSettings() {
   }
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
@@ -162,9 +186,23 @@ export function PushNotificationSettings() {
             <p>• Funziona su tutti i browser moderni</p>
             <p>• Puoi disabilitare le notifiche in qualsiasi momento</p>
             <p>• Compatibile con Chrome, Firefox, Safari, Edge</p>
+            <p>• Suono di notifica incluso</p>
           </div>
         </div>
       </CardContent>
     </Card>
+
+    {/* Notifiche in-app */}
+    {notifications.map(notification => (
+      <InAppNotification
+        key={notification.id}
+        title={notification.title}
+        message={notification.message}
+        type={notification.type}
+        duration={notification.duration}
+        onClose={() => removeNotification(notification.id)}
+      />
+    ))}
+  </>
   );
 }
