@@ -1,0 +1,63 @@
+LexAgenda – Summary per la forza commerciale
+
+Cos'è
+- Piattaforma web per studi legali che centralizza pratiche, attività e scadenze.
+- Funziona su qualsiasi browser desktop e mobile, senza installazioni.
+
+A chi serve
+- Avvocati singoli e studi legali piccoli/medi che vogliono ridurre errori e velocizzare il lavoro.
+
+Benefici chiave
+- Riduce il rischio di dimenticare scadenze urgenti/scadute.
+- Velocizza apertura pratiche, inserimento attività, gestione parti.
+- Calcolo termini standardizzato e aggiornato.
+- Dati sincronizzati in tempo reale nel cloud.
+
+Funzionalità principali
+- Dashboard operativa
+  - Visione del giorno, contatori Urgenti/Scaduti, lista attività con filtri.
+  - Azioni rapide: Nuova Parte, Nuova Pratica, Aggiungi Attività.
+  - Banner demo per utenti di test.
+- Calendario
+  - Viste Settimana e Mese con attività/appuntamenti.
+  - Evidenza scadenze urgenti e attività scadute.
+- Gestione Pratiche e Parti
+  - Archivio pratiche con numero pratica, cliente e controparti.
+  - Apertura rapida attività della pratica.
+  - Anagrafiche con autocompletamento indirizzo (Geoapify).
+- Calcolatore Legale
+  - Termini Processuali: giorni/mesi/anni, sospensione feriale, termini liberi.
+  - Giorni intercorrrenti: differenza tra date con opzioni (ritroso, feriale, ecc.).
+  - Libreria di termini standard per categorie.
+- Notifiche
+  - Notifiche native del browser (dove supportate).
+  - Fallback universale: notifiche in‑app con suono.
+  - Test notifica e attivazione/disattivazione dalle impostazioni.
+- Ricerca e filtri
+  - Filtri per pratica, categoria, cliente/controparte.
+  - Segnali visivi “semaforo” per attività scadute.
+- Integrazioni e sincronizzazione
+  - Integrazione Google Calendar (setup guidato).
+  - Aggiornamenti app con avviso nuova versione.
+  - Database cloud (Supabase) con sincronizzazione real‑time.
+
+Esperienza d’uso
+- UI moderna e leggera, ottimizzata per mobile e desktop.
+- Feedback immediato con toast e suoni opzionali.
+
+Sicurezza e architettura
+- Autenticazione sicura e profili utente.
+- Policy di accesso per singolo utente (RLS) e dati isolati.
+- Service worker per caching e caricamenti rapidi.
+
+Onboarding
+- Accesso demo immediato (utenti demo dedicati).
+- Nessuna installazione: pronto all’uso via browser.
+
+Differenziatori
+- Calcolatore legale integrato direttamente nel flusso di lavoro.
+- Doppio canale di notifica (native + in‑app con suono) per massima affidabilità.
+- Semplicità operativa: zero server da gestire, aggiornamenti automatici.
+
+Call‑to‑action
+- Prova la demo: gestione pratiche, scadenze e termini in pochi minuti.
