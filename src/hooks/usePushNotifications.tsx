@@ -79,8 +79,7 @@ export function usePushNotifications() {
         badge: '/favicon.png',
         tag: 'lexagenda-test',
         requireInteraction: false, // Chrome su macOS ha problemi con requireInteraction
-        silent: false,
-        renotify: true
+        silent: false
       });
 
       console.log('Notifica creata:', notification);
