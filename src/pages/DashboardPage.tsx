@@ -254,7 +254,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         .from('activities')
         .select(`
           *,
-          practices!inner(
+          practices(
             numero,
             cliente_id,
             controparti_ids,
@@ -275,6 +275,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         throw error
       }
       
+      console.log('Attività urgenti trovate:', activities?.length || 0)
+      console.log('Attività urgenti:', activities)
 
       // Get all unique counterparty IDs from all practices
       const allCounterpartyIds = new Set<string>()

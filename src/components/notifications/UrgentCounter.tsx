@@ -31,6 +31,8 @@ export function UrgentCounter({ userId, onClick }: UrgentCounterProps) {
         throw urgentError
       }
 
+      console.log('UrgentCounter - Attività urgenti trovate:', urgentTasks?.length || 0)
+      console.log('UrgentCounter - Attività urgenti:', urgentTasks)
 
       setUrgentCount(urgentTasks?.length || 0)
     } catch (error) {
