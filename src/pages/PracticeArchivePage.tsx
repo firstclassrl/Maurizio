@@ -10,6 +10,7 @@ import { Archive } from 'lucide-react'
 import { Input } from '../components/ui/input'
 import { Footer } from '../components/ui/Footer'
 import { NewActivityWizard } from '../components/practice/NewActivityWizard'
+import { MOCK_PRACTICES, MOCK_CLIENTS } from '../lib/mock-demo'
 import { AddActivityToExistingPractice } from '../components/practice/AddActivityToExistingPractice'
 
 interface PracticeArchivePageProps {
@@ -145,33 +146,25 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
       )
 
       if (!practicesWithCounterparties || practicesWithCounterparties.length === 0) {
-        const mock: any[] = [
-          {
-            id: 'p-m1',
-            numero: '2025/001',
-            tipo_procedura: 'GIUDIZIALE',
-            created_at: new Date().toISOString(),
-            clients: { nome: 'Mario', cognome: 'Rossi' },
-            counterparties: [{ ragione: 'Alfa S.p.A.' }],
-            autorita_giudiziaria: 'Tribunale di Roma', rg: '12345/2025', giudice: 'Dott. Bianchi'
-          },
-          {
-            id: 'p-m2',
-            numero: '2025/002',
-            tipo_procedura: 'STRAGIUDIZIALE',
-            created_at: new Date().toISOString(),
-            clients: { ragione: 'Beta S.r.l.' },
-            counterparties: [{ nome: 'Lucia', cognome: 'Bianchi' }]
-          },
-          {
-            id: 'p-m3',
-            numero: '2025/003',
-            tipo_procedura: 'STRAGIUDIZIALE',
-            created_at: new Date().toISOString(),
-            clients: { ragione: 'Comune di Pescara' },
-            counterparties: [{ ragione: 'Gamma S.c.a.r.l.' }]
-          }
-        ]
+        const mock = MOCK_PRACTICES.map(p => ({
+          id: p.id,
+          numero: p.numero,
+          tipo_procedura: p.tipo_procedura,
+          created_at: new Date().toISOString(),
+          clients: (() => {
+            const c = MOCK_CLIENTS.find(x => x.id === p.cliente_id)
+            if (!c) return null
+            return c.ragione ? { ragione: c.ragione } : { nome: c.nome, cognome: c.cognome }
+          })(),
+          counterparties: p.controparti_ids.map(id => {
+            const c = MOCK_CLIENTS.find(x => x.id === id)
+            if (!c) return null
+            return c?.ragione ? { ragione: c.ragione } : { nome: c.nome, cognome: c.cognome }
+          }).filter(Boolean),
+          autorita_giudiziaria: p.autorita_giudiziaria,
+          rg: p.rg,
+          giudice: p.giudice
+        }))
         setPractices(mock as any)
         return
       }

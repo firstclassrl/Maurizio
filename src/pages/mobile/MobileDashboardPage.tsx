@@ -11,6 +11,7 @@ import { MobileClientDialog } from '../../components/mobile/MobileClientDialog'
 import { AddActivityToExistingPractice } from '../../components/practice/AddActivityToExistingPractice'
 import { MobileAppuntamentoDialog } from '../../components/mobile/MobileAppuntamentoDialog'
 import { NewActivityWizard } from '../../components/practice/NewActivityWizard'
+import { MOCK_ACTIVITIES, MOCK_PRACTICES, getPracticeById, getClientNameById } from '../../lib/mock-demo'
 import { AppView } from '../../App'
 import { 
   AlertTriangle, 
@@ -113,34 +114,46 @@ export function MobileDashboardPage({
         activitiesData = data
       }
 
-      const transformedTasks: Task[] = (activitiesData || []).map(activity => ({
-        id: activity.id,
-        user_id: activity.user_id,
-        attivita: activity.attivita,
-        pratica: activity.practices?.numero || 'Pratica',
-        scadenza: activity.data,
-        ora: activity.ora || '00:00',
-        stato: activity.stato === 'done' ? 'done' : 'todo',
-        urgent: (activity.priorita ?? 5) >= 8,
-        categoria: activity.categoria,
-        cliente: 'Cliente',
-        controparte: null,
-        created_at: activity.created_at,
-        updated_at: activity.updated_at
-      }))
+      const transformedTasks: Task[] = (activitiesData || []).map(activity => {
+        const practice = activity.practices
+        return {
+          id: activity.id,
+          user_id: activity.user_id,
+          attivita: activity.attivita,
+          pratica: practice?.numero || 'Pratica',
+          scadenza: activity.data,
+          ora: activity.ora || '00:00',
+          stato: activity.stato === 'done' ? 'done' : 'todo',
+          urgent: (activity.priorita ?? 5) >= 8,
+          categoria: activity.categoria,
+          cliente: getClientNameById(practice?.cliente_id) || '—',
+          controparte: (practice?.controparti_ids || []).map((id: string) => getClientNameById(id)).filter(Boolean).join(', ') || null,
+          created_at: activity.created_at,
+          updated_at: activity.updated_at
+        }
+      })
 
       // If empty, provide mock tasks with proper client/counterparty relationships
-      const list = transformedTasks && transformedTasks.length > 0 ? transformedTasks : [
-        {
-          id: 'm1', user_id: user.id, pratica: '2025/001', attivita: 'Deposito ricorso', scadenza: new Date().toISOString().split('T')[0], ora: '10:00', stato: 'todo', urgent: true, categoria: 'Scadenza Processuale', cliente: 'Mario Rossi', controparte: 'Alfa S.p.A.', created_at: new Date().toISOString(), updated_at: new Date().toISOString()
-        },
-        {
-          id: 'm2', user_id: user.id, pratica: '2025/002', attivita: 'Udienza di comparizione', scadenza: new Date(Date.now()+86400000).toISOString().split('T')[0], ora: '09:30', stato: 'todo', urgent: false, categoria: 'Udienza', cliente: 'Beta S.r.l.', controparte: 'Lucia Bianchi', created_at: new Date().toISOString(), updated_at: new Date().toISOString()
-        },
-        {
-          id: 'm3', user_id: user.id, pratica: '2025/003', attivita: 'Telefonata con cliente', scadenza: new Date(Date.now()+86400000*2).toISOString().split('T')[0], ora: '15:00', stato: 'todo', urgent: false, categoria: 'Attività da Svolgere', cliente: 'Comune di Pescara', controparte: 'Gamma S.c.a.r.l.', created_at: new Date().toISOString(), updated_at: new Date().toISOString()
-        }
-      ]
+      const list = transformedTasks && transformedTasks.length > 0 ? transformedTasks : (
+        MOCK_ACTIVITIES.map(a => {
+          const p = getPracticeById(a.pratica_id) || MOCK_PRACTICES[0]
+          return {
+            id: a.id,
+            user_id: user.id,
+            attivita: a.attivita,
+            pratica: p.numero,
+            scadenza: a.data,
+            ora: a.ora,
+            stato: a.stato,
+            urgent: !!a.urgent,
+            categoria: a.categoria,
+            cliente: getClientNameById(p.cliente_id) || '—',
+            controparte: p.controparti_ids.map(id => getClientNameById(id)).filter(Boolean).join(', ') || null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        })
+      )
 
       setTasks(list)
       setUrgentTasks(list.filter(t => t.urgent))
