@@ -22,7 +22,8 @@ import {
   MoreVertical,
   Sparkles,
   FolderOpen,
-  FileText
+  FileText,
+  LogOut
 } from 'lucide-react'
 
 interface MobileDashboardPageProps {
@@ -165,10 +166,22 @@ export function MobileDashboardPage({
     onNavigate('assistant')
   }
 
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+      // Torna alla pagina di login
+      onNavigate('dashboard')
+      window.location.reload()
+    } catch (error) {
+      console.error('Errore nel logout:', error)
+    }
+  }
+
   const menuItems = [
     { label: 'Calcolatore Termini', onClick: onNavigateToCalcolatore, icon: Calculator },
     { label: 'Archivio Pratiche', onClick: onNavigateToPracticeArchive, icon: MoreVertical },
     { label: 'Storage', onClick: onNavigateToStorage, icon: MoreVertical },
+    { label: 'Logout', onClick: handleLogout, icon: LogOut },
   ]
 
   return (
