@@ -212,3 +212,38 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 input[type="time"] {
   font-family: monospace;
 }
+
+/* Mobile-specific utilities */
+@layer utilities {
+  .mobile-container {
+    @apply px-4 py-2;
+  }
+  
+  .mobile-card {
+    @apply rounded-lg shadow-sm border border-gray-200 bg-white;
+  }
+  
+  .mobile-button {
+    @apply min-h-[44px] px-4 py-2 text-base font-medium;
+  }
+  
+  .mobile-input {
+    @apply min-h-[44px] px-3 py-2 text-base;
+  }
+  
+  .mobile-text {
+    @apply text-base leading-relaxed;
+  }
+  
+  .mobile-heading {
+    @apply text-lg font-semibold leading-tight;
+  }
+  
+  .mobile-layout {
+    @apply min-h-screen bg-gray-50;
+  }
+  
+  .mobile-safe-area {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

@@ -218,6 +218,16 @@ export function CalcolatoreTermini({ onAggiungiACalendario }: CalcolatoreTermini
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Avviso Coming Soon */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <Info className="h-4 w-4 text-yellow-600" />
+                <span className="text-sm text-yellow-800">
+                  <strong>Coming Soon:</strong> I termini predefiniti sono in fase di aggiornamento e non sono ancora pronti.
+                </span>
+              </div>
+            </div>
+
             {/* Toggle per termini predefiniti */}
             <div className="flex items-center justify-between">
               <Label htmlFor="termini-predefiniti">Usa termine predefinito</Label>
@@ -225,6 +235,7 @@ export function CalcolatoreTermini({ onAggiungiACalendario }: CalcolatoreTermini
                 id="termini-predefiniti"
                 checked={mostraTerminiPredefiniti}
                 onCheckedChange={setMostraTerminiPredefiniti}
+                disabled={true}
               />
             </div>
 

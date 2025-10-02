@@ -10,12 +10,20 @@ import { CalcolatoreTerminiPage } from './pages/CalcolatoreTerminiPage'
 import { ClientsPage } from './pages/ClientsPage'
 import { StoragePage } from './pages/StoragePage'
 import { PracticeArchivePage } from './pages/PracticeArchivePage'
+import { MobileDashboardPage } from './pages/mobile/MobileDashboardPage'
+import { MobileOverduePage } from './pages/mobile/MobileOverduePage'
+import { MobileClientsPage } from './pages/mobile/MobileClientsPage'
+import { MobilePracticeArchivePageCorrect } from './pages/mobile/MobilePracticeArchivePageCorrect'
+import { MobileMonthPage } from './pages/mobile/MobileMonthPage'
+import { MobileWeekPage } from './pages/mobile/MobileWeekPage'
+import { MobileAssistantPage } from './pages/mobile/MobileAssistantPage'
 import { Loader2 } from 'lucide-react'
 import { WeekendSettingsProvider } from './contexts/WeekendSettingsContext'
 import { useAppUpdate } from './hooks/useAppUpdate'
 import { UpdateNotification } from './components/ui/UpdateNotification'
+import { useMobile } from './hooks/useMobile'
 
-type AppView = 'dashboard' | 'month' | 'week' | 'overdue' | 'calcolatore-termini' | 'clients' | 'storage' | 'practice-archive'
+export type AppView = 'dashboard' | 'month' | 'week' | 'overdue' | 'calcolatore-termini' | 'clients' | 'storage' | 'practice-archive' | 'assistant'
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
@@ -23,6 +31,7 @@ function App() {
   const [currentView, setCurrentView] = useState<AppView>('dashboard')
   const [showUpdateNotification, setShowUpdateNotification] = useState(false)
   const { isUpdateAvailable, isUpdating, updateApp } = useAppUpdate()
+  const isMobile = useMobile()
 
   useEffect(() => {
     // Get initial session
@@ -66,6 +75,86 @@ function App() {
   const renderCurrentView = () => {
     if (!user) return <LoginPage />
     
+    // Mobile routing
+    if (isMobile) {
+      switch (currentView) {
+        case 'dashboard':
+          return (
+            <MobileDashboardPage 
+              user={user} 
+              onNavigate={setCurrentView}
+              onNavigateToCalcolatore={() => setCurrentView('calcolatore-termini')}
+              onNavigateToClients={() => setCurrentView('clients')}
+              onNavigateToStorage={() => setCurrentView('storage')}
+              onNavigateToPracticeArchive={() => setCurrentView('practice-archive')}
+            />
+          )
+        case 'month':
+          return (
+            <MobileMonthPage 
+              user={user} 
+              onNavigate={setCurrentView}
+            />
+          )
+        case 'week':
+          return (
+            <MobileWeekPage 
+              user={user} 
+              onNavigate={setCurrentView}
+            />
+          )
+        case 'overdue':
+          return (
+            <MobileOverduePage 
+              user={user} 
+              onNavigate={setCurrentView}
+            />
+          )
+        case 'clients':
+          return (
+            <MobileClientsPage 
+              user={user} 
+              onNavigate={setCurrentView}
+            />
+          )
+        case 'practice-archive':
+          return (
+            <MobilePracticeArchivePageCorrect 
+              user={user}
+              onNavigate={setCurrentView}
+            />
+          )
+        case 'calcolatore-termini':
+          return (
+            <CalcolatoreTerminiPage 
+              user={user} 
+              onBackToDashboard={() => setCurrentView('dashboard')}
+            />
+          )
+        case 'assistant':
+          return (
+            <MobileAssistantPage 
+              user={user}
+              onNavigate={setCurrentView}
+            />
+          )
+        // Per le altre pagine mobile usiamo ancora le versioni desktop
+        // Implementeremo le versioni mobile specifiche nei prossimi step
+        default:
+          return (
+            <MobileDashboardPage 
+              user={user} 
+              onNavigate={setCurrentView}
+              onNavigateToCalcolatore={() => setCurrentView('calcolatore-termini')}
+              onNavigateToClients={() => setCurrentView('clients')}
+              onNavigateToStorage={() => setCurrentView('storage')}
+              onNavigateToPracticeArchive={() => setCurrentView('practice-archive')}
+            />
+          )
+      }
+    }
+    
+    // Desktop routing
     switch (currentView) {
       case 'dashboard':
         return (

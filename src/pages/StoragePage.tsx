@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { Task } from '../lib/calendar-utils'
-import { Client } from '../types/client'
 import { Button } from '../components/ui/button'
 import { Card } from '../components/ui/card'
 // import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog'

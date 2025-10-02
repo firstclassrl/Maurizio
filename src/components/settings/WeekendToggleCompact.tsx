@@ -11,7 +11,7 @@ export const WeekendToggleCompact: React.FC<WeekendToggleCompactProps> = ({ clas
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <span className="text-sm font-medium text-gray-700">
+      <span className="text-sm font-medium text-cyan-600">
         Weekend
       </span>
       <Switch

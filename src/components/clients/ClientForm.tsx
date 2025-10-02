@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Client, ClientFormData, Address, Contact } from '../../types/client'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
@@ -6,15 +7,14 @@ import { Button } from '../ui/button'
 import { Switch } from '../ui/switch'
 import { Card } from '../ui/card'
 import { Plus, Minus, ArrowLeft } from 'lucide-react'
-import { Client, Address, Contact, ClientFormData } from '../../types/client'
 import { CLIENT_TYPES } from '../../data/clientTypes'
 import { useMobile } from '../../hooks/useMobile'
 
 interface ClientFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  client?: Client | null
-  onSave: (client: Client) => void
+  client?: any | null
+  onSave: (client: any) => void
   isLoading?: boolean
 }
 
