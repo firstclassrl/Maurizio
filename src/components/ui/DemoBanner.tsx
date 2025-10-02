@@ -10,19 +10,12 @@ interface DemoBannerProps {
 }
 
 export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: DemoBannerProps) {
-  console.log('=== DEMO BANNER RENDER ===')
-  console.log('DemoBanner render:', { isDemoUser, isPopulating, hasOnRepopulate: !!onRepopulate, hasOnClear: !!onClear })
-  console.log('onRepopulate function:', onRepopulate)
-  
-  if (!isDemoUser) {
-    console.log('DemoBanner: not a demo user, returning null')
-    return null
-  }
+  if (!isDemoUser) return null
 
   return (
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 mb-4 rounded-lg shadow-lg">
       <div className="flex items-center justify-between">
-        <div className="text-xs opacity-75">DEMO BANNER RENDERED</div>
+        {/* Demo banner */}
         <div className="flex items-center gap-3">
           <Info className="h-5 w-5 text-blue-200" />
           <div>
@@ -36,18 +29,7 @@ export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: 
           {onRepopulate && (
             <Button
               size="sm"
-              onClick={() => {
-                console.log('Ricarica Dati button clicked!')
-                console.log('onRepopulate function:', onRepopulate)
-                if (onRepopulate) {
-                  console.log('Calling onRepopulate...')
-                  alert('CALLING onRepopulate function!')
-                  onRepopulate()
-                } else {
-                  console.error('onRepopulate is undefined!')
-                  alert('ERROR: onRepopulate is undefined!')
-                }
-              }}
+              onClick={onRepopulate}
               disabled={isPopulating}
               className="bg-white text-blue-600 hover:bg-blue-50 border border-blue-200 text-xs font-medium"
             >

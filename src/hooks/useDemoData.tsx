@@ -11,8 +11,6 @@ export function useDemoData(user: User | null) {
     const email = (user?.email || '').trim().toLowerCase()
     const isDemo = ['demo1@abruzzo.ai', 'demo2@abruzzo.ai', 'demo3@abruzzo.ai',
             'demo1@abruzzo.it', 'demo2@abruzzo.it', 'demo3@abruzzo.it'].includes(email)
-    console.log('=== DEMO USER CHECK ===')
-    console.log('useDemoData: checking if demo user', { email, isDemo, userEmail: user?.email })
     return isDemo
   })()
 
@@ -51,7 +49,8 @@ export function useDemoData(user: User | null) {
         const success = await populateDemoData(user.id, user.email!)
         if (success) {
           setHasDemoData(true)
-          console.log('Demo data populated successfully (no auto reload)')
+          // Reload to refresh pages and queries
+          setTimeout(() => window.location.reload(), 300)
         } else {
           console.error('Failed to populate demo data')
         }
@@ -82,7 +81,8 @@ export function useDemoData(user: User | null) {
       console.log('repopulateDemoData: result', success)
       if (success) {
         setHasDemoData(true)
-        console.log('repopulateDemoData: success (no auto reload)')
+        // Reload to refresh pages and queries
+        setTimeout(() => window.location.reload(), 300)
         return true
       } else {
         console.log('repopulateDemoData: failed')
