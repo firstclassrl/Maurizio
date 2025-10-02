@@ -51,6 +51,8 @@ export function useDemoData(user: User | null) {
         if (success) {
           setHasDemoData(true)
           console.log('Demo data populated successfully')
+          // Force a reload so dashboards refetch
+          setTimeout(() => window.location.reload(), 300)
         } else {
           console.error('Failed to populate demo data')
         }

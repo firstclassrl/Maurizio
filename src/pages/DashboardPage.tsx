@@ -511,8 +511,14 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         <DemoBanner 
           isDemoUser={isDemoUser}
           isPopulating={isPopulating}
-          onRepopulate={onRepopulateDemo}
-          onClear={onClearDemo}
+          onRepopulate={async () => {
+            await onRepopulateDemo?.()
+            setTimeout(() => window.location.reload(), 300)
+          }}
+          onClear={async () => {
+            await onClearDemo?.()
+            setTimeout(() => window.location.reload(), 300)
+          }}
         />
 
         {/* Welcome Message and Counters */}

@@ -51,9 +51,7 @@ export async function populateDemoData(userId: string, email: string) {
         partita_iva,
         indirizzi,
         contatti,
-        note: 'Dati dimostrativi',
-        cliente: rand() > 0.3,
-        controparte: rand() > 0.6
+        note: 'Dati dimostrativi'
       })
     }
 

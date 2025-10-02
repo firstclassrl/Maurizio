@@ -168,6 +168,8 @@ export function MobileDashboardPage({
 
   const handleLogout = async () => {
     try {
+      const confirmed = window.confirm('Sei sicuro di voler uscire?')
+      if (!confirmed) return
       await supabase.auth.signOut()
       // Torna alla pagina di login
       onNavigate('dashboard')
@@ -217,8 +219,14 @@ export function MobileDashboardPage({
       <DemoBanner 
         isDemoUser={isDemoUser}
         isPopulating={isPopulating}
-        onRepopulate={onRepopulateDemo}
-        onClear={onClearDemo}
+        onRepopulate={async () => {
+          await onRepopulateDemo?.()
+          setTimeout(() => window.location.reload(), 300)
+        }}
+        onClear={async () => {
+          await onClearDemo?.()
+          setTimeout(() => window.location.reload(), 300)
+        }}
       />
 
       {/* Quick Stats */}
@@ -319,9 +327,9 @@ export function MobileDashboardPage({
                   item.onClick()
                   setIsMenuOpen(false)
                 }}
-                className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-100 rounded-md"
+                className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-100 rounded-md ${item.label === 'Logout' ? 'text-red-600' : ''}`}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className={`h-4 w-4 ${item.label === 'Logout' ? 'text-red-600' : ''}`} />
                 <span className="text-sm">{item.label}</span>
               </button>
             ))}
