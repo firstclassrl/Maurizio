@@ -27,11 +27,10 @@ export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: 
         <div className="flex items-center gap-2">
           {onRepopulate && (
             <Button
-              variant="outline"
               size="sm"
               onClick={onRepopulate}
               disabled={isPopulating}
-              className="text-white border-white hover:bg-white hover:text-blue-600 text-xs"
+              className="bg-white text-blue-600 hover:bg-blue-50 border border-blue-200 text-xs font-medium"
             >
               <RotateCcw className="h-3 w-3 mr-1" />
               Ricarica Dati
@@ -39,11 +38,10 @@ export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: 
           )}
           {onClear && (
             <Button
-              variant="outline"
               size="sm"
               onClick={onClear}
               disabled={isPopulating}
-              className="text-white border-white hover:bg-white hover:text-red-600 text-xs"
+              className="bg-white text-red-600 hover:bg-red-50 border border-red-200 text-xs font-medium"
             >
               <Trash2 className="h-3 w-3 mr-1" />
               Pulisci

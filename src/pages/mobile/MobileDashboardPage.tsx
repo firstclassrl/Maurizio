@@ -62,9 +62,14 @@ export function MobileDashboardPage({
   const [clients, setClients] = useState<any[]>([])
 
   useEffect(() => {
-    loadTasks()
     loadClients()
   }, [])
+
+  useEffect(() => {
+    if (clients.length > 0) {
+      loadTasks()
+    }
+  }, [clients])
 
   const loadClients = async () => {
     try {
@@ -86,45 +91,60 @@ export function MobileDashboardPage({
   }
 
   const loadTasks = async () => {
-    // Qui implementeremo il caricamento delle task
-    // Per ora usiamo dati mock
-    const mockTasks: Task[] = [
-      {
-        id: '1',
-        user_id: user.id,
-        attivita: 'Scadenza atto processuale',
-        pratica: 'Pratica 2025/001',
-        scadenza: new Date().toISOString().split('T')[0],
-        ora: '10:00',
-        stato: 'todo',
-        urgent: true,
-        categoria: 'SCADENZA ATTO PROCESSUALE',
-        cliente: 'Mario Rossi',
-        controparte: 'Comune di Roma',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: '2',
-        user_id: user.id,
-        attivita: 'Udienza',
-        pratica: 'Pratica 2025/002',
-        scadenza: new Date().toISOString().split('T')[0],
-        ora: '14:30',
-        stato: 'todo',
-        urgent: false,
-        categoria: 'UDIENZA',
-        cliente: 'Giulia Bianchi',
-        controparte: 'Tizio S.r.l.',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+    try {
+      // Load activities with practice and client information
+      const { data: activitiesData, error } = await supabase
+        .from('activities')
+        .select(`
+          *,
+          practices!inner(
+            numero,
+            cliente_id,
+            controparti_ids,
+            clients!practices_cliente_id_fkey(
+              ragione,
+              nome,
+              cognome
+            )
+          )
+        `)
+        .eq('user_id', user.id)
+        .order('data', { ascending: true })
+
+      if (error) {
+        console.error('Error loading activities:', error)
+        return
       }
-    ]
-    
-    setTasks(mockTasks)
-    setUrgentTasks(mockTasks.filter(t => t.urgent))
-    setOverdueTasks(mockTasks.filter(t => t.stato === 'todo' && new Date(t.scadenza) < new Date()))
-    setTodayTasks(mockTasks.filter(t => t.scadenza === new Date().toISOString().split('T')[0]))
+
+      // Transform activities to Task format for compatibility
+      const transformedTasks: Task[] = (activitiesData || []).map(activity => ({
+        id: activity.id,
+        user_id: activity.user_id,
+        attivita: activity.attivita,
+        pratica: activity.practices?.numero || 'N/A',
+        scadenza: activity.data,
+        ora: activity.ora || '00:00',
+        stato: activity.stato === 'done' ? 'done' : 'todo',
+        urgent: activity.priorita >= 8,
+        categoria: activity.categoria,
+        cliente: activity.practices?.clients ? 
+          (activity.practices.clients.ragione || 
+           `${activity.practices.clients.nome || ''} ${activity.practices.clients.cognome || ''}`.trim()) 
+          : 'N/A',
+        controparte: activity.practices?.controparti_ids && activity.practices.controparti_ids.length > 0 
+          ? 'Controparte' 
+          : null,
+        created_at: activity.created_at,
+        updated_at: activity.updated_at
+      }))
+
+      setTasks(transformedTasks)
+      setUrgentTasks(transformedTasks.filter(t => t.urgent))
+      setOverdueTasks(transformedTasks.filter(t => t.stato === 'todo' && new Date(t.scadenza) < new Date()))
+      setTodayTasks(transformedTasks.filter(t => t.scadenza === new Date().toISOString().split('T')[0]))
+    } catch (error) {
+      console.error('Error loading tasks:', error)
+    }
   }
 
   const handleTaskClick = (task: Task) => {

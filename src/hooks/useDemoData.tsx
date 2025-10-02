@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { populateDemoData, clearDemoData } from '../lib/demo-data'
+import { supabase } from '../lib/supabase'
 
 export function useDemoData(user: User | null) {
   const [isPopulating, setIsPopulating] = useState(false)
@@ -17,31 +18,38 @@ export function useDemoData(user: User | null) {
   }, [user, isDemoUser])
 
   const checkAndPopulateDemoData = async () => {
-    if (!user || !isDemoUser) return
+    if (!user || !isDemoUser) {
+      console.log('Not a demo user or no user:', { user: user?.email, isDemoUser })
+      return
+    }
 
     try {
+      console.log('Starting demo data check for:', user.email)
       setIsPopulating(true)
       
       // Check if user already has data
-      const { data: existingClients, error } = await import('../lib/supabase').then(
-        ({ supabase }) => supabase
-          .from('clients')
-          .select('id')
-          .eq('user_id', user.id)
-          .limit(1)
-      )
+      const { data: existingClients, error } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('user_id', user.id)
+        .limit(1)
 
       if (error) {
         console.error('Error checking existing data:', error)
         return
       }
 
+      console.log('Existing clients found:', existingClients?.length || 0)
+
       // If no data exists, populate demo data
       if (!existingClients || existingClients.length === 0) {
+        console.log('No existing data found, populating demo data...')
         const success = await populateDemoData(user.id, user.email!)
         if (success) {
           setHasDemoData(true)
           console.log('Demo data populated successfully')
+        } else {
+          console.error('Failed to populate demo data')
         }
       } else {
         setHasDemoData(true)
