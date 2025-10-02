@@ -6,9 +6,9 @@ import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Textarea } from '../ui/textarea'
 import { User, Building2, MapPin, Phone, Mail, FileText } from 'lucide-react'
+import { Client } from '../../types/client'
 
-interface Client {
-  id?: string
+interface MobileClientFormData {
   tipologia: string
   denominazione: string
   nome?: string
@@ -25,8 +25,6 @@ interface Client {
   cliente?: boolean
   controparte?: boolean
   altri?: boolean
-  created_at?: string
-  updated_at?: string
 }
 
 interface MobileClientDialogProps {
@@ -42,7 +40,7 @@ export function MobileClientDialog({
   client, 
   onSave 
 }: MobileClientDialogProps) {
-  const [formData, setFormData] = useState<Client>({
+  const [formData, setFormData] = useState<MobileClientFormData>({
     tipologia: '',
     denominazione: '',
     nome: '',
@@ -65,7 +63,25 @@ export function MobileClientDialog({
 
   useEffect(() => {
     if (client) {
-      setFormData(client)
+      // Converti da Client a MobileClientFormData
+      setFormData({
+        tipologia: client.tipologia,
+        denominazione: client.denominazione || '',
+        nome: client.nome || '',
+        cognome: client.cognome || '',
+        codice_fiscale: client.codice_fiscale || '',
+        partita_iva: client.partita_iva || '',
+        indirizzo: client.indirizzi?.[0]?.via || '',
+        citta: client.indirizzi?.[0]?.citta || '',
+        cap: client.indirizzi?.[0]?.cap || '',
+        provincia: client.indirizzi?.[0]?.provincia || '',
+        telefono: client.contatti?.find(c => c.tipo === 'TELEFONO')?.valore || '',
+        email: client.contatti?.find(c => c.tipo === 'EMAIL')?.valore || '',
+        note: client.note || '',
+        cliente: client.cliente || false,
+        controparte: client.controparte || false,
+        altri: client.altri || false
+      })
     } else {
       setFormData({
         tipologia: '',
@@ -93,7 +109,42 @@ export function MobileClientDialog({
     setIsLoading(true)
 
     try {
-      await onSave(formData)
+      // Converti da MobileClientFormData a Client
+      const clientData: Client = {
+        id: client?.id || '',
+        user_id: client?.user_id || '',
+        tipologia: formData.tipologia as any,
+        denominazione: formData.denominazione,
+        nome: formData.nome,
+        cognome: formData.cognome,
+        codice_fiscale: formData.codice_fiscale,
+        partita_iva: formData.partita_iva,
+        indirizzi: [{
+          tipo: 'RESIDENZA',
+          via: formData.indirizzo,
+          citta: formData.citta,
+          cap: formData.cap,
+          provincia: formData.provincia
+        }],
+        contatti: [
+          {
+            tipo: 'TELEFONO',
+            valore: formData.telefono
+          },
+          {
+            tipo: 'EMAIL',
+            valore: formData.email
+          }
+        ],
+        note: formData.note,
+        created_at: client?.created_at || new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        cliente: formData.cliente,
+        controparte: formData.controparte,
+        altri: formData.altri
+      }
+      
+      await onSave(clientData)
       onOpenChange(false)
     } catch (error) {
       console.error('Errore nel salvataggio:', error)
@@ -102,7 +153,7 @@ export function MobileClientDialog({
     }
   }
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof MobileClientFormData, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value

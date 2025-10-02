@@ -11,13 +11,7 @@ import { Search, Plus, FileText, Calendar, Building2 } from 'lucide-react'
 import { User as UserIcon } from 'lucide-react'
 import { Input } from '../../components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
-
-interface Client {
-  id: string
-  denominazione?: string
-  nome?: string
-  cognome?: string
-}
+import { Client } from '../../types/client'
 
 interface Practice {
   id: string

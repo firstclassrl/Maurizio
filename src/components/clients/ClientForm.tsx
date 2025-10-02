@@ -13,8 +13,8 @@ import { useMobile } from '../../hooks/useMobile'
 interface ClientFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  client?: any | null
-  onSave: (client: any) => void
+  client?: Client | null
+  onSave: (client: Client) => void
   isLoading?: boolean
 }
 

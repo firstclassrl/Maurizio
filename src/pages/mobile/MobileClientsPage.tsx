@@ -9,25 +9,7 @@ import { MobileClientDialog } from '../../components/mobile/MobileClientDialog'
 import { AppView } from '../../App'
 import { Plus, User as UserIcon, Building2, Phone, Mail, FileText } from 'lucide-react'
 import { Input } from '../../components/ui/input'
-
-interface Client {
-  id: string
-  tipologia: string
-  denominazione: string
-  nome?: string
-  cognome?: string
-  codice_fiscale: string
-  partita_iva?: string
-  indirizzo: string
-  citta: string
-  cap: string
-  provincia: string
-  telefono: string
-  email: string
-  note?: string
-  created_at: string
-  updated_at: string
-}
+import { Client } from '../../types/client'
 
 interface MobileClientsPageProps {
   user: User

@@ -6,6 +6,7 @@ import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { Plus, Minus } from 'lucide-react'
 import { Practice, PracticeFormData, ProcedureType } from '../../types/practice'
+import { Client } from '../../types/client'
 import { supabase } from '../../lib/supabase'
 
 interface PracticeFormProps {

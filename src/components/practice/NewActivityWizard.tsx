@@ -5,6 +5,7 @@ import { DateInput } from '../ui/DateInput'
 import { TimeInput } from '../ui/TimeInput'
 import { Plus, ArrowLeft, ArrowRight } from 'lucide-react'
 import { Practice, Activity } from '../../types/practice'
+import { Client } from '../../types/client'
 import { useMobile } from '../../hooks/useMobile'
 import { supabase } from '../../lib/supabase'
 
