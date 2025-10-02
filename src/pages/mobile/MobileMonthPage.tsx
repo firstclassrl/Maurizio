@@ -7,6 +7,7 @@ import { MobileHeader } from '../../components/mobile/MobileHeader'
 import { MobileCalendar } from '../../components/mobile/MobileCalendar'
 import { WeekendToggleCompact } from '../../components/settings/WeekendToggleCompact'
 import { AppView } from '../../App'
+import { MOCK_ACTIVITIES, MOCK_PRACTICES, getPracticeById, getClientNameById } from '../../lib/mock-demo'
 
 interface MobileMonthPageProps {
   user: User
@@ -56,17 +57,42 @@ export function MobileMonthPage({ user, onNavigate }: MobileMonthPageProps) {
         scadenza: activity.data,
         ora: activity.ora,
         stato: activity.stato || 'todo',
-        urgent: activity.urgent || false,
+        urgent: (activity.priorita ?? 5) >= 8,
         note: activity.note,
         cliente: activity.practices?.clients?.ragione || 
-                activity.practices?.clients?.nome + ' ' + activity.practices?.clients?.cognome || 
+                ((activity.practices?.clients?.nome || '') + ' ' + (activity.practices?.clients?.cognome || '')).trim() || 
                 'N/A',
-        controparte: activity.controparte,
+        controparte: Array.isArray(activity.practices?.controparti_ids)
+          ? activity.practices?.controparti_ids.map((id: string) => getClientNameById(id)).filter(Boolean).join(', ')
+          : null,
         created_at: activity.created_at,
         updated_at: activity.updated_at
       }))
 
-      setTasks(transformedTasks)
+      // Fallback to mock data when no activities
+      const list = transformedTasks && transformedTasks.length > 0 ? transformedTasks : (
+        MOCK_ACTIVITIES.map(a => {
+          const p = getPracticeById(a.pratica_id) || MOCK_PRACTICES[0]
+          return {
+            id: a.id,
+            user_id: user.id,
+            pratica: p?.numero || 'N/A',
+            attivita: a.attivita,
+            categoria: a.categoria,
+            scadenza: a.data,
+            ora: a.ora,
+            stato: a.stato,
+            urgent: !!a.urgent,
+            note: a.note,
+            cliente: p ? (getClientNameById(p.cliente_id) || '—') : '—',
+            controparte: p ? p.controparti_ids.map(id => getClientNameById(id)).filter(Boolean).join(', ') || null : null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          } as Task
+        })
+      )
+
+      setTasks(list)
     } catch (error) {
       console.error('Error loading tasks:', error)
     } finally {
