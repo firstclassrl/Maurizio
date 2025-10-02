@@ -19,14 +19,23 @@ function pick<T>(rand: () => number, arr: T[]): T { return arr[Math.floor(rand()
 
 export async function populateDemoData(userId: string, email: string) {
   try {
-    console.log(`Populating demo data for ${email}...`)
+    console.log(`=== DEMO DATA POPULATION START ===`)
+    console.log(`User ID: ${userId}`)
+    console.log(`Email: ${email}`)
+    
     const seed = Array.from(email).reduce((a, c) => a + c.charCodeAt(0), 0)
     const rand = seededRandom(seed || Date.now())
+    console.log(`Seed: ${seed}`)
 
     // Clear existing data (in correct FK order)
-    await supabase.from('activities').delete().eq('user_id', userId)
-    await supabase.from('practices').delete().eq('user_id', userId)
-    await supabase.from('clients').delete().eq('user_id', userId)
+    console.log('Clearing existing data...')
+    const { error: delActivities } = await supabase.from('activities').delete().eq('user_id', userId)
+    const { error: delPractices } = await supabase.from('practices').delete().eq('user_id', userId)
+    const { error: delClients } = await supabase.from('clients').delete().eq('user_id', userId)
+    
+    if (delActivities) console.error('Error deleting activities:', delActivities)
+    if (delPractices) console.error('Error deleting practices:', delPractices)
+    if (delClients) console.error('Error deleting clients:', delClients)
 
     // Build demo clients: 6-10
     const numClients = 8
@@ -55,6 +64,7 @@ export async function populateDemoData(userId: string, email: string) {
       })
     }
 
+    console.log('Inserting clients...', clientPayloads.length)
     const { data: insertedClients, error: clientsError } = await supabase
       .from('clients')
       .insert(clientPayloads)
@@ -64,6 +74,7 @@ export async function populateDemoData(userId: string, email: string) {
       console.error('Error inserting clients:', clientsError)
       return false
     }
+    console.log('Clients inserted:', insertedClients?.length)
 
     // Practices: 6
     const clientList = insertedClients || []
@@ -77,6 +88,7 @@ export async function populateDemoData(userId: string, email: string) {
       practicePayloads.push({ user_id: userId, numero, cliente_id: cliente.id, controparti_ids, tipo_procedura })
     }
 
+    console.log('Inserting practices...', practicePayloads.length)
     const { data: insertedPractices, error: practicesError } = await supabase
       .from('practices')
       .insert(practicePayloads)
@@ -86,6 +98,7 @@ export async function populateDemoData(userId: string, email: string) {
       console.error('Error inserting practices:', practicesError)
       return false
     }
+    console.log('Practices inserted:', insertedPractices?.length)
 
     // Activities: 12-18 spread over past/future
     const practiceList = insertedPractices || []
@@ -116,6 +129,7 @@ export async function populateDemoData(userId: string, email: string) {
       })
     }
 
+    console.log('Inserting activities...', activityPayloads.length)
     const { error: activitiesError } = await supabase
       .from('activities')
       .insert(activityPayloads)
@@ -124,7 +138,9 @@ export async function populateDemoData(userId: string, email: string) {
       console.error('Error inserting activities:', activitiesError)
       return false
     }
+    console.log('Activities inserted successfully')
 
+    console.log(`=== DEMO DATA POPULATION COMPLETE ===`)
     console.log(`Demo data populated successfully for ${email}`)
     return true
   } catch (error) {

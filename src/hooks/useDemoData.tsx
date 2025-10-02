@@ -67,13 +67,20 @@ export function useDemoData(user: User | null) {
   }
 
   const repopulateDemoData = async () => {
-    if (!user || !isDemoUser) return false
+    if (!user || !isDemoUser) {
+      console.log('repopulateDemoData: not demo user or no user', { user: user?.email, isDemoUser })
+      return false
+    }
 
     try {
+      console.log('repopulateDemoData: starting...', user.email)
       setIsPopulating(true)
       const success = await populateDemoData(user.id, user.email!)
+      console.log('repopulateDemoData: result', success)
       if (success) {
         setHasDemoData(true)
+        console.log('repopulateDemoData: success, reloading page...')
+        setTimeout(() => window.location.reload(), 500)
         return true
       }
       return false
