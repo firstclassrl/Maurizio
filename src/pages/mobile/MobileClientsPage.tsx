@@ -53,7 +53,23 @@ export function MobileClientsPage({ user, onNavigate }: MobileClientsPageProps) 
       if (list.length === 0) {
         setClients(MOCK_CLIENTS as any)
       } else {
-        setClients(list)
+        // Allinea ai campi del desktop: parsifica JSON potenzialmente serializzati
+        const parsed = list.map((client: any) => {
+          let indirizzi = []
+          let contatti = []
+          try {
+            indirizzi = Array.isArray(client.indirizzi) ? client.indirizzi : (typeof client.indirizzi === 'string' ? JSON.parse(client.indirizzi) : [])
+          } catch (e) {
+            indirizzi = []
+          }
+          try {
+            contatti = Array.isArray(client.contatti) ? client.contatti : (typeof client.contatti === 'string' ? JSON.parse(client.contatti) : [])
+          } catch (e) {
+            contatti = []
+          }
+          return { ...client, indirizzi, contatti }
+        })
+        setClients(parsed as any)
       }
     } catch (error) {
       console.error('Errore nel caricamento:', error)
@@ -68,10 +84,10 @@ export function MobileClientsPage({ user, onNavigate }: MobileClientsPageProps) 
     // Filtro per ricerca
     if (searchTerm) {
       filtered = filtered.filter(client => 
-        client.denominazione?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (client as any).ragione?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.cognome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.codice_fiscale?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (client as any).codice_fiscale?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.email?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
@@ -135,10 +151,12 @@ export function MobileClientsPage({ user, onNavigate }: MobileClientsPageProps) 
   }
 
   const getClientDisplayName = (client: Client) => {
+    const companyName = (client as any).ragione
+    if (companyName) return companyName
     if (client.nome && client.cognome) {
       return `${client.nome} ${client.cognome}`
     }
-    return client.denominazione || 'Cliente senza nome'
+    return 'Cliente senza nome'
   }
 
   const tipologie = ['Persona fisica', 'Ditta Individuale', 'Persona Giuridica', 'Altro ente']
