@@ -13,14 +13,22 @@ export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: 
   console.log('=== DEMO BANNER RENDER ===')
   console.log('DemoBanner render:', { isDemoUser, isPopulating, hasOnRepopulate: !!onRepopulate, hasOnClear: !!onClear })
   console.log('onRepopulate function:', onRepopulate)
+  
+  // Alert per verificare che il componente si renderizzi
+  if (isDemoUser) {
+    alert('DEMO BANNER IS RENDERING - isDemoUser: true')
+  }
+  
   if (!isDemoUser) {
     console.log('DemoBanner: not a demo user, returning null')
+    alert('DEMO BANNER NOT RENDERING - isDemoUser: false')
     return null
   }
 
   return (
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 mb-4 rounded-lg shadow-lg">
       <div className="flex items-center justify-between">
+        <div className="text-xs opacity-75">DEMO BANNER RENDERED</div>
         <div className="flex items-center gap-3">
           <Info className="h-5 w-5 text-blue-200" />
           <div>
