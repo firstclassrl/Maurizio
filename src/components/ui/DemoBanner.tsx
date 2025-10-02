@@ -30,6 +30,7 @@ export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: 
             <Button
               size="sm"
               onClick={() => {
+                alert('Ricarica Dati clicked!')
                 console.log('Ricarica Dati button clicked!')
                 onRepopulate()
               }}
