@@ -22,6 +22,7 @@ import { ChatAssistant } from '../components/assistant/ChatAssistant'
 import { OptionsModal } from '../components/ui/OptionsModal'
 import { SimpleClientForm } from '../components/clients/SimpleClientForm'
 import { DashboardHeader } from '../components/dashboard/DashboardHeader'
+import { DemoBanner } from '../components/ui/DemoBanner'
 import { Plus, Trash2, Users, AlertTriangle, FileText, FolderOpen } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
@@ -34,24 +35,16 @@ interface DashboardPageProps {
   onNavigateToClients: () => void
   onNavigateToStorage: () => void
   onNavigateToPracticeArchive: () => void
+  isDemoUser?: boolean
+  isPopulating?: boolean
+  onRepopulateDemo?: () => void
+  onClearDemo?: () => void
 }
 
-export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToOverdue, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage, onNavigateToPracticeArchive }: DashboardPageProps) {
+export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToOverdue, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage, onNavigateToPracticeArchive, isDemoUser = false, isPopulating = false, onRepopulateDemo, onClearDemo }: DashboardPageProps) {
   const { toasts, removeToast, showSuccess, showError } = useToast()
   const isMobile = useMobile()
 
-  // Demo banner for specific test users (robust check across metadata)
-  const isDemoUser = (() => {
-    const primaryEmail = (user as any)?.email as string | undefined
-    const metaEmail = ((user as any)?.user_metadata?.email as string | undefined)
-    const email = (primaryEmail || metaEmail || '').trim().toLowerCase()
-    if (email) {
-      try { console.debug('Dashboard email detected for banner:', email) } catch {}
-    }
-    // Accept demoN@abruzzo.it or demoN@abruzzo.ai
-    const demoRegex = /^demo\d+@abruzzo\.(it|ai)$/
-    return demoRegex.test(email)
-  })()
 
   const [clients, setClients] = useState<Client[]>([])
 
@@ -515,11 +508,12 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       {/* Main Content */}
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        {isDemoUser && (
-          <div className="mb-4 p-3 border-2 border-red-300 bg-red-50 rounded-md">
-            <p className="text-red-700 font-bold text-center">Versione Demo Beta Test</p>
-          </div>
-        )}
+        <DemoBanner 
+          isDemoUser={isDemoUser}
+          isPopulating={isPopulating}
+          onRepopulate={onRepopulateDemo}
+          onClear={onClearDemo}
+        />
 
         {/* Welcome Message and Counters */}
         <div className="mb-6">

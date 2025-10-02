@@ -22,6 +22,7 @@ import { WeekendSettingsProvider } from './contexts/WeekendSettingsContext'
 import { useAppUpdate } from './hooks/useAppUpdate'
 import { UpdateNotification } from './components/ui/UpdateNotification'
 import { useMobile } from './hooks/useMobile'
+import { useDemoData } from './hooks/useDemoData'
 
 export type AppView = 'dashboard' | 'month' | 'week' | 'overdue' | 'calcolatore-termini' | 'clients' | 'storage' | 'practice-archive' | 'assistant'
 
@@ -32,6 +33,7 @@ function App() {
   const [showUpdateNotification, setShowUpdateNotification] = useState(false)
   const { isUpdateAvailable, isUpdating, updateApp } = useAppUpdate()
   const isMobile = useMobile()
+  const { isDemoUser, isPopulating, repopulateDemoData, clearUserDemoData } = useDemoData(user)
 
   useEffect(() => {
     // Get initial session
@@ -87,6 +89,20 @@ function App() {
               onNavigateToClients={() => setCurrentView('clients')}
               onNavigateToStorage={() => setCurrentView('storage')}
               onNavigateToPracticeArchive={() => setCurrentView('practice-archive')}
+              isDemoUser={isDemoUser}
+              isPopulating={isPopulating}
+              onRepopulateDemo={async () => {
+                const success = await repopulateDemoData()
+                if (success) {
+                  console.log('Demo data repopulated successfully')
+                }
+              }}
+              onClearDemo={async () => {
+                const success = await clearUserDemoData()
+                if (success) {
+                  console.log('Demo data cleared successfully')
+                }
+              }}
             />
           )
         case 'month':
@@ -149,6 +165,20 @@ function App() {
               onNavigateToClients={() => setCurrentView('clients')}
               onNavigateToStorage={() => setCurrentView('storage')}
               onNavigateToPracticeArchive={() => setCurrentView('practice-archive')}
+              isDemoUser={isDemoUser}
+              isPopulating={isPopulating}
+              onRepopulateDemo={async () => {
+                const success = await repopulateDemoData()
+                if (success) {
+                  console.log('Demo data repopulated successfully')
+                }
+              }}
+              onClearDemo={async () => {
+                const success = await clearUserDemoData()
+                if (success) {
+                  console.log('Demo data cleared successfully')
+                }
+              }}
             />
           )
       }
@@ -167,6 +197,20 @@ function App() {
             onNavigateToClients={() => setCurrentView('clients')}
             onNavigateToStorage={() => setCurrentView('storage')}
             onNavigateToPracticeArchive={() => setCurrentView('practice-archive')}
+            isDemoUser={isDemoUser}
+            isPopulating={isPopulating}
+            onRepopulateDemo={async () => {
+              const success = await repopulateDemoData()
+              if (success) {
+                console.log('Demo data repopulated successfully')
+              }
+            }}
+            onClearDemo={async () => {
+              const success = await clearUserDemoData()
+              if (success) {
+                console.log('Demo data cleared successfully')
+              }
+            }}
           />
         )
         case 'month':

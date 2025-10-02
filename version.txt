@@ -1,6 +1,26 @@
-v3.8.0-beta - Notifiche migliorate e banner demo
-Timestamp: 2025-09-30 11:58:00
+v3.9.0-beta - Dati dimostrativi completi e app mobile
+Timestamp: 2025-01-15 13:30:00
 Commit: pending (working tree)
+
+📱 APP MOBILE COMPLETA:
+- ✅ Layout mobile completo con bottom navigation
+- ✅ Dashboard mobile con azioni rapide e statistiche
+- ✅ Calendari settimanali e mensili ottimizzati per mobile
+- ✅ Gestione clienti mobile con nuove tipologie
+- ✅ Archivio pratiche mobile con ricerca e filtri
+- ✅ Assistente AI come pagina separata
+- ✅ Calcolatore termini processuali mobile
+- ✅ Toggle weekend per calendari
+- ✅ Design responsive e touch-friendly
+
+🎯 DATI DEMO COMPLETI:
+- ✅ Popolamento automatico per utenti demo1/2/3@abruzzo.ai
+- ✅ Clienti di tutti i tipi (Persona fisica, Ditta, Società, Ente)
+- ✅ Pratiche giudiziali e stragiudiziali complete
+- ✅ Attività e scadenze distribuite nel tempo
+- ✅ Appuntamenti e udienze programmate
+- ✅ Documenti e note illustrative
+- ✅ Dati realistici per dimostrazione completa
 
 🔔 NOTIFICHE:
 - ✅ Semplificazione completa: Notification API nativa
