@@ -74,21 +74,31 @@ export function useDemoData(user: User | null) {
     }
 
     try {
-      console.log('repopulateDemoData: starting...', user.email)
+      console.log('=== REPOPULATE DEMO DATA START ===')
+      console.log('repopulateDemoData: starting...', user.email, user.id)
       setIsPopulating(true)
+      
       const success = await populateDemoData(user.id, user.email!)
+      
       console.log('repopulateDemoData: result', success)
       if (success) {
         setHasDemoData(true)
         console.log('repopulateDemoData: success, reloading page...')
-        setTimeout(() => window.location.reload(), 500)
+        setTimeout(() => {
+          console.log('Reloading page now...')
+          window.location.reload()
+        }, 1000)
         return true
+      } else {
+        console.log('repopulateDemoData: failed')
+        return false
       }
-      return false
     } catch (error) {
+      console.error('=== REPOPULATE DEMO DATA ERROR ===')
       console.error('Error repopulating demo data:', error)
       return false
     } finally {
+      console.log('repopulateDemoData: setting isPopulating to false')
       setIsPopulating(false)
     }
   }

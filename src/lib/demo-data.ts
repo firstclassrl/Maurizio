@@ -22,6 +22,7 @@ export async function populateDemoData(userId: string, email: string) {
     console.log(`=== DEMO DATA POPULATION START ===`)
     console.log(`User ID: ${userId}`)
     console.log(`Email: ${email}`)
+    console.log(`Timestamp: ${new Date().toISOString()}`)
     
     const seed = Array.from(email).reduce((a, c) => a + c.charCodeAt(0), 0)
     const rand = seededRandom(seed || Date.now())
@@ -64,17 +65,21 @@ export async function populateDemoData(userId: string, email: string) {
       })
     }
 
-    console.log('Inserting clients...', clientPayloads.length)
-    const { data: insertedClients, error: clientsError } = await supabase
-      .from('clients')
-      .insert(clientPayloads)
-      .select('*')
+        console.log('Inserting clients...', clientPayloads.length)
+        console.log('Client payloads:', JSON.stringify(clientPayloads.slice(0, 2), null, 2)) // Log first 2 for debugging
+        
+        const { data: insertedClients, error: clientsError } = await supabase
+          .from('clients')
+          .insert(clientPayloads)
+          .select('*')
 
-    if (clientsError) {
-      console.error('Error inserting clients:', clientsError)
-      return false
-    }
-    console.log('Clients inserted:', insertedClients?.length)
+        if (clientsError) {
+          console.error('=== CLIENT INSERTION ERROR ===')
+          console.error('Error inserting clients:', clientsError)
+          console.error('Error details:', JSON.stringify(clientsError, null, 2))
+          return false
+        }
+        console.log('Clients inserted successfully:', insertedClients?.length)
 
     // Practices: 6
     const clientList = insertedClients || []
