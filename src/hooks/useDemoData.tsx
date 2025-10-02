@@ -31,21 +31,20 @@ export function useDemoData(user: User | null) {
       setIsPopulating(true)
       
       // Check if user already has data
-      const { data: existingClients, error } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('user_id', user.id)
-        .limit(1)
+      const [{ data: existingClients, error: clientsErr }, { data: existingActivities, error: actsErr }] = await Promise.all([
+        supabase.from('clients').select('id').eq('user_id', user.id).limit(1),
+        supabase.from('activities').select('id').eq('user_id', user.id).limit(1)
+      ])
 
-      if (error) {
-        console.error('Error checking existing data:', error)
+      if (clientsErr || actsErr) {
+        console.error('Error checking existing data:', clientsErr || actsErr)
         return
       }
 
       console.log('Existing clients found:', existingClients?.length || 0)
 
       // If no data exists, populate demo data
-      if (!existingClients || existingClients.length === 0) {
+      if ((!existingClients || existingClients.length === 0) && (!existingActivities || existingActivities.length === 0)) {
         console.log('No existing data found, populating demo data...')
         const success = await populateDemoData(user.id, user.email!)
         if (success) {

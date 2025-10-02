@@ -98,6 +98,11 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
 
   // Reload tasks when clients change
   useEffect(() => {
+    // Carica immediatamente le attività, poi aggiorna dopo i clienti
+    loadTasks()
+  }, [])
+
+  useEffect(() => {
     if (clients.length > 0) {
       loadTasks()
     }

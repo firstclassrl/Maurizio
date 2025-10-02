@@ -63,14 +63,10 @@ export function MobileDashboardPage({
   const [clients, setClients] = useState<any[]>([])
 
   useEffect(() => {
+    // Carica subito sia clienti che attività
     loadClients()
+    loadTasks()
   }, [])
-
-  useEffect(() => {
-    if (clients.length > 0) {
-      loadTasks()
-    }
-  }, [clients])
 
   const loadClients = async () => {
     try {
