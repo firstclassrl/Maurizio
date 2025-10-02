@@ -22,7 +22,6 @@ import { ChatAssistant } from '../components/assistant/ChatAssistant'
 import { OptionsModal } from '../components/ui/OptionsModal'
 import { SimpleClientForm } from '../components/clients/SimpleClientForm'
 import { DashboardHeader } from '../components/dashboard/DashboardHeader'
-import { DemoBanner } from '../components/ui/DemoBanner'
 import { Plus, Trash2, Users, AlertTriangle, FileText, FolderOpen } from 'lucide-react'
 import { formatTimeWithoutSeconds } from '../lib/time-utils'
 
@@ -35,13 +34,10 @@ interface DashboardPageProps {
   onNavigateToClients: () => void
   onNavigateToStorage: () => void
   onNavigateToPracticeArchive: () => void
-  isDemoUser?: boolean
-  isPopulating?: boolean
-  onRepopulateDemo?: () => void
-  onClearDemo?: () => void
+  
 }
 
-export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToOverdue, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage, onNavigateToPracticeArchive, isDemoUser = false, isPopulating = false, onRepopulateDemo, onClearDemo }: DashboardPageProps) {
+export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNavigateToOverdue, onNavigateToCalcolatore, onNavigateToClients, onNavigateToStorage, onNavigateToPracticeArchive }: DashboardPageProps) {
   const { toasts, removeToast, showSuccess, showError } = useToast()
   const isMobile = useMobile()
 
@@ -516,18 +512,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       {/* Main Content */}
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        <DemoBanner 
-          isDemoUser={isDemoUser}
-          isPopulating={isPopulating}
-          onRepopulate={async () => {
-            await onRepopulateDemo?.()
-            setTimeout(() => window.location.reload(), 300)
-          }}
-          onClear={async () => {
-            await onClearDemo?.()
-            setTimeout(() => window.location.reload(), 300)
-          }}
-        />
+        {/* Demo banner removed */}
 
         {/* Welcome Message and Counters */}
         <div className="mb-6">

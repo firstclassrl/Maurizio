@@ -11,7 +11,6 @@ import { MobileClientDialog } from '../../components/mobile/MobileClientDialog'
 import { AddActivityToExistingPractice } from '../../components/practice/AddActivityToExistingPractice'
 import { MobileAppuntamentoDialog } from '../../components/mobile/MobileAppuntamentoDialog'
 import { NewActivityWizard } from '../../components/practice/NewActivityWizard'
-import { DemoBanner } from '../../components/ui/DemoBanner'
 import { AppView } from '../../App'
 import { 
   AlertTriangle, 
@@ -33,10 +32,7 @@ interface MobileDashboardPageProps {
   onNavigateToClients: () => void
   onNavigateToStorage: () => void
   onNavigateToPracticeArchive: () => void
-  isDemoUser?: boolean
-  isPopulating?: boolean
-  onRepopulateDemo?: () => void
-  onClearDemo?: () => void
+  
 }
 
 export function MobileDashboardPage({ 
@@ -46,10 +42,7 @@ export function MobileDashboardPage({
   onNavigateToClients,
   onNavigateToStorage,
   onNavigateToPracticeArchive,
-  isDemoUser = false,
-  isPopulating = false,
-  onRepopulateDemo,
-  onClearDemo
+  
 }: MobileDashboardPageProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [urgentTasks, setUrgentTasks] = useState<Task[]>([])
@@ -216,19 +209,7 @@ export function MobileDashboardPage({
       currentView="dashboard"
       onNavigate={onNavigate}
     >
-      {/* Demo Banner */}
-      <DemoBanner 
-        isDemoUser={isDemoUser}
-        isPopulating={isPopulating}
-        onRepopulate={async () => {
-          await onRepopulateDemo?.()
-          setTimeout(() => window.location.reload(), 300)
-        }}
-        onClear={async () => {
-          await onClearDemo?.()
-          setTimeout(() => window.location.reload(), 300)
-        }}
-      />
+      {/* Demo banner removed */}
 
       {/* Quick Stats */}
       <div className="mb-6">
