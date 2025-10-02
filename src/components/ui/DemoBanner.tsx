@@ -10,8 +10,13 @@ interface DemoBannerProps {
 }
 
 export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: DemoBannerProps) {
+  console.log('=== DEMO BANNER RENDER ===')
   console.log('DemoBanner render:', { isDemoUser, isPopulating, hasOnRepopulate: !!onRepopulate, hasOnClear: !!onClear })
-  if (!isDemoUser) return null
+  console.log('onRepopulate function:', onRepopulate)
+  if (!isDemoUser) {
+    console.log('DemoBanner: not a demo user, returning null')
+    return null
+  }
 
   return (
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 mb-4 rounded-lg shadow-lg">
@@ -30,8 +35,15 @@ export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: 
             <Button
               size="sm"
               onClick={() => {
+                alert('Button clicked - about to call onRepopulate')
                 console.log('Ricarica Dati button clicked!')
-                onRepopulate()
+                console.log('onRepopulate function:', onRepopulate)
+                if (onRepopulate) {
+                  console.log('Calling onRepopulate...')
+                  onRepopulate()
+                } else {
+                  console.error('onRepopulate is undefined!')
+                }
               }}
               disabled={isPopulating}
               className="bg-white text-blue-600 hover:bg-blue-50 border border-blue-200 text-xs font-medium"

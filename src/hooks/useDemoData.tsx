@@ -11,7 +11,8 @@ export function useDemoData(user: User | null) {
     const email = (user?.email || '').trim().toLowerCase()
     const isDemo = ['demo1@abruzzo.ai', 'demo2@abruzzo.ai', 'demo3@abruzzo.ai',
             'demo1@abruzzo.it', 'demo2@abruzzo.it', 'demo3@abruzzo.it'].includes(email)
-    console.log('useDemoData: checking if demo user', { email, isDemo })
+    console.log('=== DEMO USER CHECK ===')
+    console.log('useDemoData: checking if demo user', { email, isDemo, userEmail: user?.email })
     return isDemo
   })()
 
