@@ -10,6 +10,7 @@ interface DemoBannerProps {
 }
 
 export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: DemoBannerProps) {
+  console.log('DemoBanner render:', { isDemoUser, isPopulating, hasOnRepopulate: !!onRepopulate, hasOnClear: !!onClear })
   if (!isDemoUser) return null
 
   return (
@@ -28,7 +29,10 @@ export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: 
           {onRepopulate && (
             <Button
               size="sm"
-              onClick={onRepopulate}
+              onClick={() => {
+                console.log('Ricarica Dati button clicked!')
+                onRepopulate()
+              }}
               disabled={isPopulating}
               className="bg-white text-blue-600 hover:bg-blue-50 border border-blue-200 text-xs font-medium"
             >

@@ -9,9 +9,10 @@ export function useDemoData(user: User | null) {
 
   const isDemoUser = (() => {
     const email = (user?.email || '').trim().toLowerCase()
-    // support both abruzzo.ai and abruzzo.it
-    return ['demo1@abruzzo.ai', 'demo2@abruzzo.ai', 'demo3@abruzzo.ai',
+    const isDemo = ['demo1@abruzzo.ai', 'demo2@abruzzo.ai', 'demo3@abruzzo.ai',
             'demo1@abruzzo.it', 'demo2@abruzzo.it', 'demo3@abruzzo.it'].includes(email)
+    console.log('useDemoData: checking if demo user', { email, isDemo })
+    return isDemo
   })()
 
   useEffect(() => {
