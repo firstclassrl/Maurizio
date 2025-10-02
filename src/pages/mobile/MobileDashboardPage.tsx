@@ -324,6 +324,28 @@ export function MobileDashboardPage({
         )}
       </div>
 
+      {/* All Activities */}
+      <div className="mb-6">
+        <div className="h-1 bg-purple-500 rounded mb-4"></div>
+        <h2 className="mobile-heading mb-3">Tutte le Attività</h2>
+        {tasks.length > 0 ? (
+          <div className="space-y-3">
+            {tasks.map(task => (
+              <MobileTaskCard 
+                key={task.id}
+                task={task}
+                onClick={() => handleTaskClick(task)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <FileText className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+            <p>Nessuna attività disponibile</p>
+          </div>
+        )}
+      </div>
+
       {/* Menu Overlay */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setIsMenuOpen(false)}>
