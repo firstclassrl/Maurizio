@@ -51,9 +51,12 @@ export function MobileClientsPage({ user, onNavigate }: MobileClientsPageProps) 
       const list = clientsData || []
       if (list.length === 0) {
         const demo: Client[] = [
-          { id: 'mc1', user_id: user.id, tipologia: 'Persona fisica', nome: 'Mario', cognome: 'Rossi', codice_fiscale: 'RSSMRA80A01H501Z', telefono: '+39 333 1234567', email: 'mario.rossi@example.com', citta: 'Roma', provincia: 'RM' },
-          { id: 'mc2', user_id: user.id, tipologia: 'Persona Giuridica', ragione: 'Alfa S.p.A.', partita_iva: '01234567890', email: 'legale@alfaspa.it', citta: 'Milano', provincia: 'MI' },
-          { id: 'mc3', user_id: user.id, tipologia: 'Persona Giuridica', ragione: 'Beta S.r.l.', partita_iva: '09876543210', email: 'info@betasrl.it', citta: 'Pescara', provincia: 'PE' }
+          { id: 'mc1', user_id: user.id, tipologia: 'Persona fisica', nome: 'Mario', cognome: 'Rossi', codice_fiscale: 'RSSMRA80A01H501Z', telefono: '+39 333 1234567', email: 'mario.rossi@example.com', citta: 'Roma', provincia: 'RM', cliente: true, controparte: false },
+          { id: 'mc2', user_id: user.id, tipologia: 'Persona Giuridica', ragione: 'Alfa S.p.A.', partita_iva: '01234567890', email: 'legale@alfaspa.it', citta: 'Milano', provincia: 'MI', cliente: false, controparte: true },
+          { id: 'mc3', user_id: user.id, tipologia: 'Persona Giuridica', ragione: 'Beta S.r.l.', partita_iva: '09876543210', email: 'amministrazione@betasrl.it', citta: 'Pescara', provincia: 'PE', cliente: true, controparte: false },
+          { id: 'mc4', user_id: user.id, tipologia: 'Persona fisica', nome: 'Lucia', cognome: 'Bianchi', codice_fiscale: 'BNCLCU75B41H501X', telefono: '+39 366 9876543', email: 'lucia.bianchi@example.com', citta: 'Torino', provincia: 'TO', cliente: false, controparte: true },
+          { id: 'mc5', user_id: user.id, tipologia: 'Altro ente', ragione: 'Comune di Pescara', email: 'protocollo@comune.pescara.it', citta: 'Pescara', provincia: 'PE', cliente: true, controparte: false },
+          { id: 'mc6', user_id: user.id, tipologia: 'Persona Giuridica', ragione: 'Gamma S.c.a.r.l.', partita_iva: '11223344550', email: 'info@gammascarll.it', citta: 'Firenze', provincia: 'FI', cliente: false, controparte: true }
         ]
         setClients(demo)
       } else {

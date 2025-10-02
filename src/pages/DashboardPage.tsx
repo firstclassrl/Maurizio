@@ -205,7 +205,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             pratica: '2025/001',
             attivita: 'Deposito ricorso',
             categoria: 'Scadenza Processuale',
-            cliente: 'Rossi Mario',
+            cliente: 'Mario Rossi',
             controparte: 'Alfa S.p.A.',
             scadenza: new Date().toISOString().split('T')[0],
             ora: '10:00',
@@ -223,7 +223,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             attivita: 'Udienza di comparizione',
             categoria: 'Udienza',
             cliente: 'Beta S.r.l.',
-            controparte: 'Bianchi Lucia',
+            controparte: 'Lucia Bianchi',
             scadenza: new Date(Date.now() + 86400000).toISOString().split('T')[0],
             ora: '09:30',
             note: 'Aula 3, Tribunale di Roma',
@@ -241,7 +241,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             categoria: 'Attività da Svolgere',
             cliente: 'Comune di Pescara',
             controparte: 'Gamma S.c.a.r.l.',
-            scadenza: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0],
+            scadenza: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
             ora: '15:00',
             note: 'Aggiornamento stato pratica',
             stato: 'todo',
@@ -326,6 +326,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               { tipo: 'TELEFONO', valore: '+39 333 1234567' },
               { tipo: 'EMAIL', valore: 'mario.rossi@example.com' }
             ],
+            cliente: true,
+            controparte: false,
             note: 'Cliente persona fisica'
           },
           {
@@ -341,6 +343,8 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
               { tipo: 'TELEFONO', valore: '+39 02 9876543' },
               { tipo: 'EMAIL', valore: 'legale@alfaspa.it' }
             ],
+            cliente: false,
+            controparte: true,
             note: 'Controparte società'
           },
           {
@@ -354,10 +358,29 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             ],
             contatti: [
               { tipo: 'EMAIL', valore: 'amministrazione@betasrl.it' }
-            ]
+            ],
+            cliente: true,
+            controparte: false
           },
           {
             id: 'c-mock-4',
+            user_id: user.id,
+            tipologia: 'Persona fisica',
+            nome: 'Lucia',
+            cognome: 'Bianchi',
+            codice_fiscale: 'BNCLCU75B41H501X',
+            indirizzi: [
+              { tipo: 'RESIDENZA', via: 'Via Torino 15', citta: 'Torino', cap: '10100', provincia: 'TO' }
+            ],
+            contatti: [
+              { tipo: 'TELEFONO', valore: '+39 366 9876543' },
+              { tipo: 'EMAIL', valore: 'lucia.bianchi@example.com' }
+            ],
+            cliente: false,
+            controparte: true
+          },
+          {
+            id: 'c-mock-5',
             user_id: user.id,
             tipologia: 'Altro ente',
             ragione: 'Comune di Pescara',
@@ -366,7 +389,24 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
             ],
             contatti: [
               { tipo: 'EMAIL', valore: 'protocollo@comune.pescara.it' }
-            ]
+            ],
+            cliente: true,
+            controparte: false
+          },
+          {
+            id: 'c-mock-6',
+            user_id: user.id,
+            tipologia: 'Persona Giuridica',
+            ragione: 'Gamma S.c.a.r.l.',
+            partita_iva: '11223344550',
+            indirizzi: [
+              { tipo: 'SEDE', via: 'Via Firenze 8', citta: 'Firenze', cap: '50100', provincia: 'FI' }
+            ],
+            contatti: [
+              { tipo: 'EMAIL', valore: 'info@gammascarll.it' }
+            ],
+            cliente: false,
+            controparte: true
           }
         ]
         setClients(demoClients)

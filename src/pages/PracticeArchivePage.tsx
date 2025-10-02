@@ -162,6 +162,14 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
             created_at: new Date().toISOString(),
             clients: { ragione: 'Beta S.r.l.' },
             counterparties: [{ nome: 'Lucia', cognome: 'Bianchi' }]
+          },
+          {
+            id: 'p-m3',
+            numero: '2025/003',
+            tipo_procedura: 'STRAGIUDIZIALE',
+            created_at: new Date().toISOString(),
+            clients: { ragione: 'Comune di Pescara' },
+            counterparties: [{ ragione: 'Gamma S.c.a.r.l.' }]
           }
         ]
         setPractices(mock as any)

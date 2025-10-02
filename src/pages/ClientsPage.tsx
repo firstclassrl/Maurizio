@@ -115,6 +115,8 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
               { tipo: 'TELEFONO', valore: '+39 333 1234567', type: 'Telefono', value: '+39 333 1234567' },
               { tipo: 'EMAIL', valore: 'mario.rossi@example.com', type: 'Email', value: 'mario.rossi@example.com' }
             ],
+            cliente: true,
+            controparte: false,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           },
@@ -130,6 +132,8 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
             contatti: [
               { tipo: 'EMAIL', valore: 'legale@alfaspa.it', type: 'Email', value: 'legale@alfaspa.it' }
             ],
+            cliente: false,
+            controparte: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           },
@@ -145,11 +149,32 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
             contatti: [
               { tipo: 'EMAIL', valore: 'amministrazione@betasrl.it', type: 'Email', value: 'amministrazione@betasrl.it' }
             ],
+            cliente: true,
+            controparte: false,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           },
           {
             id: 'c-mock-4',
+            user_id: user.id,
+            tipologia: 'Persona fisica',
+            nome: 'Lucia',
+            cognome: 'Bianchi',
+            codice_fiscale: 'BNCLCU75B41H501X',
+            indirizzi: [
+              { tipo: 'RESIDENZA', via: 'Via Torino 15', citta: 'Torino', cap: '10100', provincia: 'TO', fieldName: 'indirizzo' }
+            ],
+            contatti: [
+              { tipo: 'TELEFONO', valore: '+39 366 9876543', type: 'Telefono', value: '+39 366 9876543' },
+              { tipo: 'EMAIL', valore: 'lucia.bianchi@example.com', type: 'Email', value: 'lucia.bianchi@example.com' }
+            ],
+            cliente: false,
+            controparte: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'c-mock-5',
             user_id: user.id,
             tipologia: 'Altro ente',
             ragione: 'Comune di Pescara',
@@ -159,6 +184,25 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
             contatti: [
               { tipo: 'EMAIL', valore: 'protocollo@comune.pescara.it', type: 'Email', value: 'protocollo@comune.pescara.it' }
             ],
+            cliente: true,
+            controparte: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'c-mock-6',
+            user_id: user.id,
+            tipologia: 'Persona Giuridica',
+            ragione: 'Gamma S.c.a.r.l.',
+            partita_iva: '11223344550',
+            indirizzi: [
+              { tipo: 'SEDE', via: 'Via Firenze 8', citta: 'Firenze', cap: '50100', provincia: 'FI', fieldName: 'sede' }
+            ],
+            contatti: [
+              { tipo: 'EMAIL', valore: 'info@gammascarll.it', type: 'Email', value: 'info@gammascarll.it' }
+            ],
+            cliente: false,
+            controparte: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           }

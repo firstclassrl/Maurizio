@@ -129,13 +129,16 @@ export function MobileDashboardPage({
         updated_at: activity.updated_at
       }))
 
-      // If empty, provide mock tasks
+      // If empty, provide mock tasks with proper client/counterparty relationships
       const list = transformedTasks && transformedTasks.length > 0 ? transformedTasks : [
         {
-          id: 'm1', user_id: user.id, pratica: '2025/001', attivita: 'Deposito ricorso', scadenza: new Date().toISOString().split('T')[0], ora: '10:00', stato: 'todo', urgent: true, categoria: 'Scadenza Processuale', cliente: 'Rossi Mario', controparte: 'Alfa S.p.A.', created_at: new Date().toISOString(), updated_at: new Date().toISOString()
+          id: 'm1', user_id: user.id, pratica: '2025/001', attivita: 'Deposito ricorso', scadenza: new Date().toISOString().split('T')[0], ora: '10:00', stato: 'todo', urgent: true, categoria: 'Scadenza Processuale', cliente: 'Mario Rossi', controparte: 'Alfa S.p.A.', created_at: new Date().toISOString(), updated_at: new Date().toISOString()
         },
         {
-          id: 'm2', user_id: user.id, pratica: '2025/002', attivita: 'Udienza di comparizione', scadenza: new Date(Date.now()+86400000).toISOString().split('T')[0], ora: '09:30', stato: 'todo', urgent: false, categoria: 'Udienza', cliente: 'Beta S.r.l.', controparte: 'Bianchi Lucia', created_at: new Date().toISOString(), updated_at: new Date().toISOString()
+          id: 'm2', user_id: user.id, pratica: '2025/002', attivita: 'Udienza di comparizione', scadenza: new Date(Date.now()+86400000).toISOString().split('T')[0], ora: '09:30', stato: 'todo', urgent: false, categoria: 'Udienza', cliente: 'Beta S.r.l.', controparte: 'Lucia Bianchi', created_at: new Date().toISOString(), updated_at: new Date().toISOString()
+        },
+        {
+          id: 'm3', user_id: user.id, pratica: '2025/003', attivita: 'Telefonata con cliente', scadenza: new Date(Date.now()+86400000*2).toISOString().split('T')[0], ora: '15:00', stato: 'todo', urgent: false, categoria: 'Attività da Svolgere', cliente: 'Comune di Pescara', controparte: 'Gamma S.c.a.r.l.', created_at: new Date().toISOString(), updated_at: new Date().toISOString()
         }
       ]
 
