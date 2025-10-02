@@ -51,9 +51,7 @@ export function useDemoData(user: User | null) {
         const success = await populateDemoData(user.id, user.email!)
         if (success) {
           setHasDemoData(true)
-          console.log('Demo data populated successfully')
-          // Force a reload so dashboards refetch
-          setTimeout(() => window.location.reload(), 300)
+          console.log('Demo data populated successfully (no auto reload)')
         } else {
           console.error('Failed to populate demo data')
         }
@@ -84,11 +82,7 @@ export function useDemoData(user: User | null) {
       console.log('repopulateDemoData: result', success)
       if (success) {
         setHasDemoData(true)
-        console.log('repopulateDemoData: success, reloading page...')
-        setTimeout(() => {
-          console.log('Reloading page now...')
-          window.location.reload()
-        }, 1000)
+        console.log('repopulateDemoData: success (no auto reload)')
         return true
       } else {
         console.log('repopulateDemoData: failed')
