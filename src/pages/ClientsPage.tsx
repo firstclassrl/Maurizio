@@ -99,6 +99,74 @@ export function ClientsPage({ user, onBackToDashboard }: ClientsPageProps) {
         }
       })
       
+      if (!parsedClients || parsedClients.length === 0) {
+        const demoClients: Client[] = [
+          {
+            id: 'c-mock-1',
+            user_id: user.id,
+            tipologia: 'Persona fisica',
+            nome: 'Mario',
+            cognome: 'Rossi',
+            codice_fiscale: 'RSSMRA80A01H501Z',
+            indirizzi: [
+              { tipo: 'RESIDENZA', via: 'Via Roma 10', citta: 'Roma', cap: '00100', provincia: 'RM', fieldName: 'indirizzo' }
+            ],
+            contatti: [
+              { tipo: 'TELEFONO', valore: '+39 333 1234567', type: 'Telefono', value: '+39 333 1234567' },
+              { tipo: 'EMAIL', valore: 'mario.rossi@example.com', type: 'Email', value: 'mario.rossi@example.com' }
+            ],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'c-mock-2',
+            user_id: user.id,
+            tipologia: 'Persona Giuridica',
+            ragione: 'Alfa S.p.A.',
+            partita_iva: '01234567890',
+            indirizzi: [
+              { tipo: 'SEDE', via: 'Corso Italia 25', citta: 'Milano', cap: '20100', provincia: 'MI', fieldName: 'sede' }
+            ],
+            contatti: [
+              { tipo: 'EMAIL', valore: 'legale@alfaspa.it', type: 'Email', value: 'legale@alfaspa.it' }
+            ],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'c-mock-3',
+            user_id: user.id,
+            tipologia: 'Persona Giuridica',
+            ragione: 'Beta S.r.l.',
+            partita_iva: '09876543210',
+            indirizzi: [
+              { tipo: 'SEDE', via: 'Via Garibaldi 5', citta: 'Pescara', cap: '65100', provincia: 'PE', fieldName: 'sede' }
+            ],
+            contatti: [
+              { tipo: 'EMAIL', valore: 'amministrazione@betasrl.it', type: 'Email', value: 'amministrazione@betasrl.it' }
+            ],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'c-mock-4',
+            user_id: user.id,
+            tipologia: 'Altro ente',
+            ragione: 'Comune di Pescara',
+            indirizzi: [
+              { tipo: 'SEDE', via: 'Piazza Italia 1', citta: 'Pescara', cap: '65121', provincia: 'PE', fieldName: 'sede' }
+            ],
+            contatti: [
+              { tipo: 'EMAIL', valore: 'protocollo@comune.pescara.it', type: 'Email', value: 'protocollo@comune.pescara.it' }
+            ],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ]
+        setClients(demoClients)
+        return
+      }
+
       setClients(parsedClients)
     } catch (error) {
       showError('Errore', 'Errore nel caricamento dei clienti')

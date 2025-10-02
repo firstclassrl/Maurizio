@@ -144,6 +144,30 @@ export function PracticeArchivePage({ onNavigateBack }: PracticeArchivePageProps
         })
       )
 
+      if (!practicesWithCounterparties || practicesWithCounterparties.length === 0) {
+        const mock: any[] = [
+          {
+            id: 'p-m1',
+            numero: '2025/001',
+            tipo_procedura: 'GIUDIZIALE',
+            created_at: new Date().toISOString(),
+            clients: { nome: 'Mario', cognome: 'Rossi' },
+            counterparties: [{ ragione: 'Alfa S.p.A.' }],
+            autorita_giudiziaria: 'Tribunale di Roma', rg: '12345/2025', giudice: 'Dott. Bianchi'
+          },
+          {
+            id: 'p-m2',
+            numero: '2025/002',
+            tipo_procedura: 'STRAGIUDIZIALE',
+            created_at: new Date().toISOString(),
+            clients: { ragione: 'Beta S.r.l.' },
+            counterparties: [{ nome: 'Lucia', cognome: 'Bianchi' }]
+          }
+        ]
+        setPractices(mock as any)
+        return
+      }
+
       setPractices(practicesWithCounterparties)
     } catch (error) {
       console.error('Errore nel caricamento delle pratiche:', error)
