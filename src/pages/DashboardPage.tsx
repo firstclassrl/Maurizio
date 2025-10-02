@@ -116,29 +116,33 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
       }
 
 
-      // Load activities with practice and client information - optimized query
-      const { data: activitiesData, error } = await supabase
-        .from('activities')
-        .select(`
-          *,
-          practices!inner(
-            numero,
-            cliente_id,
-            controparti_ids,
-            clients!practices_cliente_id_fkey(
-              ragione,
-              nome,
-              cognome
+      // Try rich join first, then fallback to simple activities
+      let activitiesData: any[] | null = null
+      {
+        const { data, error } = await supabase
+          .from('activities')
+          .select(`
+            *,
+            practices(
+              numero,
+              cliente_id,
+              controparti_ids
             )
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('data', { ascending: true })
-        .limit(1000) // Limit to prevent excessive data loading
-
-      if (error) {
-        setTasks([])
-        return
+          `)
+          .eq('user_id', user.id)
+          .order('data', { ascending: true })
+          .limit(1000)
+        if (error) {
+          const fb = await supabase
+            .from('activities')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('data', { ascending: true })
+            .limit(1000)
+          activitiesData = fb.data
+        } else {
+          activitiesData = data
+        }
       }
 
 
@@ -169,8 +173,7 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         const practiceNumber = activity.practices?.numero || 'N/A'
         
         // Get client name
-        const client = activity.practices?.clients
-        const clientName = client ? (client.ragione || `${client.nome || ''} ${client.cognome || ''}`.trim()) : null
+        const clientName = null
         
         // Get counterparty names
         const counterparties = activity.practices?.controparti_ids || []

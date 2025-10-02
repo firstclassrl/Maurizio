@@ -89,48 +89,49 @@ export function MobileDashboardPage({
 
   const loadTasks = async () => {
     try {
-      // Load activities with practice and client information
-      const { data: activitiesData, error } = await supabase
-        .from('activities')
-        .select(`
-          *,
-          practices!inner(
-            numero,
-            cliente_id,
-            controparti_ids,
-            clients!practices_cliente_id_fkey(
-              ragione,
-              nome,
-              cognome
+      // Rich query with joins (best-effort)
+      let activitiesData: any[] | null = null
+      let errorJoin: any = null
+      {
+        const { data, error } = await supabase
+          .from('activities')
+          .select(`
+            *,
+            practices(
+              numero,
+              cliente_id,
+              controparti_ids
             )
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('data', { ascending: true })
-
-      if (error) {
-        console.error('Error loading activities:', error)
-        return
+          `)
+          .eq('user_id', user.id)
+          .order('data', { ascending: true })
+        activitiesData = data
+        errorJoin = error
       }
 
-      // Transform activities to Task format for compatibility
+      if (errorJoin) {
+        console.warn('Join failed, falling back to simple activities query:', errorJoin)
+        const { data, error } = await supabase
+          .from('activities')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('data', { ascending: true })
+        if (error) throw error
+        activitiesData = data
+      }
+
       const transformedTasks: Task[] = (activitiesData || []).map(activity => ({
         id: activity.id,
         user_id: activity.user_id,
         attivita: activity.attivita,
-        pratica: activity.practices?.numero || 'N/A',
+        pratica: activity.practices?.numero || 'Pratica',
         scadenza: activity.data,
         ora: activity.ora || '00:00',
         stato: activity.stato === 'done' ? 'done' : 'todo',
-        urgent: activity.priorita >= 8,
+        urgent: (activity.priorita ?? 5) >= 8,
         categoria: activity.categoria,
-        cliente: activity.practices?.clients ? 
-          (activity.practices.clients.ragione || 
-           `${activity.practices.clients.nome || ''} ${activity.practices.clients.cognome || ''}`.trim()) 
-          : 'N/A',
-        controparte: activity.practices?.controparti_ids && activity.practices.controparti_ids.length > 0 
-          ? 'Controparte' 
-          : null,
+        cliente: 'Cliente',
+        controparte: null,
         created_at: activity.created_at,
         updated_at: activity.updated_at
       }))
@@ -141,6 +142,10 @@ export function MobileDashboardPage({
       setTodayTasks(transformedTasks.filter(t => t.scadenza === new Date().toISOString().split('T')[0]))
     } catch (error) {
       console.error('Error loading tasks:', error)
+      setTasks([])
+      setUrgentTasks([])
+      setOverdueTasks([])
+      setTodayTasks([])
     }
   }
 
