@@ -14,14 +14,8 @@ export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: 
   console.log('DemoBanner render:', { isDemoUser, isPopulating, hasOnRepopulate: !!onRepopulate, hasOnClear: !!onClear })
   console.log('onRepopulate function:', onRepopulate)
   
-  // Alert per verificare che il componente si renderizzi
-  if (isDemoUser) {
-    alert('DEMO BANNER IS RENDERING - isDemoUser: true')
-  }
-  
   if (!isDemoUser) {
     console.log('DemoBanner: not a demo user, returning null')
-    alert('DEMO BANNER NOT RENDERING - isDemoUser: false')
     return null
   }
 
@@ -43,14 +37,15 @@ export function DemoBanner({ isDemoUser, isPopulating, onRepopulate, onClear }: 
             <Button
               size="sm"
               onClick={() => {
-                alert('Button clicked - about to call onRepopulate')
                 console.log('Ricarica Dati button clicked!')
                 console.log('onRepopulate function:', onRepopulate)
                 if (onRepopulate) {
                   console.log('Calling onRepopulate...')
+                  alert('CALLING onRepopulate function!')
                   onRepopulate()
                 } else {
                   console.error('onRepopulate is undefined!')
+                  alert('ERROR: onRepopulate is undefined!')
                 }
               }}
               disabled={isPopulating}
