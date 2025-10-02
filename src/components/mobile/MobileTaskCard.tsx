@@ -33,10 +33,48 @@ export function MobileTaskCard({ task, onClick }: MobileTaskCardProps) {
     return 'border-l-gray-300'
   }
 
+  const getCategoryBorder = (category?: string) => {
+    switch (category) {
+      case 'Appuntamento':
+        return 'border-gray-200'
+      case 'Scadenza':
+        return 'border-orange-200'
+      case 'Attività da Svolgere':
+        return 'border-blue-200'
+      case 'Udienza':
+        return 'border-green-200'
+      case 'Scadenza Processuale':
+        return 'border-red-200'
+      case 'Attività Processuale':
+        return 'border-yellow-200'
+      default:
+        return 'border-gray-200'
+    }
+  }
+
+  const getCategoryBadge = (category?: string) => {
+    switch (category) {
+      case 'Appuntamento':
+        return 'bg-gray-100 text-gray-800'
+      case 'Scadenza':
+        return 'bg-orange-100 text-orange-800'
+      case 'Attività da Svolgere':
+        return 'bg-blue-100 text-blue-800'
+      case 'Udienza':
+        return 'bg-green-100 text-green-800'
+      case 'Scadenza Processuale':
+        return 'bg-red-100 text-red-800'
+      case 'Attività Processuale':
+        return 'bg-yellow-100 text-yellow-800'
+      default:
+        return 'bg-gray-100 text-gray-600'
+    }
+  }
+
   return (
     <div 
       onClick={onClick}
-      className={`bg-white rounded-lg shadow-sm border-2 border-yellow-400 p-4 mb-3 cursor-pointer transition-colors`}
+      className={`bg-white rounded-lg shadow-sm border-2 ${getCategoryBorder(task.categoria)} p-4 mb-3 cursor-pointer transition-colors`}
     >
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
@@ -60,7 +98,7 @@ export function MobileTaskCard({ task, onClick }: MobileTaskCardProps) {
           </span>
         </div>
         {task.categoria && (
-          <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+          <span className={`text-xs px-2 py-1 rounded-full ${getCategoryBadge(task.categoria)}`}>
             {task.categoria}
           </span>
         )}
