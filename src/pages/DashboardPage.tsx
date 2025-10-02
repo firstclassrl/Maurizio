@@ -196,6 +196,65 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         }
       })
 
+      // If no tasks found, provide mock demo tasks to showcase features
+      if (!convertedTasks || convertedTasks.length === 0) {
+        const mockTasks: Task[] = [
+          {
+            id: 'mock-1',
+            user_id: user.id,
+            pratica: '2025/001',
+            attivita: 'Deposito ricorso',
+            categoria: 'Scadenza Processuale',
+            cliente: 'Rossi Mario',
+            controparte: 'Alfa S.p.A.',
+            scadenza: new Date().toISOString().split('T')[0],
+            ora: '10:00',
+            note: 'Predisporre atti e allegati',
+            stato: 'todo',
+            urgent: true,
+            evaso: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'mock-2',
+            user_id: user.id,
+            pratica: '2025/002',
+            attivita: 'Udienza di comparizione',
+            categoria: 'Udienza',
+            cliente: 'Beta S.r.l.',
+            controparte: 'Bianchi Lucia',
+            scadenza: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+            ora: '09:30',
+            note: 'Aula 3, Tribunale di Roma',
+            stato: 'todo',
+            urgent: false,
+            evaso: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'mock-3',
+            user_id: user.id,
+            pratica: '2025/003',
+            attivita: 'Telefonata con cliente',
+            categoria: 'Attività da Svolgere',
+            cliente: 'Comune di Pescara',
+            controparte: 'Gamma S.c.a.r.l.',
+            scadenza: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0],
+            ora: '15:00',
+            note: 'Aggiornamento stato pratica',
+            stato: 'todo',
+            urgent: false,
+            evaso: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ]
+        setTasks(mockTasks)
+        return
+      }
+
       setTasks(convertedTasks)
     } catch (error) {
       setTasks([])
@@ -250,6 +309,70 @@ export function DashboardPage({ user, onNavigateToMonth, onNavigateToWeek, onNav
         }
       })
       
+      // If no clients, provide mock demo clients and counterparties
+      if (!parsedClients || parsedClients.length === 0) {
+        const demoClients: Client[] = [
+          {
+            id: 'c-mock-1',
+            user_id: user.id,
+            tipologia: 'Persona fisica',
+            nome: 'Mario',
+            cognome: 'Rossi',
+            codice_fiscale: 'RSSMRA80A01H501Z',
+            indirizzi: [
+              { tipo: 'RESIDENZA', via: 'Via Roma 10', citta: 'Roma', cap: '00100', provincia: 'RM' }
+            ],
+            contatti: [
+              { tipo: 'TELEFONO', valore: '+39 333 1234567' },
+              { tipo: 'EMAIL', valore: 'mario.rossi@example.com' }
+            ],
+            note: 'Cliente persona fisica'
+          },
+          {
+            id: 'c-mock-2',
+            user_id: user.id,
+            tipologia: 'Persona Giuridica',
+            ragione: 'Alfa S.p.A.',
+            partita_iva: '01234567890',
+            indirizzi: [
+              { tipo: 'SEDE', via: 'Corso Italia 25', citta: 'Milano', cap: '20100', provincia: 'MI' }
+            ],
+            contatti: [
+              { tipo: 'TELEFONO', valore: '+39 02 9876543' },
+              { tipo: 'EMAIL', valore: 'legale@alfaspa.it' }
+            ],
+            note: 'Controparte società'
+          },
+          {
+            id: 'c-mock-3',
+            user_id: user.id,
+            tipologia: 'Persona Giuridica',
+            ragione: 'Beta S.r.l.',
+            partita_iva: '09876543210',
+            indirizzi: [
+              { tipo: 'SEDE', via: 'Via Garibaldi 5', citta: 'Pescara', cap: '65100', provincia: 'PE' }
+            ],
+            contatti: [
+              { tipo: 'EMAIL', valore: 'amministrazione@betasrl.it' }
+            ]
+          },
+          {
+            id: 'c-mock-4',
+            user_id: user.id,
+            tipologia: 'Altro ente',
+            ragione: 'Comune di Pescara',
+            indirizzi: [
+              { tipo: 'SEDE', via: 'Piazza Italia 1', citta: 'Pescara', cap: '65121', provincia: 'PE' }
+            ],
+            contatti: [
+              { tipo: 'EMAIL', valore: 'protocollo@comune.pescara.it' }
+            ]
+          }
+        ]
+        setClients(demoClients)
+        return
+      }
+
       setClients(parsedClients)
     } catch (error) {
       console.error('Error loading clients:', error)

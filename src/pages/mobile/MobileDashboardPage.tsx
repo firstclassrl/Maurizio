@@ -129,10 +129,20 @@ export function MobileDashboardPage({
         updated_at: activity.updated_at
       }))
 
-      setTasks(transformedTasks)
-      setUrgentTasks(transformedTasks.filter(t => t.urgent))
-      setOverdueTasks(transformedTasks.filter(t => t.stato === 'todo' && new Date(t.scadenza) < new Date()))
-      setTodayTasks(transformedTasks.filter(t => t.scadenza === new Date().toISOString().split('T')[0]))
+      // If empty, provide mock tasks
+      const list = transformedTasks && transformedTasks.length > 0 ? transformedTasks : [
+        {
+          id: 'm1', user_id: user.id, pratica: '2025/001', attivita: 'Deposito ricorso', scadenza: new Date().toISOString().split('T')[0], ora: '10:00', stato: 'todo', urgent: true, categoria: 'Scadenza Processuale', cliente: 'Rossi Mario', controparte: 'Alfa S.p.A.', created_at: new Date().toISOString(), updated_at: new Date().toISOString()
+        },
+        {
+          id: 'm2', user_id: user.id, pratica: '2025/002', attivita: 'Udienza di comparizione', scadenza: new Date(Date.now()+86400000).toISOString().split('T')[0], ora: '09:30', stato: 'todo', urgent: false, categoria: 'Udienza', cliente: 'Beta S.r.l.', controparte: 'Bianchi Lucia', created_at: new Date().toISOString(), updated_at: new Date().toISOString()
+        }
+      ]
+
+      setTasks(list)
+      setUrgentTasks(list.filter(t => t.urgent))
+      setOverdueTasks(list.filter(t => t.stato === 'todo' && new Date(t.scadenza) < new Date()))
+      setTodayTasks(list.filter(t => t.scadenza === new Date().toISOString().split('T')[0]))
     } catch (error) {
       console.error('Error loading tasks:', error)
       setTasks([])
