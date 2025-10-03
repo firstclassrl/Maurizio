@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Task } from '../../lib/calendar-utils'
 import { Button } from '../ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -24,6 +24,8 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
   const isMobile = useMobile()
   const { showWeekend } = useWeekendSettings()
   const { tooltip, handleMouseEnter, handleMouseLeave } = useActivityTooltip(2000)
+  const dragStartTime = useRef<number>(0)
+  const isDragging = useRef<boolean>(false)
 
 
   // Generate colors based on category
@@ -119,14 +121,29 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
     return date.getDate()
   }
 
-  // Handle drag and drop
+  // Handle drag start
+  const handleDragStart = () => {
+    dragStartTime.current = Date.now()
+    isDragging.current = true
+  }
+
+  // Handle drag end
   const handleDragEnd = (result: DropResult) => {
+    isDragging.current = false
     if (!result.destination || !onTaskMove) return
 
     const { draggableId, destination } = result
     const newDate = format(weekDays[parseInt(destination.droppableId)], 'yyyy-MM-dd')
     
     onTaskMove(draggableId, newDate)
+  }
+
+  // Handle task click with drag detection
+  const handleTaskClick = (task: Task) => {
+    // Only trigger click if it's not a drag operation
+    if (!isDragging.current && Date.now() - dragStartTime.current < 200) {
+      onTaskClick?.(task)
+    }
   }
 
 
@@ -195,7 +212,7 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
 
       {/* Main Calendar Grid - Full Width */}
       <div className="px-2 py-4">
-        <DragDropContext onDragEnd={handleDragEnd}>
+        <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           {isMobile ? (
             // Mobile Layout - Vertical
             <div className="space-y-4">
@@ -254,7 +271,7 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
                                       ? 'bg-green-50 text-green-800 border-green-200' 
                                       : getTaskColor(task)
                                   } ${snapshot.isDragging ? 'opacity-50' : ''}`}
-                                  onClick={() => onTaskClick?.(task)}
+                                  onClick={() => handleTaskClick(task)}
                                   onMouseEnter={(e) => handleMouseEnter(task, e)}
                                   onMouseLeave={handleMouseLeave}
                                 >
@@ -344,7 +361,7 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
                                       ? 'bg-green-50 text-green-800 border-green-200' 
                                       : getTaskColor(task)
                                   } ${snapshot.isDragging ? 'opacity-50' : ''}`}
-                                  onClick={() => onTaskClick?.(task)}
+                                  onClick={() => handleTaskClick(task)}
                                   onMouseEnter={(e) => handleMouseEnter(task, e)}
                                   onMouseLeave={handleMouseLeave}
                                 >

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Task } from '../../lib/calendar-utils'
 import { Button } from '../ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -25,6 +25,8 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
   const isMobile = useMobile()
   const { showWeekend } = useWeekendSettings()
   const { tooltip, handleMouseEnter, handleMouseLeave } = useActivityTooltip(2000)
+  const dragStartTime = useRef<number>(0)
+  const isDragging = useRef<boolean>(false)
 
 
   // Generate colors based on category
@@ -156,7 +158,15 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
   const calendarDays = getCalendarDays(currentMonth)
   const dayNames = showWeekend ? ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'] : ['Lun', 'Mar', 'Mer', 'Gio', 'Ven']
 
+  // Handle drag start
+  const handleDragStart = () => {
+    dragStartTime.current = Date.now()
+    isDragging.current = true
+  }
+
+  // Handle drag end
   const handleDragEnd = async (result: DropResult) => {
+    isDragging.current = false
     if (!result.destination) return
 
     const { source, destination } = result
@@ -188,6 +198,14 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
       }
     } catch (error) {
       console.error('Error updating task date:', error)
+    }
+  }
+
+  // Handle task click with drag detection
+  const handleTaskClick = (task: Task) => {
+    // Only trigger click if it's not a drag operation
+    if (!isDragging.current && Date.now() - dragStartTime.current < 200) {
+      onTaskClick?.(task)
     }
   }
 
@@ -268,7 +286,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
             </div>
 
             {/* Calendar grid */}
-            <DragDropContext onDragEnd={handleDragEnd}>
+            <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
               <div className={`grid gap-2 ${showWeekend ? 'grid-cols-7' : 'grid-cols-5'}`}>
                 {calendarDays.map((day, index) => {
                   const dayTasks = getTasksForDate(day)
@@ -309,7 +327,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                         ? 'bg-green-100 text-green-800 border-green-200' 
                                         : getTaskColor(task)
                                     } ${snapshot.isDragging ? 'opacity-50' : ''}`}
-                                  onClick={() => onTaskClick?.(task)}
+                                  onClick={() => handleTaskClick(task)}
                                   onMouseEnter={(e) => handleMouseEnter(task, e)}
                                   onMouseLeave={handleMouseLeave}
                                 >
@@ -363,7 +381,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
             </div>
 
             {/* Calendar grid */}
-            <DragDropContext onDragEnd={handleDragEnd}>
+            <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
               <div className={`grid gap-1 h-full ${showWeekend ? 'grid-cols-7' : 'grid-cols-5'}`}>
                 {calendarDays.map((day, index) => {
                   const dayTasks = getTasksForDate(day)
@@ -404,7 +422,7 @@ export function MonthlyCalendar({ tasks, onTaskClick, userId, onTaskUpdate }: Mo
                                         ? 'bg-green-100 text-green-800 border-green-200' 
                                         : getTaskColor(task)
                                     } ${snapshot.isDragging ? 'opacity-50' : ''}`}
-                                  onClick={() => onTaskClick?.(task)}
+                                  onClick={() => handleTaskClick(task)}
                                   onMouseEnter={(e) => handleMouseEnter(task, e)}
                                   onMouseLeave={handleMouseLeave}
                                 >

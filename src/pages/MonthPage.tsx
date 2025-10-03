@@ -33,7 +33,7 @@ export function MonthPage({ user, onBackToDashboard, onNavigateToWeek }: MonthPa
         .from('activities')
         .select(`
           *,
-          practices!inner(
+          practices(
             numero,
             cliente_id,
             controparti_ids,
