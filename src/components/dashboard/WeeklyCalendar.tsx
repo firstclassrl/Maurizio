@@ -138,12 +138,10 @@ export function WeeklyCalendar({ tasks, onTaskClick, onTaskMove }: WeeklyCalenda
     onTaskMove(draggableId, newDate)
   }
 
-  // Handle task click with drag detection
+  // Handle task click with robust drag detection (always open if not dragging)
   const handleTaskClick = (task: Task) => {
-    // Only trigger click if it's not a drag operation
-    if (!isDragging.current && Date.now() - dragStartTime.current < 200) {
-      onTaskClick?.(task)
-    }
+    if (isDragging.current) return
+    onTaskClick?.(task)
   }
 
 
