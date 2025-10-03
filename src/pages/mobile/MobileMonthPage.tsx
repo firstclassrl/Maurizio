@@ -8,6 +8,8 @@ import { MobileCalendar } from '../../components/mobile/MobileCalendar'
 import { WeekendToggleCompact } from '../../components/settings/WeekendToggleCompact'
 import { AppView } from '../../App'
 import { MOCK_ACTIVITIES, MOCK_PRACTICES, getPracticeById, getClientNameById } from '../../lib/mock-demo'
+import { TaskDialog } from '../../components/dashboard/TaskDialog'
+import { Footer } from '../../components/ui/Footer'
 
 interface MobileMonthPageProps {
   user: User
@@ -18,6 +20,7 @@ export function MobileMonthPage({ user, onNavigate }: MobileMonthPageProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
 
   useEffect(() => {
     loadTasks()
@@ -102,12 +105,44 @@ export function MobileMonthPage({ user, onNavigate }: MobileMonthPageProps) {
 
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task)
-    // Qui potresti aprire un dialog mobile per i dettagli della task
-    console.log('Task clicked:', task)
+    setIsTaskDialogOpen(true)
   }
 
   const handleTaskUpdate = () => {
     loadTasks() // Ricarica le task dopo un aggiornamento
+  }
+
+  const handleTaskSave = async (taskData: Partial<Task>) => {
+    try {
+      const mappedData = {
+        attivita: taskData.attivita,
+        data: taskData.scadenza,
+        ora: taskData.ora,
+        stato: taskData.stato,
+        urgent: taskData.urgent || false,
+        note: taskData.note || null,
+        categoria: taskData.categoria,
+        user_id: user.id
+      }
+
+      if (selectedTask) {
+        const { error } = await supabase
+          .from('activities')
+          .update({
+            ...mappedData,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', selectedTask.id)
+
+        if (error) throw error
+      }
+
+      await loadTasks()
+      setIsTaskDialogOpen(false)
+      setSelectedTask(null)
+    } catch (error) {
+      console.error('Error saving task:', error)
+    }
   }
 
   if (isLoading) {
@@ -145,11 +180,19 @@ export function MobileMonthPage({ user, onNavigate }: MobileMonthPageProps) {
       }
       currentView="month"
       onNavigate={onNavigate}
+      footer={<Footer />}
     >
       <MobileCalendar 
         tasks={tasks}
         onTaskClick={handleTaskClick}
         onDateChange={handleTaskUpdate}
+      />
+
+      <TaskDialog
+        open={isTaskDialogOpen}
+        onOpenChange={setIsTaskDialogOpen}
+        task={selectedTask}
+        onSave={handleTaskSave}
       />
     </MobileLayout>
   )
