@@ -1,6 +1,13 @@
-v3.9.0-beta - Dati dimostrativi completi e app mobile
-Timestamp: 2025-01-15 13:30:00
+v3.9.1-beta - Fix visualizzazione attività calendari
+Timestamp: 2025-01-15 14:45:00
 Commit: pending (working tree)
+
+🔧 CORREZIONI CALENDARI (v3.9.1):
+- ✅ Implementato fallback query per caricamento attività
+- ✅ Aggiunto logging per debug problemi caricamento
+- ✅ Corretto sistema drag vs click per cliccabilità mobile
+- ✅ Migliorata gestione errori nelle query calendari
+- ✅ Aggiunto supporto per attività senza pratiche associate
 
 📱 APP MOBILE COMPLETA:
 - ✅ Layout mobile completo con bottom navigation

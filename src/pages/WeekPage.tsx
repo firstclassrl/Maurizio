@@ -30,7 +30,8 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
 
   const loadTasks = async () => {
     try {
-      const { data, error } = await supabase
+      // First try to load activities with practices
+      let { data, error } = await supabase
         .from('activities')
         .select(`
           *,
@@ -47,13 +48,35 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
         `)
         .eq('user_id', user.id)
         .order('data', { ascending: true })
-        .limit(1000) // Limit to prevent excessive data loading
+        .limit(1000)
+
+      // If that fails, try simple activities query
+      if (error) {
+        console.log('Complex query failed, trying simple query:', error)
+        const simpleResult = await supabase
+          .from('activities')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('data', { ascending: true })
+          .limit(1000)
+        
+        data = simpleResult.data
+        error = simpleResult.error
+      }
 
       if (error) {
+        console.error('Error loading activities:', error)
         setTasks([])
         return
       }
 
+      if (!data || data.length === 0) {
+        console.log('No activities found for user:', user.id)
+        setTasks([])
+        return
+      }
+
+      console.log('Loaded activities:', data.length)
 
       // Get all unique counterparty IDs from all practices
       const allCounterpartyIds = new Set<string>()
@@ -110,8 +133,10 @@ export function WeekPage({ user, onBackToDashboard, onNavigateToMonth }: WeekPag
         }
       })
 
+      console.log('Converted tasks:', convertedTasks.length)
       setTasks(convertedTasks)
     } catch (error) {
+      console.error('Error in loadTasks:', error)
       setTasks([])
     }
   }
