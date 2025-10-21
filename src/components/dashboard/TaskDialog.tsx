@@ -131,7 +131,7 @@ export function TaskDialog({ open, onOpenChange, task, isUrgentMode = false, onS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={isMobile ? "mx-4 max-w-[95vw] max-h-[95vh] overflow-y-auto" : "sm:max-w-[600px] max-h-[95vh] overflow-y-auto"}>
+      <DialogContent className={isMobile ? "mx-4 max-w-[95vw] max-h-[95vh] overflow-y-auto" : "sm:max-w-[800px] lg:max-w-[900px] max-h-[95vh] overflow-y-auto"}>
         <DialogHeader>
           <DialogTitle className={`flex items-center gap-2 ${isUrgentMode ? 'text-red-600' : ''}`}>
             {isUrgentMode && <AlertTriangle className="h-5 w-5" />}

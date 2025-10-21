@@ -235,7 +235,7 @@ export const SimpleClientForm: React.FC<SimpleClientFormProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {client ? 'Modifica Parte' : 'Nuova Parte'}

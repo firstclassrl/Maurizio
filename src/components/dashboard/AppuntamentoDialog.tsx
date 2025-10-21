@@ -64,7 +64,7 @@ export function AppuntamentoDialog({ isOpen, onClose, onSave }: AppuntamentoDial
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg lg:max-w-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Users className="h-5 w-5 text-cyan-600" />
